@@ -1,12 +1,64 @@
 const Payment = require('../models/Payment');
 const Appointment = require('../models/Appointment');
 
+<<<<<<< HEAD
+=======
+const normalizeCardNumber = (value = '') => String(value).replace(/\D/g, '');
+
+const isValidCardNumber = (number) => {
+  if (!number || number.length < 13 || number.length > 19) return false;
+
+  let sum = 0;
+  let shouldDouble = false;
+
+  for (let i = number.length - 1; i >= 0; i -= 1) {
+    let digit = Number(number[i]);
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+
+  return sum % 10 === 0;
+};
+
+const detectCardBrand = (number) => {
+  if (/^4/.test(number)) return 'Visa';
+  if (/^5[1-5]/.test(number)) return 'Mastercard';
+  if (/^3[47]/.test(number)) return 'American Express';
+  return 'Card';
+};
+
+const isValidExpiry = (value = '') => {
+  const cleaned = String(value).trim();
+  const parts = cleaned.split('/');
+  if (parts.length !== 2) return false;
+
+  const month = Number(parts[0]);
+  const yearPart = parts[1];
+  const fullYear = yearPart.length === 2 ? 2000 + Number(yearPart) : Number(yearPart);
+
+  if (!month || month < 1 || month > 12 || !fullYear) return false;
+
+  const now = new Date();
+  const expiryDate = new Date(fullYear, month, 0, 23, 59, 59, 999);
+  return expiryDate >= now;
+};
+
+const isValidCvv = (value = '') => /^\d{3,4}$/.test(String(value).trim());
+
+const makeTransactionId = () => `TXN-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
 // Create payment
 const createPayment = async (req, res) => {
   try {
     const {
       appointmentId,
       amount,
+<<<<<<< HEAD
       paymentMethod,
       paymentStatus,
       patientId: patientIdFromBody,
@@ -19,6 +71,22 @@ const createPayment = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Please provide appointment ID, patient ID, and amount'
+=======
+      paymentStatus,
+      paymentMethod,
+      cardNumber,
+      expiry,
+      cvv,
+      cardholderName
+    } = req.body;
+    const patientId = req.user.id; // From auth middleware
+
+    // Validation
+    if (!appointmentId || amount === undefined || amount === null) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide appointment ID and amount'
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       });
     }
 
@@ -29,10 +97,50 @@ const createPayment = async (req, res) => {
       });
     }
 
+<<<<<<< HEAD
     if (!paymentMethod || !String(paymentMethod).trim()) {
       return res.status(400).json({
         success: false,
         message: 'Please provide a payment method'
+=======
+    const normalizedStatus = paymentStatus === 'Paid' ? 'Paid' : 'Pending';
+    const normalizedMethod = paymentMethod === 'Card' || !paymentMethod ? 'Card' : null;
+
+    if (!normalizedMethod) {
+      return res.status(400).json({
+        success: false,
+        message: 'Only card payments are supported right now'
+      });
+    }
+
+    const normalizedCardNumber = normalizeCardNumber(cardNumber);
+
+    if (!cardholderName || !String(cardholderName).trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cardholder name is required'
+      });
+    }
+
+    if (!isValidCardNumber(normalizedCardNumber)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid card number'
+      });
+    }
+
+    if (!isValidExpiry(expiry)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid expiry date'
+      });
+    }
+
+    if (!isValidCvv(cvv)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid CVV'
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       });
     }
 
@@ -52,25 +160,53 @@ const createPayment = async (req, res) => {
       });
     }
 
+<<<<<<< HEAD
     const normalizedStatus = paymentStatus === 'Paid' ? 'Paid' : 'Pending';
     const paymentPaidAt = normalizedStatus === 'Paid' ? (paidAt ? new Date(paidAt) : new Date()) : null;
+=======
+    // Create or update payment for the appointment
+    const paidAt = normalizedStatus === 'Paid' ? new Date() : null;
+    const cardBrand = detectCardBrand(normalizedCardNumber);
+    const cardLast4 = normalizedCardNumber.slice(-4);
+    const transactionId = makeTransactionId();
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
 
     let payment = await Payment.findOne({ appointmentId, patientId });
 
     if (payment) {
       payment.amount = Number(amount);
+<<<<<<< HEAD
       payment.paymentMethod = String(paymentMethod).trim();
       payment.paymentStatus = normalizedStatus;
       payment.paidAt = paymentPaidAt;
+=======
+      payment.paymentMethod = normalizedMethod;
+      payment.paymentStatus = normalizedStatus;
+      payment.paidAt = paidAt;
+      payment.cardBrand = cardBrand;
+      payment.cardLast4 = cardLast4;
+      payment.cardholderName = String(cardholderName).trim();
+      payment.transactionId = transactionId;
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       await payment.save();
     } else {
       payment = new Payment({
         appointmentId,
         patientId,
         amount: Number(amount),
+<<<<<<< HEAD
         paymentMethod: String(paymentMethod).trim(),
         paymentStatus: normalizedStatus,
         paidAt: paymentPaidAt
+=======
+        paymentMethod: normalizedMethod,
+        paymentStatus: normalizedStatus,
+        paidAt,
+        cardBrand,
+        cardLast4,
+        cardholderName: String(cardholderName).trim(),
+        transactionId
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       });
 
       await payment.save();

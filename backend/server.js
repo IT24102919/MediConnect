@@ -38,7 +38,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/appointments', appointmentRoutes);
+<<<<<<< HEAD
 app.use("/api/payments", paymentRoutes);
+=======
+app.use('/api/payments', paymentRoutes);
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
 app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/medical-history', medicalHistoryRoutes);

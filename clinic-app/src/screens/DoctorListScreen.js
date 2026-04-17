@@ -190,7 +190,11 @@ export default function DoctorListScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+<<<<<<< HEAD
     backgroundColor: '#102A43',
+=======
+    backgroundColor: '#0F172A',
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
   },
   centerContent: {
     justifyContent: 'center',

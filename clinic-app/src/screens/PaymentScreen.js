@@ -9,6 +9,7 @@ import {
   ScrollView,
   TextInput
 } from 'react-native';
+<<<<<<< HEAD
 import { AuthContext } from '../context/AuthContext';
 import axiosInstance from '../api/axios';
 
@@ -16,6 +17,15 @@ export default function PaymentScreen({ route, navigation }) {
   const { appointment, doctor } = route.params || {};
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+=======
+import { PaymentContext } from '../context/PaymentContext';
+import { AppointmentContext } from '../context/AppointmentContext';
+
+export default function PaymentScreen({ route, navigation }) {
+  const { appointment, doctor } = route.params || {};
+  const { createPayment, loading } = useContext(PaymentContext);
+  const { updateAppointment } = useContext(AppointmentContext);
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
   const [currentStatus, setCurrentStatus] = useState('Pending');
   const [cardholderName, setCardholderName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -36,10 +46,16 @@ export default function PaymentScreen({ route, navigation }) {
   };
 
   const validateCardInputs = () => {
+<<<<<<< HEAD
+=======
+    const cardDigits = cardNumber.replace(/\D/g, '');
+
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     if (!cardholderName.trim()) {
       return 'Cardholder name is required.';
     }
 
+<<<<<<< HEAD
     if (!cardNumber.trim()) {
       return 'Card number is required.';
     }
@@ -50,13 +66,43 @@ export default function PaymentScreen({ route, navigation }) {
 
     if (!cvv.trim()) {
       return 'CVV is required.';
+=======
+    if (cardDigits.length < 13 || cardDigits.length > 19) {
+      return 'Please enter a valid card number.';
+    }
+
+    const expiryMatch = expiry.match(/^(\d{2})\/(\d{2})$/);
+    if (!expiryMatch) {
+      return 'Expiry must be in MM/YY format.';
+    }
+
+    const month = Number(expiryMatch[1]);
+    const year = 2000 + Number(expiryMatch[2]);
+    if (month < 1 || month > 12) {
+      return 'Expiry month is invalid.';
+    }
+
+    const now = new Date();
+    const expiryDate = new Date(year, month, 0, 23, 59, 59, 999);
+    if (expiryDate < now) {
+      return 'Card has expired.';
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+      return 'CVV must be 3 or 4 digits.';
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     }
 
     return null;
   };
 
   const handlePayment = async () => {
+<<<<<<< HEAD
     if (loading || currentStatus === 'Paid') {
+=======
+    if (!appointment?._id) {
+      Alert.alert('Error', 'Appointment details are missing.');
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       return;
     }
 
@@ -66,6 +112,7 @@ export default function PaymentScreen({ route, navigation }) {
       return;
     }
 
+<<<<<<< HEAD
     if (!appointment?._id) {
       Alert.alert('Error', 'Appointment details are missing.');
       return;
@@ -120,6 +167,42 @@ export default function PaymentScreen({ route, navigation }) {
 
   const isPaid = currentStatus === 'Paid';
   const statusStyle = isPaid ? styles.paid : styles.pending;
+=======
+    const paymentResult = await createPayment({
+      appointmentId: appointment._id,
+      amount,
+      paymentStatus: 'Paid',
+      paymentMethod: 'Card',
+      cardholderName: cardholderName.trim(),
+      cardNumber,
+      expiry,
+      cvv
+    });
+
+    if (!paymentResult.success) {
+      Alert.alert('Payment Failed', paymentResult.message || 'Could not process payment.');
+      return;
+    }
+
+    const appointmentResult = await updateAppointment(appointment._id, {
+      status: 'Confirmed'
+    });
+
+    if (!appointmentResult.success) {
+      Alert.alert('Payment Saved', 'Payment completed, but appointment status update failed.');
+      setCurrentStatus('Paid');
+      return;
+    }
+
+    setCurrentStatus('Paid');
+    Alert.alert('Payment Success', 'Your payment is complete and appointment is confirmed.', [
+      {
+        text: 'Go to My Appointments',
+        onPress: () => navigation.navigate('MyAppointments')
+      }
+    ]);
+  };
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -151,7 +234,11 @@ export default function PaymentScreen({ route, navigation }) {
           value={cardholderName}
           onChangeText={setCardholderName}
           autoCapitalize="words"
+<<<<<<< HEAD
           editable={!isPaid && !loading}
+=======
+          editable={currentStatus !== 'Paid'}
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
         />
 
         <Text style={styles.label}>Card Number</Text>
@@ -162,7 +249,11 @@ export default function PaymentScreen({ route, navigation }) {
           value={cardNumber}
           onChangeText={(value) => setCardNumber(formatCardNumber(value))}
           keyboardType="number-pad"
+<<<<<<< HEAD
           editable={!isPaid && !loading}
+=======
+          editable={currentStatus !== 'Paid'}
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
         />
 
         <View style={styles.row}>
@@ -175,7 +266,11 @@ export default function PaymentScreen({ route, navigation }) {
               value={expiry}
               onChangeText={(value) => setExpiry(formatExpiry(value))}
               keyboardType="number-pad"
+<<<<<<< HEAD
               editable={!isPaid && !loading}
+=======
+              editable={currentStatus !== 'Paid'}
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
             />
           </View>
 
@@ -189,20 +284,32 @@ export default function PaymentScreen({ route, navigation }) {
               onChangeText={(value) => setCvv(value.replace(/\D/g, '').slice(0, 4))}
               keyboardType="number-pad"
               secureTextEntry
+<<<<<<< HEAD
               editable={!isPaid && !loading}
+=======
+              editable={currentStatus !== 'Paid'}
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
             />
           </View>
         </View>
 
         <Text style={styles.label}>Payment Status</Text>
+<<<<<<< HEAD
         <Text style={[styles.status, statusStyle]}>
+=======
+        <Text style={[styles.status, currentStatus === 'Paid' ? styles.paid : styles.pending]}>
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
           {currentStatus}
         </Text>
       </View>
 
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
+<<<<<<< HEAD
         disabled={loading || isPaid}
+=======
+        disabled={loading || currentStatus === 'Paid'}
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
         onPress={handlePayment}
       >
         {loading ? (
@@ -220,12 +327,20 @@ export default function PaymentScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+<<<<<<< HEAD
     backgroundColor: '#102A43',
+=======
+    backgroundColor: '#0F172A',
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     padding: 16
   },
   heading: {
     color: '#FFFFFF',
+<<<<<<< HEAD
     backgroundColor: '#102A43',
+=======
+    fontSize: 22,
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     fontWeight: '700',
     marginBottom: 16
   },

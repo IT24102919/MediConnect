@@ -1,6 +1,10 @@
 {
   "expo": {
+<<<<<<< HEAD
     "name": "App Pen",
+=======
+    "name": "clinic-app",
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     "slug": "clinic-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -29,7 +33,11 @@
       [
         "expo-splash-screen",
         {
+<<<<<<< HEAD
           "image": "./assets/splash.png",
+=======
+          "image": "./assets/images/splash-icon.png",
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",

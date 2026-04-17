@@ -67,8 +67,13 @@ export default function RegisterScreen({ navigation }) {
         Alert.alert("Registration Failed", result.message);
       } else {
         console.log("✅ REGISTER SUCCESS:", result.message);
+<<<<<<< HEAD
         Alert.alert("Success", result.message);
         navigation.replace("Home");
+=======
+        // Navigation is handled by AppNavigator when isAuthenticated changes
+        Alert.alert("Success", result.message);
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";
@@ -190,7 +195,11 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+<<<<<<< HEAD
     backgroundColor: "#102A43", 
+=======
+    backgroundColor: "#0F172A", 
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     justifyContent: "center",
   },
   circle1: {

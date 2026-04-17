@@ -15,7 +15,11 @@ export default function ProfileScreen({ navigation }) {
           text: 'Logout',
           onPress: async () => {
             await logout();
+<<<<<<< HEAD
             navigation.replace('Login');
+=======
+            // Navigation is handled by AppNavigator when isAuthenticated changes
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
           },
           style: 'destructive'
         }
@@ -97,7 +101,11 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+<<<<<<< HEAD
     backgroundColor: '#102A43',
+=======
+    backgroundColor: '#0F172A',
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     paddingHorizontal: 16,
     paddingTop: 20,
   },

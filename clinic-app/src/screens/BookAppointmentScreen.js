@@ -158,7 +158,11 @@ export default function BookAppointmentScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+<<<<<<< HEAD
     backgroundColor: '#102A43',
+=======
+    backgroundColor: '#0F172A',
+>>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     padding: 16,
     paddingBottom: 24,
   },
