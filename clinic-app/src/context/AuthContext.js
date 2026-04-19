@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Register user
-  const register = async (name, email, password, confirmPassword) => {
+  const register = async (name, email, password, confirmPassword, role = "patient") => {
     try {
       // Validation
       if (!name || !email || !password || !confirmPassword) {
@@ -66,7 +66,7 @@ export function AuthProvider({ children }) {
         name: name.trim(),
         email: email.trim(),
         password: password.trim(),
-        role: 'patient'
+        role: 'role'
       });
 
       console.log("📡 REGISTER API: Response received:", response.data);
