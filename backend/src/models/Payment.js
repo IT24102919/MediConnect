@@ -20,11 +20,6 @@ const paymentSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-<<<<<<< HEAD
-      required: [true, 'Please provide payment method'],
-      trim: true,
-      default: 'Credit Card'
-=======
       enum: ['Card'],
       default: 'Card'
     },
@@ -49,7 +44,6 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: ''
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
     },
     paymentStatus: {
       type: String,

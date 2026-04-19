@@ -1,8 +1,6 @@
 const Payment = require('../models/Payment');
 const Appointment = require('../models/Appointment');
 
-<<<<<<< HEAD
-=======
 const normalizeCardNumber = (value = '') => String(value).replace(/\D/g, '');
 
 const isValidCardNumber = (number) => {
@@ -50,28 +48,12 @@ const isValidExpiry = (value = '') => {
 const isValidCvv = (value = '') => /^\d{3,4}$/.test(String(value).trim());
 
 const makeTransactionId = () => `TXN-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
-
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
 // Create payment
 const createPayment = async (req, res) => {
   try {
     const {
       appointmentId,
       amount,
-<<<<<<< HEAD
-      paymentMethod,
-      paymentStatus,
-      patientId: patientIdFromBody,
-      paidAt
-    } = req.body;
-    const patientId = patientIdFromBody || req.user?.id;
-
-    // Validation
-    if (!appointmentId || !patientId || amount === undefined || amount === null) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide appointment ID, patient ID, and amount'
-=======
       paymentStatus,
       paymentMethod,
       cardNumber,
@@ -86,7 +68,6 @@ const createPayment = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Please provide appointment ID and amount'
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       });
     }
 
@@ -97,12 +78,6 @@ const createPayment = async (req, res) => {
       });
     }
 
-<<<<<<< HEAD
-    if (!paymentMethod || !String(paymentMethod).trim()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide a payment method'
-=======
     const normalizedStatus = paymentStatus === 'Paid' ? 'Paid' : 'Pending';
     const normalizedMethod = paymentMethod === 'Card' || !paymentMethod ? 'Card' : null;
 
@@ -140,7 +115,6 @@ const createPayment = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Please provide a valid CVV'
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       });
     }
 
@@ -160,26 +134,16 @@ const createPayment = async (req, res) => {
       });
     }
 
-<<<<<<< HEAD
-    const normalizedStatus = paymentStatus === 'Paid' ? 'Paid' : 'Pending';
-    const paymentPaidAt = normalizedStatus === 'Paid' ? (paidAt ? new Date(paidAt) : new Date()) : null;
-=======
     // Create or update payment for the appointment
     const paidAt = normalizedStatus === 'Paid' ? new Date() : null;
     const cardBrand = detectCardBrand(normalizedCardNumber);
     const cardLast4 = normalizedCardNumber.slice(-4);
     const transactionId = makeTransactionId();
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
 
     let payment = await Payment.findOne({ appointmentId, patientId });
 
     if (payment) {
       payment.amount = Number(amount);
-<<<<<<< HEAD
-      payment.paymentMethod = String(paymentMethod).trim();
-      payment.paymentStatus = normalizedStatus;
-      payment.paidAt = paymentPaidAt;
-=======
       payment.paymentMethod = normalizedMethod;
       payment.paymentStatus = normalizedStatus;
       payment.paidAt = paidAt;
@@ -187,18 +151,12 @@ const createPayment = async (req, res) => {
       payment.cardLast4 = cardLast4;
       payment.cardholderName = String(cardholderName).trim();
       payment.transactionId = transactionId;
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       await payment.save();
     } else {
       payment = new Payment({
         appointmentId,
         patientId,
         amount: Number(amount),
-<<<<<<< HEAD
-        paymentMethod: String(paymentMethod).trim(),
-        paymentStatus: normalizedStatus,
-        paidAt: paymentPaidAt
-=======
         paymentMethod: normalizedMethod,
         paymentStatus: normalizedStatus,
         paidAt,
@@ -206,7 +164,6 @@ const createPayment = async (req, res) => {
         cardLast4,
         cardholderName: String(cardholderName).trim(),
         transactionId
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       });
 
       await payment.save();
