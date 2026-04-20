@@ -13,7 +13,8 @@ const createDoctor = async (req, res) => {
       description,
       available,
       phone,
-      image
+      image,
+      userId
     } = req.body;
 
     // Validation
@@ -42,7 +43,8 @@ const createDoctor = async (req, res) => {
       description: description || '',
       available: available !== undefined ? Boolean(available) : true,
       phone: phone || '',
-      image: image || null
+      image: image || null,
+      userId: userId || null
     });
 
     await doctor.save();

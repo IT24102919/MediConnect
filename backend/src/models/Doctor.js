@@ -3,6 +3,12 @@ const mongoose = require('mongoose');
 // Define Doctor Schema
 const doctorSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      unique: true,  // One doctor per user
+      sparse: true   // Allow null for existing doctors
+    },
     name: {
       type: String,
       required: [true, 'Please provide doctor name'],
