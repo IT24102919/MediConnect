@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -9,7 +9,7 @@ import { AuthContext } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 
-// App Screens
+// Patient Screens
 import HomeScreen from '../screens/HomeScreen';
 import DoctorListScreen from '../screens/DoctorListScreen';
 import DoctorDetailsScreen from '../screens/DoctorDetailsScreen';
@@ -20,117 +20,87 @@ import ProfileScreen from '../screens/ProfileScreen';
 import MedicalHistoryScreen from '../screens/MedicalHistoryScreen';
 import AppointmentRecordsScreen from '../screens/AppointmentRecordsScreen';
 
+// Doctor Screens
+import CompleteDoctorProfileScreen from '../screens/CompleteDoctorProfileScreen';
+import DoctorDashboardScreen from '../screens/DoctorDashboardScreen';
+
 const Stack = createNativeStackNavigator();
 
-// Authentication Stack (Login/Register)
-function AuthStack() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        animationEnabled: true
-      }}
-    >
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ animationEnabled: false }}
-      />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-    </Stack.Navigator>
-  );
-}
+// Main App Navigator - handles all screens
+function MainStack() {
+  const { user } = useContext(AuthContext);
+  const isDoctor = user?.role === 'doctor';
 
-// App Stack (Main app screens)
-function AppStack() {
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: true,
-        headerStyle: {
-          backgroundColor: '#0F172A'
-        },
+        headerStyle: { backgroundColor: '#0F172A' },
         headerTintColor: '#FFFFFF',
-        headerTitleStyle: {
-          fontWeight: '700',
-          fontSize: 18
-        },
+        headerTitleStyle: { fontWeight: '700', fontSize: 18 },
         headerBackTitle: 'Back'
       }}
     >
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          headerShown: false
-        }}
-      />
-      <Stack.Screen
-        name="Doctors"
-        component={DoctorListScreen}
-        options={{
-          title: 'Find Doctors'
-        }}
-      />
-      <Stack.Screen
-        name="DoctorDetails"
-        component={DoctorDetailsScreen}
-        options={{
-          title: 'Doctor Profile'
-        }}
-      />
-      <Stack.Screen
-        name="BookAppointment"
-        component={BookAppointmentScreen}
-        options={{
-          title: 'Book Appointment'
-        }}
-      />
-      <Stack.Screen
-        name="Payment"
-        component={PaymentScreen}
-        options={{
-          title: 'Payment'
-        }}
-      />
-      <Stack.Screen
-        name="MyAppointments"
-        component={MyAppointmentsScreen}
-        options={{
-          title: 'My Appointments'
-        }}
-      />
-      <Stack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          title: 'Profile Settings'
-        }}
-      />
-      <Stack.Screen
-        name="MedicalHistory"
-        component={MedicalHistoryScreen}
-        options={{
-          title: 'Medical History'
-        }}
-      />
-      <Stack.Screen
-        name="AppointmentRecords"
-        component={AppointmentRecordsScreen}
-        options={{
-          title: 'Appointment Records'
-        }}
-      />
+      {isDoctor ? (
+        // Doctor Screens
+        <>
+          <Stack.Screen 
+            name="DoctorDashboard" 
+            component={DoctorDashboardScreen} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="CompleteProfile" 
+            component={CompleteDoctorProfileScreen} 
+            options={{ title: 'Complete Profile' }}
+          />
+        </>
+      ) : (
+        // Patient Screens
+        <>
+          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Doctors" component={DoctorListScreen} options={{ title: 'Find Doctors' }} />
+          <Stack.Screen name="DoctorDetails" component={DoctorDetailsScreen} options={{ title: 'Doctor Profile' }} />
+          <Stack.Screen name="BookAppointment" component={BookAppointmentScreen} options={{ title: 'Book Appointment' }} />
+          <Stack.Screen name="Payment" component={PaymentScreen} options={{ title: 'Payment' }} />
+          <Stack.Screen name="MyAppointments" component={MyAppointmentsScreen} options={{ title: 'My Appointments' }} />
+          <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile Settings' }} />
+          <Stack.Screen name="MedicalHistory" component={MedicalHistoryScreen} options={{ title: 'Medical History' }} />
+          <Stack.Screen name="AppointmentRecords" component={AppointmentRecordsScreen} options={{ title: 'Appointment Records' }} />
+        </>
+      )}
+    </Stack.Navigator>
+  );
+}
+
+// Auth Stack (Login/Register)
+function AuthStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>
   );
 }
 
 // Root Navigator
 export default function AppNavigator() {
-  const { isAuthenticated, loading } = useContext(AuthContext);
+  const { isAuthenticated, loading, user, checkDoctorProfile } = useContext(AuthContext);
+  const [needsProfile, setNeedsProfile] = useState(false);
+  const [checkingProfile, setCheckingProfile] = useState(true);
 
-  // Show loading screen while checking authentication
-  if (loading) {
+  useEffect(() => {
+    const verifyDoctorProfile = async () => {
+      if (isAuthenticated && user?.role === 'doctor') {
+        const result = await checkDoctorProfile();
+        setNeedsProfile(!result.exists);
+      }
+      setCheckingProfile(false);
+    };
+    verifyDoctorProfile();
+  }, [isAuthenticated, user]);
+
+  if (loading || checkingProfile) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0F172A' }}>
         <ActivityIndicator size="large" color="#38BDF8" />
@@ -138,9 +108,20 @@ export default function AppNavigator() {
     );
   }
 
+  // Show profile completion for doctors who need it
+  if (isAuthenticated && user?.role === 'doctor' && needsProfile) {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="CompleteProfile" component={CompleteDoctorProfileScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
   return (
     <NavigationContainer>
-      {isAuthenticated ? <AppStack /> : <AuthStack />}
+      {isAuthenticated ? <MainStack /> : <AuthStack />}
     </NavigationContainer>
   );
 }
