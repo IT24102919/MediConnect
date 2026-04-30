@@ -65,7 +65,10 @@ export default function DoctorDashboardScreen({ navigation }) {
           <Text style={styles.profileText}>💰 Rs. {doctorProfile.fee}</Text>
           <TouchableOpacity
             style={styles.editButton}
-            onPress={() => navigation.navigate('CompleteProfile', { isEditing: true })}
+            onPress={() => navigation.navigate('CompleteProfile', {
+              isEditing: true,
+              doctorData: doctorProfile  //Pass the existing profile data to edit form
+              })}
           >
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>

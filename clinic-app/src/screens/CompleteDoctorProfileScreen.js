@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
   const { token, user, getProfile } = useContext(AuthContext);
   const { params } = route;
   const isEditing = params?.isEditing || false;
+  const existingDoctorData = params?.doctorData || null;
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
 
@@ -29,6 +30,19 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
   const [fee, setFee] = useState('');
   const [phone, setPhone] = useState('');
   const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    // If editing and we have existing data, pre-fill the form
+    if (isEditing && existingDoctorData) {
+      setSpecialization(existingDoctorData.specialization || '');
+      setHospital(existingDoctorData.hospital || '');
+      setExperience(existingDoctorData.experience?.toString() || '');
+      setFee(existingDoctorData.fee?.toString() || '');
+      setPhone(existingDoctorData.phone || '');
+      setDescription(existingDoctorData.description || '');
+      // Note: Image would need separate handling
+    }
+  }, [isEditing, existingDoctorData]);
 
   const specializations = [
     'Cardiologist', 'Dermatologist', 'Neurologist',
@@ -135,13 +149,13 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
 
       await AsyncStorage.removeItem('needsProfileCompletion');
 
-      Alert.alert('Success', 'Your profile is complete!', [
+      Alert.alert('Success', isEditing ? 'Profile updated!' : 'Your profile is complete!', [
         {
           text: 'OK', onPress: () => {
             if (isEditing) {
-              navigation.goBack();
+              navigation.goBack();  // Go back to dashboard without reloading
             } else {
-              navigation.replace('DoctorDashboard');
+              navigation.replace('DoctorDashboard');  // First time completion
             }
           }
         }
@@ -269,7 +283,7 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? 'Saving...' : 'Complete Profile'}
+            {loading ? 'Saving...' : (isEditing ? 'Update Profile' : 'Complete Profile')}
           </Text>
         </TouchableOpacity>
       </View>
