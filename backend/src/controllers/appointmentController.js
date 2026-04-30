@@ -1,10 +1,27 @@
 const Appointment = require('../models/Appointment');
 const Doctor = require('../models/Doctor');
+const Notification = require('../models/Notification');
 
 const isValidDateInput = (value) => {
   if (!value) return false;
   const parsed = new Date(value);
   return !Number.isNaN(parsed.getTime());
+};
+
+const createNotificationForPatient = async ({
+  userId,
+  title,
+  message,
+  type = 'general',
+  data = {}
+}) => {
+  await Notification.create({
+    userId,
+    title,
+    message,
+    type,
+    data
+  });
 };
 
 // Create appointment
@@ -57,12 +74,15 @@ const createAppointment = async (req, res) => {
 
     await appointment.save();
 
-    console.log('Notification: Appointment booked', {
-      appointmentId: appointment._id,
-      patientId,
-      doctorId,
-      appointmentDate,
-      timeSlot
+    await createNotificationForPatient({
+      userId: patientId,
+      title: 'Appointment Booked',
+      message: `Your appointment is booked for ${new Date(appointmentDate).toDateString()} at ${timeSlot}.`,
+      type: 'appointment_created',
+      data: {
+        appointmentId: appointment._id,
+        doctorId
+      }
     });
 
     // Populate doctor details
@@ -231,10 +251,26 @@ const updateAppointment = async (req, res) => {
     await appointment.save();
 
     if (status === 'Cancelled') {
-      console.log('Notification: Appointment cancelled', {
-        appointmentId: appointment._id,
-        patientId: appointment.patientId,
-        doctorId: appointment.doctorId
+      await createNotificationForPatient({
+        userId: appointment.patientId,
+        title: 'Appointment Cancelled',
+        message: 'Your appointment has been cancelled.',
+        type: 'appointment_cancelled',
+        data: {
+          appointmentId: appointment._id,
+          doctorId: appointment.doctorId
+        }
+      });
+    } else if (appointmentDate || timeSlot || status) {
+      await createNotificationForPatient({
+        userId: appointment.patientId,
+        title: 'Appointment Updated',
+        message: 'Your appointment details were updated.',
+        type: 'appointment_updated',
+        data: {
+          appointmentId: appointment._id,
+          doctorId: appointment.doctorId
+        }
       });
     }
 

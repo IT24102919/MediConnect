@@ -181,11 +181,7 @@ export default function MedicalHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-<<<<<<< HEAD
-    backgroundColor: '#102A43'
-=======
-    backgroundColor: '#0F172A'
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
+    backgroundColor: '#1D4ED8'
   },
   content: {
     paddingHorizontal: 16,
@@ -239,7 +235,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14
   },
   saveButtonText: {
-    color: '#0F172A',
+    color: '#1D4ED8',
     fontWeight: '800'
   }
 });
+
+
+

@@ -17,15 +17,15 @@ export default function AppointmentCard({ appointment, onCancel }) {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'pending':
-        return '#F59E0B';
+        return '#38BDF8';
       case 'confirmed':
-        return '#10B981';
+        return '#1D4ED8';
       case 'completed':
-        return '#3B82F6';
+        return '#38BDF8';
       case 'cancelled':
-        return '#EF4444';
+        return '#1D4ED8';
       default:
-        return '#6B7280';
+        return '#1D4ED8';
     }
   };
 
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.12)',
-    shadowColor: '#000',
+    shadowColor: '#1D4ED8',
     shadowOpacity: 0.2,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
@@ -168,16 +168,16 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.6)',
   },
   symptomsBox: {
-    backgroundColor: 'rgba(129, 140, 248, 0.1)',
+    backgroundColor: 'rgba(29, 78, 216, 0.1)',
     borderRadius: 10,
     padding: 10,
     borderLeftWidth: 3,
-    borderLeftColor: '#818CF8',
+    borderLeftColor: '#1D4ED8',
   },
   symptomsLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#818CF8',
+    color: '#1D4ED8',
     marginBottom: 4,
   },
   symptomsText: {
@@ -188,14 +188,17 @@ const styles = StyleSheet.create({
     marginTop: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#EF4444',
-    backgroundColor: 'rgba(239, 68, 68, 0.14)',
+    borderColor: '#1D4ED8',
+    backgroundColor: 'rgba(29, 78, 216, 0.14)',
     paddingVertical: 10,
     alignItems: 'center',
   },
   cancelButtonText: {
-    color: '#FCA5A5',
+    color: '#38BDF8',
     fontWeight: '700',
     fontSize: 13,
   },
 });
+
+
+

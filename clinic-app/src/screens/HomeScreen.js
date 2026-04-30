@@ -1,11 +1,21 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import { AuthContext } from "../context/AuthContext";
+import { NotificationContext } from "../context/NotificationContext";
 
 const { width } = Dimensions.get("window");
 
 export default function HomeScreen({ navigation }) {
   const { user } = useContext(AuthContext);
+  const { unreadCount, fetchUnreadCount } = useContext(NotificationContext);
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchUnreadCount();
+    });
+    return unsubscribe;
+  }, [navigation, fetchUnreadCount]);
 
   return (
     <View style={styles.mainContainer}>
@@ -49,7 +59,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MyAppointments")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(129, 140, 248, 0.2)' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}>
               <Text style={styles.cardIcon}>📅</Text>
             </View>
             <View style={styles.cardContent}>
@@ -79,7 +89,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MedicalHistory")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(34, 197, 94, 0.18)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.18)' }]}> 
               <Text style={styles.cardIcon}>🩺</Text>
             </View>
             <View style={styles.cardContent}>
@@ -94,7 +104,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("AppointmentRecords")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(251, 191, 36, 0.2)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
               <Text style={styles.cardIcon}>📁</Text>
             </View>
             <View style={styles.cardContent}>
@@ -102,6 +112,26 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.cardText}>See your past and cancelled appointments</Text>
             </View>
             <Text style={styles.arrowIcon}>›</Text>
+          </TouchableOpacity>
+
+          {/* Card 6: Notifications */}
+          <TouchableOpacity
+            style={styles.glassCard}
+            onPress={() => navigation.navigate("Notifications")}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
+              <Text style={styles.cardIcon}>N</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Notifications</Text>
+              <Text style={styles.cardText}>See booking updates and alerts</Text>
+            </View>
+            {unreadCount > 0 ? (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
+              </View>
+            ) : null}
+            <Text style={styles.arrowIcon}>â€º</Text>
           </TouchableOpacity>
 
         </View>
@@ -119,11 +149,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-<<<<<<< HEAD
-    backgroundColor: "#102A43", 
-=======
-    backgroundColor: "#0F172A", 
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
+    backgroundColor: "#1D4ED8", 
   },
   circle1: {
     position: 'absolute',
@@ -142,7 +168,7 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: '#818CF8',
+    backgroundColor: '#1D4ED8',
     opacity: 0.2,
   },
   contentContainer: {
@@ -179,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.15)",
-    shadowColor: "#000",
+    shadowColor: "#1D4ED8",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 15,
@@ -214,18 +240,36 @@ const styles = StyleSheet.create({
     color: "rgba(255, 255, 255, 0.3)",
     marginLeft: 10,
   },
+  badge: {
+    minWidth: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#38BDF8",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 6,
+    marginRight: 8
+  },
+  badgeText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "700"
+  },
   infoBox: {
     marginTop: 30,
     padding: 15,
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    backgroundColor: "rgba(29, 78, 216, 0.12)",
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "rgba(239, 68, 68, 0.2)",
+    borderColor: "rgba(29, 78, 216, 0.22)",
     alignItems: "center",
   },
   infoText: {
-    color: "#F87171",
+    color: "#38BDF8",
     fontSize: 12,
     fontWeight: "600",
   },
 });
+
+
+

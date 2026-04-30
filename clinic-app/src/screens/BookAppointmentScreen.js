@@ -89,7 +89,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Enter your name"
-        placeholderTextColor="rgba(0, 0, 0, 0.4)"
+        placeholderTextColor="rgba(29, 78, 216, 0.45)"
         value={patientName}
         onChangeText={setPatientName}
       />
@@ -99,7 +99,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={styles.input}
         placeholder="2024-04-15"
-        placeholderTextColor="rgba(0, 0, 0, 0.4)"
+        placeholderTextColor="rgba(29, 78, 216, 0.45)"
         value={appointmentDate}
         onChangeText={setAppointmentDate}
       />
@@ -133,7 +133,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={[styles.input, styles.textArea]}
         placeholder="Any additional information..."
-        placeholderTextColor="rgba(0, 0, 0, 0.4)"
+        placeholderTextColor="rgba(29, 78, 216, 0.45)"
         value={notes}
         onChangeText={setNotes}
         multiline
@@ -158,11 +158,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-<<<<<<< HEAD
-    backgroundColor: '#102A43',
-=======
-    backgroundColor: '#0F172A',
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
+    backgroundColor: '#1D4ED8',
     padding: 16,
     paddingBottom: 24,
   },
@@ -282,3 +278,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+
+

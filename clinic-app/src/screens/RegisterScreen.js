@@ -67,13 +67,8 @@ export default function RegisterScreen({ navigation }) {
         Alert.alert("Registration Failed", result.message);
       } else {
         console.log("✅ REGISTER SUCCESS:", result.message);
-<<<<<<< HEAD
         Alert.alert("Success", result.message);
         navigation.replace("Home");
-=======
-        // Navigation is handled by AppNavigator when isAuthenticated changes
-        Alert.alert("Success", result.message);
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";
@@ -195,11 +190,7 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-<<<<<<< HEAD
-    backgroundColor: "#102A43", 
-=======
-    backgroundColor: "#0F172A", 
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
+    backgroundColor: "#1D4ED8", 
     justifyContent: "center",
   },
   circle1: {
@@ -219,7 +210,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: '#818CF8',
+    backgroundColor: '#1D4ED8',
     opacity: 0.3,
   },
   contentContainer: {
@@ -233,7 +224,7 @@ const styles = StyleSheet.create({
     padding: 25,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.2)",
-    shadowColor: "#000",
+    shadowColor: "#1D4ED8",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
     shadowRadius: 20,
@@ -259,7 +250,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#E2E8F0",
+    color: "#FFFFFF",
     marginBottom: 8,
     marginLeft: 4,
   },
@@ -316,3 +307,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
+
+
+

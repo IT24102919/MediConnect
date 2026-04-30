@@ -15,11 +15,7 @@ export default function ProfileScreen({ navigation }) {
           text: 'Logout',
           onPress: async () => {
             await logout();
-<<<<<<< HEAD
             navigation.replace('Login');
-=======
-            // Navigation is handled by AppNavigator when isAuthenticated changes
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
           },
           style: 'destructive'
         }
@@ -101,11 +97,7 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-<<<<<<< HEAD
-    backgroundColor: '#102A43',
-=======
-    backgroundColor: '#0F172A',
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
+    backgroundColor: '#1D4ED8',
     paddingHorizontal: 16,
     paddingTop: 20,
   },
@@ -200,9 +192,9 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.4)',
   },
   logoutButton: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: 'rgba(29, 78, 216, 0.15)',
     borderWidth: 1,
-    borderColor: '#FF6B6B',
+    borderColor: '#1D4ED8',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
@@ -210,8 +202,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoutText: {
-    color: '#FF6B6B',
+    color: '#1D4ED8',
     fontWeight: '700',
     fontSize: 16,
   },
 });
+
+
+

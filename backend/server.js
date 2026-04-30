@@ -18,6 +18,7 @@ const paymentRoutes = require('./src/routes/paymentRoutes');
 const feedbackRoutes = require('./src/routes/feedbackRoutes');
 const uploadRoutes = require('./src/routes/uploadRoutes');
 const medicalHistoryRoutes = require('./src/routes/medicalHistoryRoutes');
+const notificationRoutes = require('./src/routes/notificationRoutes');
 
 // Import middleware
 const errorMiddleware = require('./src/middleware/errorMiddleware');
@@ -42,6 +43,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/medical-history', medicalHistoryRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Simple DB test route
 app.get('/api/test-db', (req, res) => {
@@ -64,7 +66,8 @@ app.get('/', (req, res) => {
       payments: '/api/payments',
       feedbacks: '/api/feedbacks',
       upload: '/api/upload',
-      medicalHistory: '/api/medical-history'
+      medicalHistory: '/api/medical-history',
+      notifications: '/api/notifications'
     }
   });
 });

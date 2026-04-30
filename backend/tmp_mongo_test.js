@@ -7,6 +7,7 @@ const util = require('util');
     await mongoose.connect(process.env.MONGO_URI, {
       serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 10000,
+       
       socketTimeoutMS: 20000,
       family: 4,
       tls: true

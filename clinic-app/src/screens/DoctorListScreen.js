@@ -190,11 +190,7 @@ export default function DoctorListScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-<<<<<<< HEAD
-    backgroundColor: '#102A43',
-=======
-    backgroundColor: '#0F172A',
->>>>>>> b97bb2a5578a6ebbe5b954f4ae073ee17dd94cae
+    backgroundColor: '#1D4ED8',
   },
   centerContent: {
     justifyContent: 'center',
@@ -207,7 +203,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   errorText: {
-    color: '#FF6B6B',
+    color: '#1D4ED8',
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 16,
@@ -249,7 +245,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: '#818CF8',
+    backgroundColor: '#1D4ED8',
     opacity: 0.1,
   },
  
@@ -289,7 +285,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   warningText: {
-    color: '#FDE68A',
+    color: '#38BDF8',
     fontSize: 12,
     fontWeight: '600',
     marginBottom: 10,
@@ -334,3 +330,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+
+

@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     
     borderColor: "rgba(255, 255, 255, 0.12)", 
     
-    shadowColor: "#000",
+    shadowColor: "#1D4ED8",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -131,3 +131,5 @@ const styles = StyleSheet.create({
     fontWeight: "300",
   },
 });
+
+
