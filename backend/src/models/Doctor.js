@@ -16,8 +16,9 @@ const doctorSchema = new mongoose.Schema(
     },
     specialization: {
       type: String,
-      required: [true, 'Please provide specialization'],
+      // required: [true, 'Please provide specialization'],
       enum: [
+        '',
         'Cardiologist',
         'Dermatologist',
         'Neurologist',
@@ -35,17 +36,17 @@ const doctorSchema = new mongoose.Schema(
     },
     hospital: {
       type: String,
-      required: [true, 'Please provide hospital name'],
+      // required: [true, 'Please provide hospital name'],
       trim: true
     },
     experience: {
       type: Number,
-      required: [true, 'Please provide experience in years'],
+      // required: [true, 'Please provide experience in years'],
       min: 0
     },
     fee: {
       type: Number,
-      required: [true, 'Please provide consultation fee'],
+      // required: [true, 'Please provide consultation fee'],
       min: 0
     },
     rating: {

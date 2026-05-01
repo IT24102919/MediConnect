@@ -27,12 +27,13 @@ import DoctorDashboardScreen from '../screens/DoctorDashboardScreen';
 const Stack = createNativeStackNavigator();
 
 // Main App Navigator - handles all screens
-function MainStack() {
+function MainStack({ initialRoute }) {
   const { user } = useContext(AuthContext);
   const isDoctor = user?.role === 'doctor';
 
   return (
     <Stack.Navigator
+      initialRouteName={initialRoute || (isDoctor ? 'DoctorDashboard' : 'Home')}
       screenOptions={{
         headerShown: true,
         headerStyle: { backgroundColor: '#0F172A' },
@@ -44,14 +45,14 @@ function MainStack() {
       {isDoctor ? (
         // Doctor Screens
         <>
-          <Stack.Screen 
-            name="DoctorDashboard" 
-            component={DoctorDashboardScreen} 
+          <Stack.Screen
+            name="DoctorDashboard"
+            component={DoctorDashboardScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen 
-            name="CompleteProfile" 
-            component={CompleteDoctorProfileScreen} 
+          <Stack.Screen
+            name="CompleteProfile"
+            component={CompleteDoctorProfileScreen}
             options={{ title: 'Complete Profile' }}
           />
         </>
@@ -93,7 +94,10 @@ export default function AppNavigator() {
     const verifyDoctorProfile = async () => {
       if (isAuthenticated && user?.role === 'doctor') {
         const result = await checkDoctorProfile();
+        console.log("🔍 [AppNavigator] checkDoctorProfile result:", result);
+        console.log("🔍 [AppNavigator] result.exists:", result.exists);
         setNeedsProfile(!result.exists);
+        console.log("🔍 [AppNavigator] needsProfile set to:", !result.exists);
       }
       setCheckingProfile(false);
     };
@@ -108,20 +112,15 @@ export default function AppNavigator() {
     );
   }
 
-  // Show profile completion for doctors who need it
-  if (isAuthenticated && user?.role === 'doctor' && needsProfile) {
-    return (
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="CompleteProfile" component={CompleteDoctorProfileScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
-
   return (
     <NavigationContainer>
-      {isAuthenticated ? <MainStack /> : <AuthStack />}
+      {!isAuthenticated ? (
+        <AuthStack />
+      ) : user?.role === 'doctor' && needsProfile ? (
+        <MainStack initialRoute="CompleteProfile" />
+      ) : (
+        <MainStack />
+      )}
     </NavigationContainer>
   );
 }

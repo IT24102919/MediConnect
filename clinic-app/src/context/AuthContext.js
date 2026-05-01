@@ -42,29 +42,29 @@ export function AuthProvider({ children }) {
       const currentUser = await AsyncStorage.getItem('user');
 
       console.log("🔍 checkDoctorProfile - token exists:", !!currentToken);
-    console.log("🔍 checkDoctorProfile - user:", currentUser);
-      
+      console.log("🔍 checkDoctorProfile - user:", currentUser);
+
       if (!currentToken || !currentUser) return { exists: false };
-      
+
       const parsedUser = JSON.parse(currentUser);
       console.log("🔍 checkDoctorProfile - parsed role:", parsedUser.role);
 
       if (parsedUser.role !== 'doctor') return { exists: true }; // Patients don't need profile
-      
+
       // Check if doctor profile exists and is complete
       const response = await axiosInstance.get('/doctors', {
         headers: { Authorization: `Bearer ${currentToken}` }
       });
 
       console.log("🔍 checkDoctorProfile - doctors found:", response.data.doctors.length);
-      
+
       // Find doctor profile linked to this user
       const doctorProfile = response.data.doctors.find(
         doc => doc.userId === parsedUser.id || doc.name === parsedUser.name
       );
 
       console.log("🔍 checkDoctorProfile - matching doctor:", doctorProfile);
-      
+
       // Profile exists AND has required fields filled
       if (doctorProfile && doctorProfile.specialization && doctorProfile.hospital && doctorProfile.hospital !== '') {
         return { exists: true, profile: doctorProfile };
@@ -129,16 +129,16 @@ export function AuthProvider({ children }) {
         if (user.role === 'doctor') {
           try {
             console.log("👨‍⚕️ Checking doctor profile for:", user.id);
-            
+
             // First check if doctor profile already exists
             const doctorsResponse = await axiosInstance.get('/doctors', {
               headers: { Authorization: `Bearer ${token}` }
             });
-            
+
             const existingDoctor = doctorsResponse.data.doctors.find(
               doc => doc.userId === user.id || doc.name === user.name
             );
-            
+
             if (!existingDoctor) {
               // Create a basic doctor profile (all fields empty - will need completion)
               const doctorResponse = await axiosInstance.post('/doctors', {
@@ -158,6 +158,9 @@ export function AuthProvider({ children }) {
                 console.log("✅ Doctor profile created");
                 // Store that profile needs completion
                 await AsyncStorage.setItem('needsProfileCompletion', 'true');
+
+                // Force refresh user data to ensure AppNavigator re-renders
+                await getProfile();
               }
             } else {
               console.log("✅ Doctor profile already exists");
