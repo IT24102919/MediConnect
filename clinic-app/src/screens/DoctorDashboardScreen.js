@@ -12,7 +12,7 @@ import axiosInstance from '../api/axios';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function DoctorDashboardScreen({ navigation }) {
-  const { logout, token, user } = useContext(AuthContext);
+  const { logout, token, user, deleteAccount } = useContext(AuthContext);
   const [doctorProfile, setDoctorProfile] = useState(null);
   const [appointments, setAppointments] = useState([]);
 
@@ -56,6 +56,29 @@ export default function DoctorDashboardScreen({ navigation }) {
     navigation.replace('Login');
   };
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      '⚠️ WARNING: This action is permanent!\n\nDeleting your account will:\n• Remove your doctor profile\n• Cancel all your appointments\n\nThis cannot be undone.\n\nAre you sure you want to delete your account?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes, Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const result = await deleteAccount();
+            if (result.success) {
+              Alert.alert('Account Deleted', 'Your account has been deleted.');
+              navigation.replace('Login');
+            } else {
+              Alert.alert('Error', result.message);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -80,6 +103,12 @@ export default function DoctorDashboardScreen({ navigation }) {
             })}
           >
             <Text style={styles.editButtonText}>Edit Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDeleteAccount}
+          >
+            <Text style={styles.deleteButtonText}>🗑️ Delete Account</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -159,6 +188,19 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  deleteButton: {
+    marginTop: 8,
+    padding: 10,
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#EF4444',
+  },
+  deleteButtonText: {
+    color: '#EF4444',
     fontWeight: '600',
   },
   appointmentsCard: {

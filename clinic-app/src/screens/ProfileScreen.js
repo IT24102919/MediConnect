@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 
 export default function ProfileScreen({ navigation }) {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, deleteAccount } = useContext(AuthContext);
 
   const handleLogout = async () => {
     Alert.alert(
       'Logout',
       'Are you sure you want to logout?',
       [
-        { text: 'Cancel', onPress: () => {} },
+        { text: 'Cancel', onPress: () => { } },
         {
           text: 'Logout',
           onPress: async () => {
@@ -18,6 +18,28 @@ export default function ProfileScreen({ navigation }) {
             // Navigation is handled by AppNavigator when isAuthenticated changes
           },
           style: 'destructive'
+        }
+      ]
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      '⚠️ WARNING: This action is permanent!\n\nDeleting your account will:\n• Remove your profile\n• Delete your user account\n• Cancel all your appointments\n\nThis cannot be undone.\n\nAre you sure you want to delete your account?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes, Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const result = await deleteAccount();
+            if (result.success) {
+              Alert.alert('Account Deleted', 'Your account has been deleted.');
+            } else {
+              Alert.alert('Error', result.message);
+            }
+          }
         }
       ]
     );
@@ -90,6 +112,13 @@ export default function ProfileScreen({ navigation }) {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>🚪 Logout</Text>
       </TouchableOpacity>
+
+      {/* Delete Account Button - Only for doctors */}
+      {user?.role === 'doctor' && (
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
+          <Text style={styles.deleteButtonText}>🗑️ Delete Account</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -203,6 +232,20 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: '#FF6B6B',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  deleteButton: {
+    backgroundColor: 'rgba(239, 68, 68, 0.25)',
+    borderWidth: 1,
+    borderColor: '#EF4444',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  deleteButtonText: {
+    color: '#EF4444',
     fontWeight: '700',
     fontSize: 16,
   },

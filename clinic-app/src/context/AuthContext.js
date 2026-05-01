@@ -312,6 +312,52 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Delete user account
+  const deleteAccount = async () => {
+    try {
+      const currentToken = await AsyncStorage.getItem('authToken');
+
+      if (!currentToken) {
+        return {
+          success: false,
+          message: 'No token available'
+        };
+      }
+
+      const response = await axiosInstance.delete('/auth/account', {
+        headers: { Authorization: `Bearer ${currentToken}` }
+      });
+
+      if (response.data.success) {
+        // Clear all local storage
+        await AsyncStorage.removeItem('authToken');
+        await AsyncStorage.removeItem('user');
+        await AsyncStorage.removeItem('needsProfileCompletion');
+
+        // Clear state
+        setToken(null);
+        setUser(null);
+        setIsAuthenticated(false);
+
+        return {
+          success: true,
+          message: 'Account deleted successfully'
+        };
+      }
+
+      return {
+        success: false,
+        message: response.data.message || 'Failed to delete account'
+      };
+    } catch (error) {
+      console.log("❌ DELETE ACCOUNT ERROR:", error.response?.data);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to delete account'
+      };
+    }
+  };
+
   const value = {
     user,
     token,
@@ -321,7 +367,8 @@ export function AuthProvider({ children }) {
     register,
     logout,
     getProfile,
-    checkDoctorProfile
+    checkDoctorProfile,
+    deleteAccount
   };
 
   return (
