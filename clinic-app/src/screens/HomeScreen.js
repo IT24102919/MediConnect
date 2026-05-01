@@ -69,21 +69,6 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.arrowIcon}>›</Text>
           </TouchableOpacity>
 
-          {/* Card 3: Profile */}
-          <TouchableOpacity
-            style={styles.glassCard}
-            onPress={() => navigation.navigate("Profile")}
-          >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}>
-              <Text style={styles.cardIcon}>⚙️</Text>
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>Profile Settings</Text>
-              <Text style={styles.cardText}>Manage your health records</Text>
-            </View>
-            <Text style={styles.arrowIcon}>›</Text>
-          </TouchableOpacity>
-
           {/* Card 4: Medical History */}
           <TouchableOpacity
             style={styles.glassCard}
@@ -135,6 +120,23 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
 
         </View>
+
+        
+
+          {/* Card 3: Profile */}
+          <TouchableOpacity
+            style={styles.glassCard}
+            onPress={() => navigation.navigate("Profile")}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}>
+              <Text style={styles.cardIcon}>⚙️</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Profile Settings</Text>
+              <Text style={styles.cardText}>Manage your health records</Text>
+            </View>
+            <Text style={styles.arrowIcon}>›</Text>
+          </TouchableOpacity>
 
         {/* Support Card (Optional extra) */}
         <View style={styles.infoBox}>
@@ -195,7 +197,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   menuContainer: {
-    gap: 16,
+    paddingBottom: 4,
   },
   glassCard: {
     flexDirection: "row",
@@ -209,6 +211,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 15,
+    marginBottom: 16,
   },
   iconCircle: {
     width: 50,
@@ -270,6 +273,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
 
 
 

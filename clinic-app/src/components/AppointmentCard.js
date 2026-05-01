@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function AppointmentCard({ appointment, onCancel }) {
+export default function AppointmentCard({ appointment, onCancel, onDelete }) {
   // Format date
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -92,6 +92,12 @@ export default function AppointmentCard({ appointment, onCancel }) {
       {onCancel && appointment.status !== 'Cancelled' && (
         <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
           <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
+        </TouchableOpacity>
+      )}
+
+      {onDelete && (
+        <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
+          <Text style={styles.deleteButtonText}>Delete Record</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -195,6 +201,20 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: '#38BDF8',
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  deleteButton: {
+    marginTop: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#EF4444',
+    backgroundColor: 'rgba(239, 68, 68, 0.14)',
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    color: '#FCA5A5',
     fontWeight: '700',
     fontSize: 13,
   },

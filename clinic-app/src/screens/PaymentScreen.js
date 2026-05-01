@@ -35,6 +35,26 @@ export default function PaymentScreen({ route, navigation }) {
     return `${digits.slice(0, 2)}/${digits.slice(2)}`;
   };
 
+  const isValidCardNumber = (value) => {
+    const digits = String(value).replace(/\D/g, '');
+    if (digits.length < 13 || digits.length > 19) return false;
+
+    let sum = 0;
+    let shouldDouble = false;
+
+    for (let i = digits.length - 1; i >= 0; i -= 1) {
+      let digit = Number(digits[i]);
+      if (shouldDouble) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+
+    return sum % 10 === 0;
+  };
+
   const validateCardInputs = () => {
     if (!cardholderName.trim()) {
       return 'Cardholder name is required.';
@@ -42,6 +62,10 @@ export default function PaymentScreen({ route, navigation }) {
 
     if (!cardNumber.trim()) {
       return 'Card number is required.';
+    }
+
+    if (!isValidCardNumber(cardNumber)) {
+      return 'Please enter a valid card number.';
     }
 
     if (!expiry.trim()) {
@@ -86,7 +110,11 @@ export default function PaymentScreen({ route, navigation }) {
         appointmentId: appointment._id,
         patientId,
         amount,
-        paymentMethod: 'Credit Card',
+        paymentMethod: 'Card',
+        cardholderName: cardholderName.trim(),
+        cardNumber,
+        expiry,
+        cvv,
         paymentStatus: 'Paid'
       });
 

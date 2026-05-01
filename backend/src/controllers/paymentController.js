@@ -2,6 +2,13 @@ const Payment = require('../models/Payment');
 const Appointment = require('../models/Appointment');
 
 const normalizeCardNumber = (value = '') => String(value).replace(/\D/g, '');
+const ALLOW_DEMO_CARDS =
+  process.env.ALLOW_DEMO_CARDS === 'true' || process.env.NODE_ENV !== 'production';
+const DEMO_CARD_NUMBERS = new Set([
+  '4242424242424242',
+  '4111111111111111',
+  '5555555555554444'
+]);
 
 const isValidCardNumber = (number) => {
   if (!number || number.length < 13 || number.length > 19) return false;
@@ -46,8 +53,18 @@ const isValidExpiry = (value = '') => {
 };
 
 const isValidCvv = (value = '') => /^\d{3,4}$/.test(String(value).trim());
+const isDemoCard = (number = '') => ALLOW_DEMO_CARDS && DEMO_CARD_NUMBERS.has(String(number));
 
 const makeTransactionId = () => `TXN-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+
+const normalizePaymentMethod = (value) => {
+  if (!value) return 'Card';
+  const cleaned = String(value).trim().toLowerCase();
+  if (cleaned === 'card' || cleaned === 'credit card' || cleaned === 'credit_card') {
+    return 'Card';
+  }
+  return null;
+};
 // Create payment
 const createPayment = async (req, res) => {
   try {
@@ -79,7 +96,7 @@ const createPayment = async (req, res) => {
     }
 
     const normalizedStatus = paymentStatus === 'Paid' ? 'Paid' : 'Pending';
-    const normalizedMethod = paymentMethod === 'Card' || !paymentMethod ? 'Card' : null;
+    const normalizedMethod = normalizePaymentMethod(paymentMethod);
 
     if (!normalizedMethod) {
       return res.status(400).json({
@@ -97,7 +114,7 @@ const createPayment = async (req, res) => {
       });
     }
 
-    if (!isValidCardNumber(normalizedCardNumber)) {
+    if (!isValidCardNumber(normalizedCardNumber) && !isDemoCard(normalizedCardNumber)) {
       return res.status(400).json({
         success: false,
         message: 'Please provide a valid card number'
