@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import axiosInstance from '../api/axios';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function DoctorDashboardScreen({ navigation }) {
   const { logout, token, user } = useContext(AuthContext);
@@ -19,6 +20,14 @@ export default function DoctorDashboardScreen({ navigation }) {
     fetchDoctorProfile();
     fetchAppointments();
   }, []);
+
+  //refreshes data when returning to this screen
+  useFocusEffect(
+    useCallback(() => {
+      fetchDoctorProfile();
+      fetchAppointments();
+    }, [])
+  );
 
   const fetchDoctorProfile = async () => {
     try {
@@ -68,7 +77,7 @@ export default function DoctorDashboardScreen({ navigation }) {
             onPress={() => navigation.navigate('CompleteProfile', {
               isEditing: true,
               doctorData: doctorProfile  //Pass the existing profile data to edit form
-              })}
+            })}
           >
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
@@ -84,8 +93,8 @@ export default function DoctorDashboardScreen({ navigation }) {
             <View key={apt._id} style={styles.appointmentItem}>
               <Text style={styles.patientName}>{apt.patientName}</Text>
               <Text style={styles.appointmentTime}>{apt.timeSlot}</Text>
-              <Text style={[styles.status, 
-                apt.status === 'Confirmed' ? styles.confirmed : styles.pending]}>
+              <Text style={[styles.status,
+              apt.status === 'Confirmed' ? styles.confirmed : styles.pending]}>
                 {apt.status}
               </Text>
             </View>
