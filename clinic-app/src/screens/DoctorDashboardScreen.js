@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert
+  Alert,
+  Image
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import axiosInstance from '../api/axios';
@@ -15,6 +16,13 @@ export default function DoctorDashboardScreen({ navigation }) {
   const { logout, token, user, deleteAccount } = useContext(AuthContext);
   const [doctorProfile, setDoctorProfile] = useState(null);
   const [appointments, setAppointments] = useState([]);
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    const baseURL = axiosInstance.defaults.baseURL;
+    const backendUrl = baseURL.replace('/api', '');
+    return `${backendUrl}${imagePath}`;
+  };
 
   useEffect(() => {
     fetchDoctorProfile();
@@ -91,6 +99,16 @@ export default function DoctorDashboardScreen({ navigation }) {
       {doctorProfile && (
         <View style={styles.profileCard}>
           <Text style={styles.sectionTitle}>Your Profile</Text>
+          {doctorProfile.image ? (
+            <Image
+              source={{ uri: getImageUrl(doctorProfile.image) }}
+              style={styles.profileImage}
+            />
+          ) : (
+            <View style={styles.profileImagePlaceholder}>
+              <Text style={styles.profileImagePlaceholderText}>👨‍⚕️</Text>
+            </View>
+          )}
           <Text style={styles.profileText}>🏥 {doctorProfile.hospital}</Text>
           <Text style={styles.profileText}>⚕️ {doctorProfile.specialization}</Text>
           <Text style={styles.profileText}>📅 {doctorProfile.experience} years</Text>
@@ -245,5 +263,25 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.5)',
     textAlign: 'center',
     paddingVertical: 20,
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 12,
+    alignSelf: 'center',
+  },
+  profileImagePlaceholder: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+    alignSelf: 'center',
+  },
+  profileImagePlaceholderText: {
+    fontSize: 40,
   },
 });

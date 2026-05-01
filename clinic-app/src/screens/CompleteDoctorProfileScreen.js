@@ -46,7 +46,13 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
       setFee(existingDoctorData.fee?.toString() || '');
       setPhone(existingDoctorData.phone || '');
       setDescription(existingDoctorData.description || '');
-      // Note: Image would need separate handling
+
+      if (existingDoctorData.image) {
+        // Build URL dynamically using axios base URL
+        const baseURL = axiosInstance.defaults.baseURL;
+        const backendUrl = baseURL.replace('/api', '');
+        setImage(`${backendUrl}${existingDoctorData.image}`);
+      }
     }
   }, [isEditing, existingDoctorData]);
 
@@ -109,17 +115,17 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
   };
 
   // Phone validation - must be exactly 10 digits (if entered)
-const validatePhone = (text) => {
-  if (text.length > 0) {
-    if (text.length !== 10) {
-      setPhoneError('Phone number must be exactly 10 digits');
+  const validatePhone = (text) => {
+    if (text.length > 0) {
+      if (text.length !== 10) {
+        setPhoneError('Phone number must be exactly 10 digits');
+      } else {
+        setPhoneError('');
+      }
     } else {
-      setPhoneError('');
+      setPhoneError(''); // no error if empty
     }
-  } else {
-    setPhoneError(''); // no error if empty
-  }
-};
+  };
 
   const specializations = [
     'Cardiologist', 'Dermatologist', 'Neurologist',
@@ -130,7 +136,7 @@ const validatePhone = (text) => {
   // Pick image from gallery
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,

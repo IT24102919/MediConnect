@@ -8,6 +8,7 @@ const {
   deleteDoctor
 } = require('../controllers/doctorController');
 const authMiddleware = require('../middleware/authMiddleware');
+const Doctor = require('../models/Doctor');
 
 const multer = require('multer');
 const path = require('path');
@@ -38,13 +39,17 @@ router.post('/:id/upload-image', authMiddleware, upload.single('image'), async (
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
-    
+
     if (req.file) {
       doctor.image = `/uploads/${req.file.filename}`;
       await doctor.save();
     }
-    
-    res.json({ success: true, image: doctor.image });
+
+    res.json({
+      success: true,
+      image: doctor.image,
+      imageUrl: doctor.image
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
