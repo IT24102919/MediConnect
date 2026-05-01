@@ -19,6 +19,7 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState("patient");
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
@@ -59,7 +60,8 @@ export default function RegisterScreen({ navigation }) {
         name.trim(),
         email.trim(),
         password.trim(),
-        confirmPassword.trim()
+        confirmPassword.trim(),
+        selectedRole
       );
 
       if (!result.success) {
@@ -86,7 +88,7 @@ export default function RegisterScreen({ navigation }) {
       <View style={styles.circle1} />
       <View style={styles.circle2} />
 
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.contentContainer}
       >
@@ -161,9 +163,43 @@ export default function RegisterScreen({ navigation }) {
             </View>
           </View>
 
+          {/* Role Selection */}
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Account Type</Text>
+            <View style={styles.roleContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.roleButton,
+                  selectedRole === "patient" && styles.roleButtonActive
+                ]}
+                onPress={() => setSelectedRole("patient")}
+              >
+                <Text style={styles.roleIcon}>👤</Text>
+                <Text style={[
+                  styles.roleText,
+                  selectedRole === "patient" && styles.roleTextActive
+                ]}>Patient</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.roleButton,
+                  selectedRole === "doctor" && styles.roleButtonActive
+                ]}
+                onPress={() => setSelectedRole("doctor")}
+              >
+                <Text style={styles.roleIcon}>👨‍⚕️</Text>
+                <Text style={[
+                  styles.roleText,
+                  selectedRole === "doctor" && styles.roleTextActive
+                ]}>Doctor</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           {/* Register Button */}
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]} 
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleRegister}
             disabled={loading}
           >
@@ -190,7 +226,7 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#0F172A", 
+    backgroundColor: "#0F172A",
     justifyContent: "center",
   },
   circle1: {
@@ -305,5 +341,36 @@ const styles = StyleSheet.create({
   linkHighlight: {
     color: "#38BDF8",
     fontWeight: "700",
+  },
+    roleContainer: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  roleButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.07)",
+    borderRadius: 15,
+    paddingVertical: 12,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+  },
+  roleButtonActive: {
+    backgroundColor: "rgba(56, 189, 248, 0.15)",
+    borderColor: "#38BDF8",
+  },
+  roleIcon: {
+    fontSize: 18,
+  },
+  roleText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  roleTextActive: {
+    color: "#38BDF8",
   },
 });

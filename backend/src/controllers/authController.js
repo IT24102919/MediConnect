@@ -141,8 +141,48 @@ const getProfile = async (req, res) => {
   }
 };
 
+// Delete user account (and doctor profile if exists)
+const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // If user is a doctor, delete their doctor profile first
+    if (userRole === 'doctor') {
+      const Doctor = require('../models/Doctor');
+      await Doctor.findOneAndDelete({ userId: userId });
+      console.log(`✅ Doctor profile deleted for user: ${userId}`);
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+    console.log(`✅ User account deleted: ${userId}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Account deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
-  getProfile
+  getProfile,
+  deleteAccount
 };
