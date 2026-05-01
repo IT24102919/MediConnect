@@ -31,6 +31,12 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
   const [phone, setPhone] = useState('');
   const [description, setDescription] = useState('');
 
+  // Validation error messages
+  const [hospitalError, setHospitalError] = useState('');
+  const [experienceError, setExperienceError] = useState('');
+  const [feeError, setFeeError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+
   useEffect(() => {
     // If editing and we have existing data, pre-fill the form
     if (isEditing && existingDoctorData) {
@@ -43,6 +49,77 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
       // Note: Image would need separate handling
     }
   }, [isEditing, existingDoctorData]);
+
+  // Hospital validation - must be more than 2 characters
+  const validateHospital = (text) => {
+    if (text.length > 0 && text.length < 3) {
+      setHospitalError('Hospital name must be at least 3 characters');
+    } else {
+      setHospitalError('');
+    }
+  };
+
+  // Experience validation - no dot at beginning, no multiple dots
+  const validateExperience = (text) => {
+    let error = '';
+
+    if (text.length > 0) {
+      // Check if starts with dot
+      if (text.startsWith('.')) {
+        error = 'Experience cannot start with a dot';
+      }
+      // Check for multiple dots
+      else if ((text.match(/\./g) || []).length > 1) {
+        error = 'Experience can only have one decimal point';
+      }
+    }
+
+    setExperienceError(error);
+    return error === '';
+  };
+
+  // Fee validation - range 500-15000, no dot at beginning, no multiple dots
+  const validateFee = (text) => {
+    let error = '';
+
+    if (text.length > 0) {
+      // Check if starts with dot
+      if (text.startsWith('.')) {
+        error = 'Fee cannot start with a dot';
+      }
+      // Check for multiple dots
+      else if ((text.match(/\./g) || []).length > 1) {
+        error = 'Fee can only have one decimal point';
+      }
+      // Check range (only if value is a valid number)
+      else {
+        const numValue = parseFloat(text);
+        if (!isNaN(numValue)) {
+          if (numValue < 500) {
+            error = 'Fee must be at least Rs. 500';
+          } else if (numValue > 15000) {
+            error = 'Fee cannot exceed Rs. 15,000';
+          }
+        }
+      }
+    }
+
+    setFeeError(error);
+    return error === '';
+  };
+
+  // Phone validation - must be exactly 10 digits (if entered)
+const validatePhone = (text) => {
+  if (text.length > 0) {
+    if (text.length !== 10) {
+      setPhoneError('Phone number must be exactly 10 digits');
+    } else {
+      setPhoneError('');
+    }
+  } else {
+    setPhoneError(''); // no error if empty
+  }
+};
 
   const specializations = [
     'Cardiologist', 'Dermatologist', 'Neurologist',
@@ -74,12 +151,42 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
       Alert.alert('Error', 'Please enter your hospital/clinic');
       return;
     }
+    // Check hospital length
+    if (hospital.trim().length < 3) {
+      Alert.alert('Error', 'Hospital name must be at least 3 characters');
+      return;
+    }
     if (!experience || parseInt(experience) < 0) {
       Alert.alert('Error', 'Please enter valid years of experience');
       return;
     }
+    // Check experience dot validation
+    if (experienceError) {
+      Alert.alert('Error', experienceError);
+      return;
+    }
     if (!fee || parseInt(fee) <= 0) {
       Alert.alert('Error', 'Please enter a valid consultation fee');
+      return;
+    }
+    // Check fee validation
+    if (feeError) {
+      Alert.alert('Error', feeError);
+      return;
+    }
+    // Check fee range
+    const feeNumber = parseInt(fee);
+    if (feeNumber < 500) {
+      Alert.alert('Error', 'Consultation fee must be at least Rs. 500');
+      return;
+    }
+    if (feeNumber > 15000) {
+      Alert.alert('Error', 'Consultation fee cannot exceed Rs. 15,000');
+      return;
+    }
+    // Check phone length if provided
+    if (phone && phone.length !== 10) {
+      Alert.alert('Error', 'Phone number must be exactly 10 digits');
       return;
     }
 
@@ -216,51 +323,67 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Hospital/Clinic *</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, hospitalError ? styles.inputError : null]}
             placeholder="e.g., General Hospital, Colombo"
             placeholderTextColor="rgba(255,255,255,0.5)"
             value={hospital}
-            onChangeText={setHospital}
+            onChangeText={(text) => {
+              setHospital(text);
+              validateHospital(text);
+            }}
           />
+          {hospitalError ? <Text style={styles.errorText}>{hospitalError}</Text> : null}
         </View>
 
         {/* Experience - REQUIRED */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Experience (years) *</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, experienceError ? styles.inputError : null]}
             placeholder="e.g., 5"
             placeholderTextColor="rgba(255,255,255,0.5)"
             keyboardType="numeric"
             value={experience}
-            onChangeText={setExperience}
+            onChangeText={(text) => {
+              setExperience(text);
+              validateExperience(text);
+            }}
           />
+          {experienceError ? <Text style={styles.errorText}>{experienceError}</Text> : null}
         </View>
 
         {/* Fee - REQUIRED */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Consultation Fee (Rs.) *</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, feeError ? styles.inputError : null]}
             placeholder="e.g., 1500"
             placeholderTextColor="rgba(255,255,255,0.5)"
             keyboardType="numeric"
             value={fee}
-            onChangeText={setFee}
+            onChangeText={(text) => {
+              setFee(text);
+              validateFee(text);
+            }}
           />
+          {feeError ? <Text style={styles.errorText}>{feeError}</Text> : null}
         </View>
 
         {/* Phone - Optional */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Phone Number (Optional)</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, phoneError ? styles.inputError : null]}
             placeholder="e.g., 0771234567"
             placeholderTextColor="rgba(255,255,255,0.5)"
             keyboardType="phone-pad"
             value={phone}
-            onChangeText={setPhone}
+            onChangeText={(text) => {
+              setPhone(text);
+              validatePhone(text);
+            }}
           />
+          {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
         </View>
 
         {/* Description - Optional */}
@@ -394,5 +517,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'rgba(255,255,255,0.5)',
     textAlign: 'center',
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+  },
+  inputError: {
+    borderColor: '#EF4444',
+    borderWidth: 1,
   },
 });
