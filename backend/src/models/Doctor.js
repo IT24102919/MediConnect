@@ -17,22 +17,7 @@ const doctorSchema = new mongoose.Schema(
     specialization: {
       type: String,
       // required: [true, 'Please provide specialization'],
-      enum: [
-        '',
-        'Cardiologist',
-        'Dermatologist',
-        'Neurologist',
-        'Orthopedic',
-        'Orthopedic Surgeon',
-        'ENT Specialist',
-        'Gynecologist',
-        'Endocrinologist',
-        'Dentist',
-        'General Practitioner',
-        'Pediatrician',
-        'Psychiatrist',
-        'Other'
-      ]
+      trim: true
     },
     hospital: {
       type: String,
