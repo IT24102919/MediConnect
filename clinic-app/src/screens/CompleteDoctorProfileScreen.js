@@ -37,6 +37,17 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
   const [feeError, setFeeError] = useState('');
   const [phoneError, setPhoneError] = useState('');
 
+  // Custom specialization (for "Other" option)
+  const [customSpecialization, setCustomSpecialization] = useState('');
+  const [customSpecError, setCustomSpecError] = useState('');
+  const [isOtherSelected, setIsOtherSelected] = useState(false);
+
+  const specializations = [
+    'Cardiologist', 'Dermatologist', 'Neurologist',
+    'Orthopedic', 'ENT Specialist', 'Gynecologist',
+    'Pediatrician', 'General Practitioner', 'Psychiatrist', 'Dentist', 'Other'
+  ];
+
   useEffect(() => {
     // If editing and we have existing data, pre-fill the form
     if (isEditing && existingDoctorData) {
@@ -47,6 +58,13 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
       setPhone(existingDoctorData.phone || '');
       setDescription(existingDoctorData.description || '');
 
+      // Check if the specialization is from the predefined list
+      const currentSpecialization = existingDoctorData.specialization || '';
+      if (currentSpecialization && !specializations.includes(currentSpecialization)) {
+        setIsOtherSelected(true);
+        setCustomSpecialization(currentSpecialization);
+      }
+
       if (existingDoctorData.image) {
         // Build URL dynamically using axios base URL
         const baseURL = axiosInstance.defaults.baseURL;
@@ -56,7 +74,6 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
     }
   }, [isEditing, existingDoctorData]);
 
-  // Hospital validation - must be more than 2 characters
   const validateHospital = (text) => {
     if (text.length > 0 && text.length < 3) {
       setHospitalError('Hospital name must be at least 3 characters');
@@ -127,11 +144,29 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
     }
   };
 
-  const specializations = [
-    'Cardiologist', 'Dermatologist', 'Neurologist',
-    'Orthopedic', 'ENT Specialist', 'Gynecologist',
-    'Pediatrician', 'General Practitioner', 'Psychiatrist', 'Dentist'
-  ];
+  // Custom specialization validation
+  const validateCustomSpecialization = (text) => {
+    let error = '';
+
+    if (text.length > 0) {
+      if (/\d/.test(text)) {
+        error = 'Numbers are not allowed';
+      }
+      // Check for numbers
+      else if (!/^[A-Za-z\s]+$/.test(text)) {
+        error = 'Only letters and spaces are allowed';
+      }
+      // Check for special characters (allow only letters and spaces)
+      else if (text.length < 3) {
+        error = 'Specialization must be at least 3 characters';
+      }
+    } else {
+      error = 'Please enter your specialization';
+    }
+
+    setCustomSpecError(error);
+    return error === '';
+  };
 
   // Pick image from gallery
   const pickImage = async () => {
@@ -153,11 +188,22 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
       Alert.alert('Error', 'Please select your specialization');
       return;
     }
+
+    // Validate custom specialization if "Other" is selected
+    if (isOtherSelected) {
+      if (!customSpecialization.trim()) {
+        Alert.alert('Error', 'Please enter your specialization');
+        return;
+      }
+      if (customSpecError) {
+        Alert.alert('Error', customSpecError);
+        return;
+      }
+    }
     if (!hospital.trim()) {
       Alert.alert('Error', 'Please enter your hospital/clinic');
       return;
     }
-    // Check hospital length
     if (hospital.trim().length < 3) {
       Alert.alert('Error', 'Hospital name must be at least 3 characters');
       return;
@@ -314,7 +360,21 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
                   styles.specChip,
                   specialization === spec && styles.specChipActive
                 ]}
-                onPress={() => setSpecialization(spec)}
+                onPress={() => {
+                  setSpecialization(spec);
+                  if (spec === 'Other') {
+                    setIsOtherSelected(true);
+                    // If editing and has custom value, pre-fill it
+                    if (existingDoctorData && existingDoctorData.specialization &&
+                      !specializations.includes(existingDoctorData.specialization)) {
+                      setCustomSpecialization(existingDoctorData.specialization);
+                    }
+                  } else {
+                    setIsOtherSelected(false);
+                    setCustomSpecialization('');
+                    setCustomSpecError('');
+                  }
+                }}
               >
                 <Text style={[
                   styles.specChipText,
@@ -324,6 +384,26 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
             ))}
           </View>
         </View>
+
+        {/* Custom Specialization Input - only shows when "Other" is selected */}
+        {isOtherSelected && (
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Enter Your Specialization *</Text>
+            <TextInput
+              style={[styles.input, customSpecError ? styles.inputError : null]}
+              placeholder="e.g., Sports Medicine, Emergency Medicine"
+              placeholderTextColor="rgba(255,255,255,0.5)"
+              value={customSpecialization}
+              onChangeText={(text) => {
+                setCustomSpecialization(text);
+                validateCustomSpecialization(text);
+                // Update the specialization value for form submission
+                setSpecialization(text);
+              }}
+            />
+            {customSpecError ? <Text style={styles.errorText}>{customSpecError}</Text> : null}
+          </View>
+        )}
 
         {/* Hospital - REQUIRED */}
         <View style={styles.formGroup}>
