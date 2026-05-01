@@ -1,15 +1,12 @@
-// Load environment variables
-require('dotenv').config();
+require("dotenv").config();
 
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-// Import database configuration
 const connectDB = require('./src/config/db');
 const seedDoctors = require('./src/utils/seedDoctors');
 
-// Import routes
 const authRoutes = require('./src/routes/authRoutes');
 const doctorRoutes = require('./src/routes/doctorRoutes');
 const scheduleRoutes = require('./src/routes/scheduleRoutes');
@@ -20,21 +17,16 @@ const uploadRoutes = require('./src/routes/uploadRoutes');
 const medicalHistoryRoutes = require('./src/routes/medicalHistoryRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
 
-// Import middleware
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 
-// Initialize express app
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/schedules', scheduleRoutes);
@@ -45,14 +37,12 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/medical-history', medicalHistoryRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Simple DB test route
 app.get('/api/test-db', (req, res) => {
   res.json({
     message: 'Database connected successfully'
   });
 });
 
-// Welcome route
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -72,7 +62,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -80,20 +69,24 @@ app.use((req, res) => {
   });
 });
 
-// Error handling middleware (must be last)
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5000;
 
-// Start server after successful database connection
 const startServer = async () => {
-  await connectDB();
-  await seedDoctors();
+  try {
+    console.log('MONGO_URI LOADED:', process.env.MONGO_URI ? 'YES' : 'NO');
 
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`API Documentation: http://localhost:${PORT}`);
-  });
+    await connectDB();
+    await seedDoctors();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Server startup error:', error.message);
+    process.exit(1);
+  }
 };
 
 startServer();
