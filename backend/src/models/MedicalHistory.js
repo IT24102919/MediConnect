@@ -38,6 +38,10 @@ const medicalHistorySchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: ''
+    },
+    reportImageData: {
+      type: String,
+      default: ''
     }
   },
   {
