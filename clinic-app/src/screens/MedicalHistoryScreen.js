@@ -154,7 +154,7 @@ export default function MedicalHistoryScreen() {
         <TextInput
           style={styles.input}
           placeholder="e.g. A+, O-"
-          placeholderTextColor="rgba(255,255,255,0.35)"
+          placeholderTextColor="#94A3B8"
           value={form.bloodGroup}
           onChangeText={(text) => handleChange('bloodGroup', text)}
         />
@@ -163,7 +163,7 @@ export default function MedicalHistoryScreen() {
         <TextInput
           style={styles.input}
           placeholder="e.g. Penicillin, Dust"
-          placeholderTextColor="rgba(255,255,255,0.35)"
+          placeholderTextColor="#94A3B8"
           value={form.allergies}
           onChangeText={(text) => handleChange('allergies', text)}
         />
@@ -172,7 +172,7 @@ export default function MedicalHistoryScreen() {
         <TextInput
           style={styles.input}
           placeholder="e.g. Diabetes, Hypertension"
-          placeholderTextColor="rgba(255,255,255,0.35)"
+          placeholderTextColor="#94A3B8"
           value={form.chronicConditions}
           onChangeText={(text) => handleChange('chronicConditions', text)}
         />
@@ -181,7 +181,7 @@ export default function MedicalHistoryScreen() {
         <TextInput
           style={styles.input}
           placeholder="e.g. Metformin 500mg"
-          placeholderTextColor="rgba(255,255,255,0.35)"
+          placeholderTextColor="#94A3B8"
           value={form.currentMedications}
           onChangeText={(text) => handleChange('currentMedications', text)}
         />
@@ -190,7 +190,7 @@ export default function MedicalHistoryScreen() {
         <TextInput
           style={styles.input}
           placeholder="e.g. Appendectomy (2019)"
-          placeholderTextColor="rgba(255,255,255,0.35)"
+          placeholderTextColor="#94A3B8"
           value={form.surgeries}
           onChangeText={(text) => handleChange('surgeries', text)}
         />
@@ -199,7 +199,7 @@ export default function MedicalHistoryScreen() {
         <TextInput
           style={[styles.input, styles.textArea]}
           placeholder="Family health history..."
-          placeholderTextColor="rgba(255,255,255,0.35)"
+          placeholderTextColor="#94A3B8"
           value={form.familyHistory}
           onChangeText={(text) => handleChange('familyHistory', text)}
           multiline
@@ -209,7 +209,7 @@ export default function MedicalHistoryScreen() {
         <TextInput
           style={[styles.input, styles.textArea]}
           placeholder="Any other medical notes..."
-          placeholderTextColor="rgba(255,255,255,0.35)"
+          placeholderTextColor="#94A3B8"
           value={form.notes}
           onChangeText={(text) => handleChange('notes', text)}
           multiline
@@ -234,7 +234,7 @@ export default function MedicalHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2B50D9'
+    backgroundColor: '#F8FAFC'
   },
   content: {
     paddingHorizontal: 16,
@@ -251,30 +251,30 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
   title: {
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 22,
     fontWeight: '700',
     marginBottom: 6
   },
   subtitle: {
-    color: 'rgba(255,255,255,0.6)',
+    color: '#64748B',
     marginBottom: 18
   },
   label: {
-    color: '#38BDF8',
+    color: '#334155',
     fontWeight: '700',
     marginTop: 12,
     marginBottom: 6,
     fontSize: 13
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
+    borderColor: '#CBD5E1',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 11,
-    color: '#FFFFFF'
+    color: '#0F172A'
   },
   textArea: {
     minHeight: 90,

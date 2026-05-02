@@ -193,21 +193,21 @@ export default function MyAppointmentsScreen({ navigation }) {
                   <TextInput
                     style={styles.editInput}
                     placeholder="Date (YYYY-MM-DD)"
-                    placeholderTextColor="rgba(255,255,255,0.4)"
+                    placeholderTextColor="#94A3B8"
                     value={editDate}
                     onChangeText={setEditDate}
                   />
                   <TextInput
                     style={styles.editInput}
                     placeholder="Time slot (e.g. 10:00 AM)"
-                    placeholderTextColor="rgba(255,255,255,0.4)"
+                    placeholderTextColor="#94A3B8"
                     value={editTimeSlot}
                     onChangeText={setEditTimeSlot}
                   />
                   <TextInput
                     style={[styles.editInput, styles.editNotesInput]}
                     placeholder="Notes (optional)"
-                    placeholderTextColor="rgba(255,255,255,0.4)"
+                    placeholderTextColor="#94A3B8"
                     value={editNotes}
                     onChangeText={setEditNotes}
                     multiline
@@ -246,7 +246,7 @@ export default function MyAppointmentsScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2B50D9',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 16,
   },
   centerContent: {
@@ -266,12 +266,12 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#0F172A',
     marginBottom: 8,
   },
   emptySubtext: {
     marginTop: 6,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#64748B',
     textAlign: 'center',
     paddingHorizontal: 20,
   },
@@ -285,23 +285,23 @@ const styles = StyleSheet.create({
   editPanel: {
     marginTop: -2,
     marginBottom: 12,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: '#EAF3FF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: '#E2E8F0',
     borderRadius: 12,
     padding: 12,
   },
   editTitle: {
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontWeight: '700',
     marginBottom: 10,
   },
   editInput: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.16)',
+    borderColor: '#CBD5E1',
     borderRadius: 10,
-    color: '#FFFFFF',
+    color: '#0F172A',
     paddingHorizontal: 10,
     paddingVertical: 10,
     marginBottom: 8,
@@ -327,16 +327,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: '#CBD5E1',
   },
   closeEditButtonText: {
-    color: 'rgba(255,255,255,0.75)',
+    color: '#475569',
     fontWeight: '600',
   },
   disabledButton: {
     opacity: 0.7,
   },
 });
+
+
 
 
 

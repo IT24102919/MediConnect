@@ -69,7 +69,7 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2B50D9',
+    backgroundColor: '#F8FAFC',
     padding: 16
   },
   loaderWrap: {
@@ -95,10 +95,10 @@ const styles = StyleSheet.create({
     fontWeight: '700'
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#EAF3FF',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: '#E2E8F0',
     padding: 14,
     marginBottom: 10
   },
@@ -106,21 +106,21 @@ const styles = StyleSheet.create({
     borderColor: '#38BDF8'
   },
   title: {
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 15,
     fontWeight: '700'
   },
   message: {
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: '#334155',
     marginTop: 6
   },
   date: {
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: '#64748B',
     fontSize: 12,
     marginTop: 10
   },
   empty: {
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#64748B',
     textAlign: 'center',
     marginTop: 32
   }

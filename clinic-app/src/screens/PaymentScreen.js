@@ -175,7 +175,7 @@ export default function PaymentScreen({ route, navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Name on card"
-          placeholderTextColor="rgba(255,255,255,0.45)"
+          placeholderTextColor="#94A3B8"
           value={cardholderName}
           onChangeText={setCardholderName}
           autoCapitalize="words"
@@ -186,7 +186,7 @@ export default function PaymentScreen({ route, navigation }) {
         <TextInput
           style={styles.input}
           placeholder="1234 5678 9012 3456"
-          placeholderTextColor="rgba(255,255,255,0.45)"
+          placeholderTextColor="#94A3B8"
           value={cardNumber}
           onChangeText={(value) => setCardNumber(formatCardNumber(value))}
           keyboardType="number-pad"
@@ -199,7 +199,7 @@ export default function PaymentScreen({ route, navigation }) {
             <TextInput
               style={styles.input}
               placeholder="MM/YY"
-              placeholderTextColor="rgba(255,255,255,0.45)"
+              placeholderTextColor="#94A3B8"
               value={expiry}
               onChangeText={(value) => setExpiry(formatExpiry(value))}
               keyboardType="number-pad"
@@ -212,7 +212,7 @@ export default function PaymentScreen({ route, navigation }) {
             <TextInput
               style={styles.input}
               placeholder="123"
-              placeholderTextColor="rgba(255,255,255,0.45)"
+              placeholderTextColor="#94A3B8"
               value={cvv}
               onChangeText={(value) => setCvv(value.replace(/\D/g, '').slice(0, 4))}
               keyboardType="number-pad"
@@ -248,30 +248,29 @@ export default function PaymentScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#2B50D9',
+    backgroundColor: '#F8FAFC',
     padding: 16
   },
   heading: {
-    color: '#FFFFFF',
-    backgroundColor: '#2B50D9',
+    color: '#0F172A',
     fontWeight: '700',
     marginBottom: 16
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#EAF3FF',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: '#E2E8F0',
     borderRadius: 14,
     padding: 16,
     marginBottom: 18
   },
   label: {
-    color: 'rgba(255, 255, 255, 0.65)',
+    color: '#64748B',
     fontSize: 12,
     marginTop: 10
   },
   value: {
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 16,
     fontWeight: '600',
     marginTop: 2
@@ -283,7 +282,7 @@ const styles = StyleSheet.create({
     marginTop: 4
   },
   sectionHeading: {
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 16,
     fontWeight: '700',
     marginTop: 16,
@@ -291,13 +290,13 @@ const styles = StyleSheet.create({
   },
   input: {
     marginTop: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
+    borderColor: '#CBD5E1',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 15
   },
   row: {
@@ -319,7 +318,7 @@ const styles = StyleSheet.create({
     color: '#22C55E'
   },
   button: {
-    backgroundColor: '#38BDF8',
+    backgroundColor: '#2563EB',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center'

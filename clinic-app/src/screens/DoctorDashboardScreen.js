@@ -187,7 +187,7 @@ export default function DoctorDashboardScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2B50D9',
+    backgroundColor: '#F8FAFC',
   },
   header: {
     flexDirection: 'row',
@@ -195,17 +195,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     paddingTop: 60,
-    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+    backgroundColor: '#EAF3FF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
   welcome: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#0F172A',
   },
   logoutButton: {
     padding: 8,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#F1F5F9',
     borderRadius: 8,
   },
   logoutText: {
@@ -215,18 +217,20 @@ const styles = StyleSheet.create({
   profileCard: {
     margin: 20,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#EAF3FF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     borderRadius: 20,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#0F172A',
     marginBottom: 12,
   },
   profileText: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#475569',
     marginBottom: 8,
   },
   editButton: {
@@ -256,7 +260,9 @@ const styles = StyleSheet.create({
   appointmentsCard: {
     margin: 20,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#EAF3FF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     borderRadius: 20,
   },
   appointmentItem: {
@@ -265,16 +271,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: '#E2E8F0',
   },
   patientName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#0F172A',
   },
   appointmentTime: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: '#64748B',
   },
   status: {
     fontSize: 12,
@@ -292,7 +298,7 @@ const styles = StyleSheet.create({
     color: '#FBBF24',
   },
   emptyText: {
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: '#64748B',
     textAlign: 'center',
     paddingVertical: 20,
   },
@@ -307,7 +313,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: '#E2E8F0',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,

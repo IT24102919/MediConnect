@@ -95,7 +95,7 @@ export default function AppointmentRecordsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2B50D9',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 16
   },
   centerContent: {
@@ -120,13 +120,13 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   emptyTitle: {
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 6
   },
   emptySubtext: {
-    color: 'rgba(255,255,255,0.6)',
+    color: '#64748B',
     textAlign: 'center'
   }
 });

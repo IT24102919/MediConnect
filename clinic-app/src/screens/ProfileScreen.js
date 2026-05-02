@@ -97,7 +97,7 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2B50D9',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 16,
     paddingTop: 20,
   },
@@ -125,21 +125,21 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#0F172A',
     marginBottom: 4,
   },
   role: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#64748B',
     textTransform: 'capitalize',
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#EAF3FF',
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: '#E2E8F0',
   },
   infoRow: {
     flexDirection: 'row',
@@ -150,18 +150,18 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#64748B',
   },
   value: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#0F172A',
     flex: 1,
     textAlign: 'right',
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#E2E8F0',
   },
   linksContainer: {
     marginBottom: 24,
@@ -169,13 +169,13 @@ const styles = StyleSheet.create({
   linkButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#EAF3FF',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#E2E8F0',
   },
   linkIcon: {
     fontSize: 18,
@@ -185,11 +185,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#0F172A',
   },
   linkArrow: {
     fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: '#94A3B8',
   },
   logoutButton: {
     backgroundColor: 'rgba(56, 189, 248, 0.15)',
