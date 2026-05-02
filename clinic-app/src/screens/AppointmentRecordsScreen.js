@@ -5,7 +5,8 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  Alert
 } from 'react-native';
 import { AppointmentContext } from '../context/AppointmentContext';
 import { AuthContext } from '../context/AuthContext';
@@ -13,7 +14,7 @@ import AppointmentCard from '../components/AppointmentCard';
 
 export default function AppointmentRecordsScreen() {
   const { user } = useContext(AuthContext);
-  const { loading, appointmentRecords, fetchAppointmentRecordsByPatient } = useContext(AppointmentContext);
+  const { loading, appointmentRecords, fetchAppointmentRecordsByPatient, deleteAppointment } = useContext(AppointmentContext);
   const [refreshing, setRefreshing] = useState(false);
 
   const patientId = user?._id || user?.id;
@@ -30,6 +31,25 @@ export default function AppointmentRecordsScreen() {
     setRefreshing(true);
     await fetchAppointmentRecordsByPatient(patientId);
     setRefreshing(false);
+  };
+
+  const handleDeleteRecord = (appointmentId) => {
+    Alert.alert('Delete Appointment Record', 'Are you sure you want to delete this record?', [
+      { text: 'No', style: 'cancel' },
+      {
+        text: 'Yes, Delete',
+        style: 'destructive',
+        onPress: async () => {
+          const result = await deleteAppointment(appointmentId);
+          if (result.success) {
+            Alert.alert('Deleted', 'Appointment record deleted successfully.');
+            await fetchAppointmentRecordsByPatient(patientId);
+          } else {
+            Alert.alert('Error', result.message || 'Could not delete appointment record.');
+          }
+        }
+      }
+    ]);
   };
 
   if (loading && appointmentRecords.length === 0) {
@@ -56,7 +76,12 @@ export default function AppointmentRecordsScreen() {
       <FlatList
         data={appointmentRecords}
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <AppointmentCard appointment={item} />}
+        renderItem={({ item }) => (
+          <AppointmentCard
+            appointment={item}
+            onDelete={() => handleDeleteRecord(item._id)}
+          />
+        )}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
@@ -70,7 +95,7 @@ export default function AppointmentRecordsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#1D4ED8',
     paddingHorizontal: 16
   },
   centerContent: {
@@ -105,3 +130,6 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 });
+
+
+

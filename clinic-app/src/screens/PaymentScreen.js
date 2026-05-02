@@ -9,13 +9,13 @@ import {
   ScrollView,
   TextInput
 } from 'react-native';
-import { PaymentContext } from '../context/PaymentContext';
-import { AppointmentContext } from '../context/AppointmentContext';
+import { AuthContext } from '../context/AuthContext';
+import axiosInstance from '../api/axios';
 
 export default function PaymentScreen({ route, navigation }) {
   const { appointment, doctor } = route.params || {};
-  const { createPayment, loading } = useContext(PaymentContext);
-  const { updateAppointment } = useContext(AppointmentContext);
+  const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('Pending');
   const [cardholderName, setCardholderName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -35,44 +35,52 @@ export default function PaymentScreen({ route, navigation }) {
     return `${digits.slice(0, 2)}/${digits.slice(2)}`;
   };
 
-  const validateCardInputs = () => {
-    const cardDigits = cardNumber.replace(/\D/g, '');
+  const isValidCardNumber = (value) => {
+    const digits = String(value).replace(/\D/g, '');
+    if (digits.length < 13 || digits.length > 19) return false;
 
+    let sum = 0;
+    let shouldDouble = false;
+
+    for (let i = digits.length - 1; i >= 0; i -= 1) {
+      let digit = Number(digits[i]);
+      if (shouldDouble) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+
+    return sum % 10 === 0;
+  };
+
+  const validateCardInputs = () => {
     if (!cardholderName.trim()) {
       return 'Cardholder name is required.';
     }
 
-    if (cardDigits.length < 13 || cardDigits.length > 19) {
+    if (!cardNumber.trim()) {
+      return 'Card number is required.';
+    }
+
+    if (!isValidCardNumber(cardNumber)) {
       return 'Please enter a valid card number.';
     }
 
-    const expiryMatch = expiry.match(/^(\d{2})\/(\d{2})$/);
-    if (!expiryMatch) {
+    if (!expiry.trim()) {
       return 'Expiry must be in MM/YY format.';
     }
 
-    const month = Number(expiryMatch[1]);
-    const year = 2000 + Number(expiryMatch[2]);
-    if (month < 1 || month > 12) {
-      return 'Expiry month is invalid.';
-    }
-
-    const now = new Date();
-    const expiryDate = new Date(year, month, 0, 23, 59, 59, 999);
-    if (expiryDate < now) {
-      return 'Card has expired.';
-    }
-
-    if (!/^\d{3,4}$/.test(cvv)) {
-      return 'CVV must be 3 or 4 digits.';
+    if (!cvv.trim()) {
+      return 'CVV is required.';
     }
 
     return null;
   };
 
   const handlePayment = async () => {
-    if (!appointment?._id) {
-      Alert.alert('Error', 'Appointment details are missing.');
+    if (loading || currentStatus === 'Paid') {
       return;
     }
 
@@ -82,40 +90,64 @@ export default function PaymentScreen({ route, navigation }) {
       return;
     }
 
-    const paymentResult = await createPayment({
-      appointmentId: appointment._id,
-      amount,
-      paymentStatus: 'Paid',
-      paymentMethod: 'Card',
-      cardholderName: cardholderName.trim(),
-      cardNumber,
-      expiry,
-      cvv
-    });
-
-    if (!paymentResult.success) {
-      Alert.alert('Payment Failed', paymentResult.message || 'Could not process payment.');
+    if (!appointment?._id) {
+      Alert.alert('Error', 'Appointment details are missing.');
       return;
     }
 
-    const appointmentResult = await updateAppointment(appointment._id, {
-      status: 'Confirmed'
-    });
-
-    if (!appointmentResult.success) {
-      Alert.alert('Payment Saved', 'Payment completed, but appointment status update failed.');
-      setCurrentStatus('Paid');
+    const patientId = user?._id || user?.id;
+    if (!patientId) {
+      Alert.alert('Error', 'Patient information is missing. Please log in again.');
       return;
     }
 
-    setCurrentStatus('Paid');
-    Alert.alert('Payment Success', 'Your payment is complete and appointment is confirmed.', [
-      {
-        text: 'Go to My Appointments',
-        onPress: () => navigation.navigate('MyAppointments')
+    setLoading(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1800));
+
+      const response = await axiosInstance.post('/payments', {
+        appointmentId: appointment._id,
+        patientId,
+        amount,
+        paymentMethod: 'Card',
+        cardholderName: cardholderName.trim(),
+        cardNumber,
+        expiry,
+        cvv,
+        paymentStatus: 'Paid'
+      });
+
+      if (!response.data?.success) {
+        throw new Error(response.data?.message || 'Payment could not be saved');
       }
-    ]);
+
+      setCurrentStatus('Paid');
+      Alert.alert('Payment Successful', 'Your payment was saved successfully.', [
+        {
+          text: 'Go to My Appointments',
+          onPress: () => navigation.navigate('MyAppointments')
+        },
+        {
+          text: 'OK',
+          style: 'cancel'
+        }
+      ]);
+    } catch (error) {
+      console.error('❌ PAYMENT SAVE ERROR:', error);
+      console.error('Response data:', error.response?.data);
+      console.error('Response status:', error.response?.status);
+      Alert.alert(
+        'Payment Failed',
+        error.response?.data?.message || error.message || 'Could not save payment.'
+      );
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const isPaid = currentStatus === 'Paid';
+  const statusStyle = isPaid ? styles.paid : styles.pending;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -147,7 +179,7 @@ export default function PaymentScreen({ route, navigation }) {
           value={cardholderName}
           onChangeText={setCardholderName}
           autoCapitalize="words"
-          editable={currentStatus !== 'Paid'}
+          editable={!isPaid && !loading}
         />
 
         <Text style={styles.label}>Card Number</Text>
@@ -158,7 +190,7 @@ export default function PaymentScreen({ route, navigation }) {
           value={cardNumber}
           onChangeText={(value) => setCardNumber(formatCardNumber(value))}
           keyboardType="number-pad"
-          editable={currentStatus !== 'Paid'}
+          editable={!isPaid && !loading}
         />
 
         <View style={styles.row}>
@@ -171,7 +203,7 @@ export default function PaymentScreen({ route, navigation }) {
               value={expiry}
               onChangeText={(value) => setExpiry(formatExpiry(value))}
               keyboardType="number-pad"
-              editable={currentStatus !== 'Paid'}
+              editable={!isPaid && !loading}
             />
           </View>
 
@@ -185,20 +217,20 @@ export default function PaymentScreen({ route, navigation }) {
               onChangeText={(value) => setCvv(value.replace(/\D/g, '').slice(0, 4))}
               keyboardType="number-pad"
               secureTextEntry
-              editable={currentStatus !== 'Paid'}
+              editable={!isPaid && !loading}
             />
           </View>
         </View>
 
         <Text style={styles.label}>Payment Status</Text>
-        <Text style={[styles.status, currentStatus === 'Paid' ? styles.paid : styles.pending]}>
+        <Text style={[styles.status, statusStyle]}>
           {currentStatus}
         </Text>
       </View>
 
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
-        disabled={loading || currentStatus === 'Paid'}
+        disabled={loading || isPaid}
         onPress={handlePayment}
       >
         {loading ? (
@@ -216,12 +248,12 @@ export default function PaymentScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#1D4ED8',
     padding: 16
   },
   heading: {
     color: '#FFFFFF',
-    fontSize: 22,
+    backgroundColor: '#1D4ED8',
     fontWeight: '700',
     marginBottom: 16
   },
@@ -281,10 +313,10 @@ const styles = StyleSheet.create({
     fontWeight: '700'
   },
   pending: {
-    color: '#F59E0B'
+    color: '#38BDF8'
   },
   paid: {
-    color: '#10B981'
+    color: '#1D4ED8'
   },
   button: {
     backgroundColor: '#38BDF8',
@@ -301,3 +333,6 @@ const styles = StyleSheet.create({
     fontWeight: '700'
   }
 });
+
+
+

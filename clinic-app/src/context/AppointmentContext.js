@@ -176,6 +176,7 @@ export function AppointmentProvider({ children }) {
       if (response.data.success) {
         // Remove from local state
         setAppointments((prev) => prev.filter((apt) => apt._id !== appointmentId));
+        setAppointmentRecords((prev) => prev.filter((apt) => apt._id !== appointmentId));
 
         return {
           success: true,
@@ -218,3 +219,6 @@ export function AppointmentProvider({ children }) {
     </AppointmentContext.Provider>
   );
 }
+
+
+

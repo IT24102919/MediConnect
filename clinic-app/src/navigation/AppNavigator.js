@@ -3,13 +3,9 @@ import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { AuthContext } from '../context/AuthContext';
-
-// Auth Screens
+import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-
-// Patient Screens
 import HomeScreen from '../screens/HomeScreen';
 import DoctorListScreen from '../screens/DoctorListScreen';
 import DoctorDetailsScreen from '../screens/DoctorDetailsScreen';
@@ -19,12 +15,28 @@ import MyAppointmentsScreen from '../screens/MyAppointmentsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MedicalHistoryScreen from '../screens/MedicalHistoryScreen';
 import AppointmentRecordsScreen from '../screens/AppointmentRecordsScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
 
 // Doctor Screens
 import CompleteDoctorProfileScreen from '../screens/CompleteDoctorProfileScreen';
 import DoctorDashboardScreen from '../screens/DoctorDashboardScreen';
+import { AuthContext } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
+
+// Shared header options
+const appHeaderOptions = {
+  headerShown: true,
+  headerStyle: {
+    backgroundColor: '#1D4ED8'
+  },
+  headerTintColor: '#FFFFFF',
+  headerTitleStyle: {
+    fontWeight: '700',
+    fontSize: 18
+  },
+  headerBackTitle: 'Back'
+};
 
 // Main App Navigator - handles all screens
 function MainStack({ initialRoute }) {
@@ -60,24 +72,62 @@ function MainStack({ initialRoute }) {
         // Patient Screens
         <>
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Doctors" component={DoctorListScreen} options={{ title: 'Find Doctors' }} />
-          <Stack.Screen name="DoctorDetails" component={DoctorDetailsScreen} options={{ title: 'Doctor Profile' }} />
-          <Stack.Screen name="BookAppointment" component={BookAppointmentScreen} options={{ title: 'Book Appointment' }} />
-          <Stack.Screen name="Payment" component={PaymentScreen} options={{ title: 'Payment' }} />
-          <Stack.Screen name="MyAppointments" component={MyAppointmentsScreen} options={{ title: 'My Appointments' }} />
-          <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile Settings' }} />
-          <Stack.Screen name="MedicalHistory" component={MedicalHistoryScreen} options={{ title: 'Medical History' }} />
-          <Stack.Screen name="AppointmentRecords" component={AppointmentRecordsScreen} options={{ title: 'Appointment Records' }} />
+          <Stack.Screen
+            name="Doctors"
+            component={DoctorListScreen}
+            options={{ ...appHeaderOptions, title: 'Find Doctors' }}
+          />
+          <Stack.Screen
+            name="DoctorDetails"
+            component={DoctorDetailsScreen}
+            options={{ ...appHeaderOptions, title: 'Doctor Profile' }}
+          />
+          <Stack.Screen
+            name="BookAppointment"
+            component={BookAppointmentScreen}
+            options={{ ...appHeaderOptions, title: 'Book Appointment' }}
+          />
+          <Stack.Screen
+            name="Payment"
+            component={PaymentScreen}
+            options={{ ...appHeaderOptions, title: 'Payment' }}
+          />
+          <Stack.Screen
+            name="MyAppointments"
+            component={MyAppointmentsScreen}
+            options={{ ...appHeaderOptions, title: 'My Appointments' }}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={{ ...appHeaderOptions, title: 'Profile Settings' }}
+          />
+          <Stack.Screen
+            name="MedicalHistory"
+            component={MedicalHistoryScreen}
+            options={{ ...appHeaderOptions, title: 'Medical History' }}
+          />
+          <Stack.Screen
+            name="AppointmentRecords"
+            component={AppointmentRecordsScreen}
+            options={{ ...appHeaderOptions, title: 'Appointment Records' }}
+          />
+          <Stack.Screen
+            name="Notifications"
+            component={NotificationsScreen}
+            options={{ ...appHeaderOptions, title: 'Notifications' }}
+          />
         </>
       )}
     </Stack.Navigator>
   );
 }
 
-// Auth Stack (Login/Register)
+// Auth Stack (Login/Register with Splash)
 function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>

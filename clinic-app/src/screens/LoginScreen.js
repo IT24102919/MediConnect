@@ -51,8 +51,8 @@ export default function LoginScreen({ navigation }) {
         Alert.alert("Login Failed", result.message);
       } else {
         console.log("✅ LOGIN SUCCESS:", result.message);
-        // Navigation is handled by AppNavigator when isAuthenticated changes
         Alert.alert("Success", result.message);
+        navigation.replace("Home");
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";
@@ -199,11 +199,11 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: "#1D4ED8",
   },
   backgroundGradient: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#0F172A",
+    backgroundColor: "#1D4ED8",
   },
   // Floating animated blobs
   blob: {
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     left: -80,
     width: 200,
     height: 200,
-    backgroundColor: '#818CF8',
+    backgroundColor: '#1D4ED8',
     opacity: 0.1,
   },
   blob3: {
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     right: '-20%',
     width: 150,
     height: 150,
-    backgroundColor: '#0EA5E9',
+    backgroundColor: '#38BDF8',
     opacity: 0.08,
   },
   contentContainer: {
@@ -241,12 +241,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   glassCard: {
-    backgroundColor: "rgba(15, 23, 42, 0.7)",
+    backgroundColor: "rgba(29, 78, 216, 0.7)",
     borderRadius: 28,
     padding: 28,
     borderWidth: 1.5,
     borderColor: "rgba(255, 255, 255, 0.15)",
-    shadowColor: "#000",
+    shadowColor: "#1D4ED8",
     shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.4,
     shadowRadius: 30,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#E2E8F0",
+    color: "#FFFFFF",
     marginBottom: 10,
     marginLeft: 2,
     letterSpacing: 0.2,
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1.5,
     borderColor: "rgba(255, 255, 255, 0.1)",
-    shadowColor: "#000",
+    shadowColor: "#1D4ED8",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -439,3 +439,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 });
+
+
+
+
