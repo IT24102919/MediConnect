@@ -138,7 +138,7 @@ export default function MyAppointmentsScreen({ navigation }) {
   if (loading && appointments.length === 0) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#38BDF8" />
+        <ActivityIndicator size="large" color={COLORS.primary} />
         <Text style={styles.loadingText}>Loading your appointments...</Text>
       </View>
     );
@@ -194,21 +194,21 @@ export default function MyAppointmentsScreen({ navigation }) {
                   <TextInput
                     style={styles.editInput}
                     placeholder="Date (YYYY-MM-DD)"
-                    placeholderTextColor="#94A3B8"
+                    placeholderTextColor={COLORS.textMuted}
                     value={editDate}
                     onChangeText={setEditDate}
                   />
                   <TextInput
                     style={styles.editInput}
                     placeholder="Time slot (e.g. 10:00 AM)"
-                    placeholderTextColor="#94A3B8"
+                    placeholderTextColor={COLORS.textMuted}
                     value={editTimeSlot}
                     onChangeText={setEditTimeSlot}
                   />
                   <TextInput
                     style={[styles.editInput, styles.editNotesInput]}
                     placeholder="Notes (optional)"
-                    placeholderTextColor="#94A3B8"
+                    placeholderTextColor={COLORS.textMuted}
                     value={editNotes}
                     onChangeText={setEditNotes}
                     multiline
@@ -341,6 +341,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 });
+
+
 
 
 

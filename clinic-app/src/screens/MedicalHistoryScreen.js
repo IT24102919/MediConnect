@@ -136,7 +136,7 @@ export default function MedicalHistoryScreen() {
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color="#38BDF8" />
+        <ActivityIndicator size="large" color={COLORS.primary} />
         <Text style={styles.loadingText}>Loading medical report...</Text>
       </View>
     );
@@ -277,3 +277,4 @@ const styles = StyleSheet.create({
     opacity: 0.65
   }
 });
+

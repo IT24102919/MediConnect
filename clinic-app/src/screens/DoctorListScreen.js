@@ -86,7 +86,7 @@ export default function DoctorListScreen({ navigation }) {
   if (loading) {
     return (
       <View style={[styles.mainContainer, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#38BDF8" />
+        <ActivityIndicator size="large" color={COLORS.primary} />
         <Text style={styles.loadingText}>Loading doctors...</Text>
       </View>
     );
@@ -134,7 +134,7 @@ export default function DoctorListScreen({ navigation }) {
         <TextInput
           style={styles.searchInput}
           placeholder="Search doctor by name"
-          placeholderTextColor="rgba(255, 255, 255, 0.45)"
+          placeholderTextColor={COLORS.textMuted}
           value={searchText}
           onChangeText={setSearchText}
         />
@@ -331,4 +331,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+
 

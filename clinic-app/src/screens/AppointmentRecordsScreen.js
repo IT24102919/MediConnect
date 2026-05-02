@@ -56,7 +56,7 @@ export default function AppointmentRecordsScreen() {
   if (loading && appointmentRecords.length === 0) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#38BDF8" />
+        <ActivityIndicator size="large" color={COLORS.primary} />
         <Text style={styles.loadingText}>Loading appointment records...</Text>
       </View>
     );
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 });
+
 
 
 

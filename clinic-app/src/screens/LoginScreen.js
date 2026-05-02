@@ -112,7 +112,7 @@ export default function LoginScreen({ navigation }) {
                   <TextInput
                     style={styles.input}
                     placeholder="nimal@gmail.com"
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                    placeholderTextColor={COLORS.textMuted}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     value={email}
@@ -134,7 +134,7 @@ export default function LoginScreen({ navigation }) {
                   <TextInput
                     style={styles.input}
                     placeholder="••••••••••"
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                    placeholderTextColor={COLORS.textMuted}
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
@@ -420,6 +420,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 });
+
 
 
 

@@ -176,7 +176,7 @@ export default function PaymentScreen({ route, navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Name on card"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={COLORS.textMuted}
           value={cardholderName}
           onChangeText={setCardholderName}
           autoCapitalize="words"
@@ -187,7 +187,7 @@ export default function PaymentScreen({ route, navigation }) {
         <TextInput
           style={styles.input}
           placeholder="1234 5678 9012 3456"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={COLORS.textMuted}
           value={cardNumber}
           onChangeText={(value) => setCardNumber(formatCardNumber(value))}
           keyboardType="number-pad"
@@ -200,7 +200,7 @@ export default function PaymentScreen({ route, navigation }) {
             <TextInput
               style={styles.input}
               placeholder="MM/YY"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={COLORS.textMuted}
               value={expiry}
               onChangeText={(value) => setExpiry(formatExpiry(value))}
               keyboardType="number-pad"
@@ -213,7 +213,7 @@ export default function PaymentScreen({ route, navigation }) {
             <TextInput
               style={styles.input}
               placeholder="123"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={COLORS.textMuted}
               value={cvv}
               onChangeText={(value) => setCvv(value.replace(/\D/g, '').slice(0, 4))}
               keyboardType="number-pad"
@@ -235,7 +235,7 @@ export default function PaymentScreen({ route, navigation }) {
         onPress={handlePayment}
       >
         {loading ? (
-          <ActivityIndicator size="small" color="#FFFFFF" />
+          <ActivityIndicator size="small" color={COLORS.white} />
         ) : (
           <Text style={styles.buttonText}>
             {currentStatus === 'Paid' ? 'Payment Completed' : 'Pay with Credit Card'}
@@ -337,6 +337,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   }
 });
+
+
 
 
 

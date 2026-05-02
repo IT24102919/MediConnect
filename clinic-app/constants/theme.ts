@@ -1,43 +1,38 @@
-/**
- * Warm-Earth Color Palette Theme
- * Modern, clean, balanced healthcare app design
- */
-
 import { Platform } from 'react-native';
 
-// Core Brand Colors
 export const COLORS = {
-  // Primary Colors
-  primary: '#ABC270',           // Green - Main brand, headers, primary buttons, active tabs
-  secondary: '#FEC868',         // Yellow - Secondary buttons, cards, section highlights, badges
-  accent: '#FDA769',            // Orange - CTA buttons, alerts, important actions, hover states
-  dark: '#473C33',              // Dark Brown - Text, headers, footer, premium sections
-  
-  // Background & Neutral
-  background: '#FFF9F0',        // Soft light cream - Main app background
-  white: '#FFFFFF',             // Pure white - Cards, elevated sections
-  
-  // Text Colors
-  text: '#473C33',              // Dark brown text
-  textLight: '#7A6F67',         // Lighter brown for secondary text
-  textMuted: '#A89F98',         // Muted gray-brown for tertiary text
-  
-  // Semantic Colors
-  success: '#ABC270',           // Success states (green)
-  warning: '#FDA769',           // Warning states (orange)
-  error: '#E85D75',             // Error states
-  info: '#38BDF8',              // Info states
-  
-  // Transparent/Overlay
-  overlay: 'rgba(71, 60, 51, 0.5)',      // Dark overlay
-  cardShadow: 'rgba(71, 60, 51, 0.08)',  // Subtle shadow
-  
-  // Gradient Support
-  gradientStart: '#ABC270',
-  gradientEnd: '#FEC868',
+  // Core palette
+  background: '#F0F3FA',
+  surface: '#FFFFFF',
+  soft: '#D5DEEF',
+  light: '#B1C9EF',
+  secondary: '#8AAEE0',
+  primary: '#638ECB',
+  dark: '#395886',
+  textPrimary: '#395886',
+  textSecondary: '#638ECB',
+  border: '#D5DEEF',
+
+  // Compatibility aliases used across existing screens/components
+  white: '#FFFFFF',
+  text: '#395886',
+  textLight: '#638ECB',
+  textMuted: '#8AAEE0',
+  accent: '#638ECB',
+
+  // Semantic colors adapted to the healthcare blue hierarchy
+  success: '#8AAEE0',
+  warning: '#638ECB',
+  error: '#395886',
+  info: '#8AAEE0',
+
+  overlay: 'rgba(57, 88, 134, 0.35)',
+  cardShadow: 'rgba(57, 88, 134, 0.14)',
+  gradientStart: '#395886',
+  gradientMid: '#8AAEE0',
+  gradientEnd: '#F0F3FA',
 };
 
-// Modern shadows and spacing
 export const SPACING = {
   xs: 4,
   sm: 8,
@@ -49,49 +44,47 @@ export const SPACING = {
 };
 
 export const BORDER_RADIUS = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
+  sm: 10,
+  md: 14,
+  lg: 18,
+  xl: 22,
   full: 999,
 };
 
-// Modern shadows
 export const SHADOWS = {
   none: {
     shadowColor: 'transparent',
   },
   sm: {
-    shadowColor: '#000',
+    shadowColor: '#395886',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 2,
   },
   md: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
+    shadowColor: '#395886',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.14,
+    shadowRadius: 10,
     elevation: 4,
   },
   lg: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowColor: '#395886',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.16,
+    shadowRadius: 14,
     elevation: 6,
   },
   xl: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
+    shadowColor: '#395886',
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
-    shadowRadius: 16,
+    shadowRadius: 18,
     elevation: 8,
   },
 };
 
-// Legacy Colors object for compatibility
 export const Colors = {
   light: {
     text: COLORS.text,

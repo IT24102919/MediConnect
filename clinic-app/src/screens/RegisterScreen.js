@@ -108,7 +108,7 @@ export default function RegisterScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="Mhd Shifan"
-                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                placeholderTextColor={COLORS.textMuted}
                 value={name}
                 onChangeText={setName}
               />
@@ -123,7 +123,7 @@ export default function RegisterScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="shifan@email.com"
-                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                placeholderTextColor={COLORS.textMuted}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
@@ -140,7 +140,7 @@ export default function RegisterScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                placeholderTextColor={COLORS.textMuted}
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
@@ -156,7 +156,7 @@ export default function RegisterScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                placeholderTextColor={COLORS.textMuted}
                 secureTextEntry
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -365,3 +365,4 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
 });
+

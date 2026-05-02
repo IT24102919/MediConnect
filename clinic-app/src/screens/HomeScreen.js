@@ -60,7 +60,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MyAppointments")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}>
               <Text style={styles.cardIcon}>📅</Text>
             </View>
             <View style={styles.cardContent}>
@@ -75,7 +75,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MedicalHistory")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.18)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}> 
               <Text style={styles.cardIcon}>🩺</Text>
             </View>
             <View style={styles.cardContent}>
@@ -90,7 +90,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("AppointmentRecords")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}> 
               <Text style={styles.cardIcon}>📁</Text>
             </View>
             <View style={styles.cardContent}>
@@ -105,7 +105,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("Notifications")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}> 
               <Text style={styles.cardIcon}>N</Text>
             </View>
             <View style={styles.cardContent}>
@@ -129,7 +129,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("Profile")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}>
               <Text style={styles.cardIcon}>⚙️</Text>
             </View>
             <View style={styles.cardContent}>
@@ -268,6 +268,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
 
 
 

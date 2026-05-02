@@ -393,7 +393,7 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
             <TextInput
               style={[styles.input, customSpecError ? styles.inputError : null]}
               placeholder="e.g., Sports Medicine, Emergency Medicine"
-              placeholderTextColor="rgba(255,255,255,0.5)"
+              placeholderTextColor={COLORS.textMuted}
               value={customSpecialization}
               onChangeText={(text) => {
                 setCustomSpecialization(text);
@@ -412,7 +412,7 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
           <TextInput
             style={[styles.input, hospitalError ? styles.inputError : null]}
             placeholder="e.g., General Hospital, Colombo"
-            placeholderTextColor="rgba(255,255,255,0.5)"
+            placeholderTextColor={COLORS.textMuted}
             value={hospital}
             onChangeText={(text) => {
               setHospital(text);
@@ -428,7 +428,7 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
           <TextInput
             style={[styles.input, experienceError ? styles.inputError : null]}
             placeholder="e.g., 5"
-            placeholderTextColor="rgba(255,255,255,0.5)"
+            placeholderTextColor={COLORS.textMuted}
             keyboardType="numeric"
             value={experience}
             onChangeText={(text) => {
@@ -445,7 +445,7 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
           <TextInput
             style={[styles.input, feeError ? styles.inputError : null]}
             placeholder="e.g., 1500"
-            placeholderTextColor="rgba(255,255,255,0.5)"
+            placeholderTextColor={COLORS.textMuted}
             keyboardType="numeric"
             value={fee}
             onChangeText={(text) => {
@@ -462,7 +462,7 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
           <TextInput
             style={[styles.input, phoneError ? styles.inputError : null]}
             placeholder="e.g., 0771234567"
-            placeholderTextColor="rgba(255,255,255,0.5)"
+            placeholderTextColor={COLORS.textMuted}
             keyboardType="phone-pad"
             value={phone}
             onChangeText={(text) => {
@@ -479,7 +479,7 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
           <TextInput
             style={[styles.input, styles.textArea]}
             placeholder="Tell patients about your experience and approach..."
-            placeholderTextColor="rgba(255,255,255,0.5)"
+            placeholderTextColor={COLORS.textMuted}
             multiline
             numberOfLines={4}
             value={description}

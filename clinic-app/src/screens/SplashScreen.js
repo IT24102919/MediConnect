@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Image, StyleSheet, View, LinearGradient } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../../constants/theme';
 
@@ -25,14 +25,15 @@ export default function SplashScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.gradientContainer}>
-        <View style={styles.gradientContent}>
-          <Image
-            source={require('../assets/splash.png')}
-            style={styles.image}
-            resizeMode="contain"
-          />
-        </View>
+      <View style={styles.gradientLayerDark} />
+      <View style={styles.gradientLayerMid} />
+      <View style={styles.gradientLayerSoft} />
+      <View style={styles.logoWrap}>
+        <Image
+          source={require('../assets/splash.png')}
+          style={styles.image}
+          resizeMode="contain"
+        />
       </View>
     </View>
   );
@@ -45,22 +46,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  gradientContainer: {
+  gradientLayerDark: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.15
+    width: '140%',
+    height: '72%',
+    top: '-8%',
+    borderBottomLeftRadius: 220,
+    borderBottomRightRadius: 220,
+    backgroundColor: COLORS.dark,
+    opacity: 0.95
   },
-  gradientContent: {
-    flex: 1,
-    backgroundColor: COLORS.primary,
-    transform: [{ scaleX: 2 }, { scaleY: 1.5 }]
+  gradientLayerMid: {
+    position: 'absolute',
+    width: '150%',
+    height: '72%',
+    top: '18%',
+    left: '-25%',
+    borderRadius: 240,
+    backgroundColor: COLORS.secondary,
+    opacity: 0.55
+  },
+  gradientLayerSoft: {
+    position: 'absolute',
+    width: '130%',
+    height: '62%',
+    bottom: '-24%',
+    right: '-15%',
+    borderRadius: 220,
+    backgroundColor: COLORS.background,
+    opacity: 0.95
+  },
+  logoWrap: {
+    padding: 22,
+    borderRadius: 22,
+    backgroundColor: COLORS.surface,
+    shadowColor: COLORS.dark,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    elevation: 8
   },
   image: {
-    width: 240,
-    height: 240
+    width: 210,
+    height: 210
   }
 });
 

@@ -111,7 +111,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Enter your name"
-        placeholderTextColor="rgba(56, 189, 248, 0.45)"
+        placeholderTextColor={COLORS.textMuted}
         value={patientName}
         onChangeText={setPatientName}
       />
@@ -136,6 +136,13 @@ export default function BookAppointmentScreen({ route, navigation }) {
             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             minimumDate={new Date()}
             onChange={handleDateChange}
+            {...(Platform.OS === 'ios'
+              ? {
+                  textColor: COLORS.dark,
+                  accentColor: COLORS.primary,
+                  themeVariant: 'light',
+                }
+              : {})}
           />
           {Platform.OS === 'ios' && (
             <TouchableOpacity style={styles.dateDoneButton} onPress={() => setShowDatePicker(false)}>
@@ -174,7 +181,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={[styles.input, styles.textArea]}
         placeholder="Any additional information..."
-        placeholderTextColor="rgba(56, 189, 248, 0.45)"
+        placeholderTextColor={COLORS.textMuted}
         value={notes}
         onChangeText={setNotes}
         multiline
@@ -188,7 +195,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator size="small" color="#FFFFFF" />
+          <ActivityIndicator size="small" color={COLORS.white} />
         ) : (
           <Text style={styles.buttonText}>Confirm Appointment</Text>
         )}
@@ -239,7 +246,6 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     borderTopWidth: 1,
     borderTopColor: COLORS.textMuted,
-    opacity: 0.2,
   },
   feeLabel: {
     color: COLORS.text,
@@ -343,6 +349,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+
 
 
 

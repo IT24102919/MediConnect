@@ -52,7 +52,7 @@ export default function NotificationsScreen() {
 
       {loading ? (
         <View style={styles.loaderWrap}>
-          <ActivityIndicator size="large" color="#38BDF8" />
+          <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       ) : (
         <FlatList
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xxxl
   }
 });
+
 
 
 
