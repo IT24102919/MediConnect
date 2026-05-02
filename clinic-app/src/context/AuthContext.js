@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
 
   // Restore token and user on app start
   useEffect(() => {
@@ -49,8 +50,7 @@ export function AuthProvider({ children }) {
       const parsedUser = JSON.parse(currentUser);
       console.log("🔍 checkDoctorProfile - parsed role:", parsedUser.role);
 
-      if (parsedUser.role !== 'doctor') return { exists: true }; // Patients don't need profile
-
+      if (parsedUser.role !== 'doctor') return { exists: true };
       // Check if doctor profile exists and is complete
       const response = await axiosInstance.get('/doctors', {
         headers: { Authorization: `Bearer ${currentToken}` }
@@ -120,15 +120,21 @@ export function AuthProvider({ children }) {
         await AsyncStorage.setItem('authToken', token);
         await AsyncStorage.setItem('user', JSON.stringify(user));
 
-        // Update state
+        // For doctors, set needsProfileCompletion BEFORE updating auth state
+        if (user.role === 'doctor') {
+          setNeedsProfileCompletion(true);
+          await AsyncStorage.setItem('needsProfileCompletion', 'true');
+        }
+
+        // Update auth state (this triggers AppNavigator re-render)
         setToken(token);
         setUser(user);
         setIsAuthenticated(true);
 
-        // If user registered as doctor, check/create doctor profile
+        // If user registered as doctor, create doctor profile (async - doesn't block navigation)
         if (user.role === 'doctor') {
           try {
-            console.log("👨‍⚕️ Checking doctor profile for:", user.id);
+            console.log("👨‍⚕️ Creating doctor profile for:", user.id);
 
             // First check if doctor profile already exists
             const doctorsResponse = await axiosInstance.get('/doctors', {
@@ -153,25 +159,10 @@ export function AuthProvider({ children }) {
               }, {
                 headers: { Authorization: `Bearer ${token}` }
               });
-
-              if (doctorResponse.data.success) {
-                console.log("✅ Doctor profile created");
-                // Store that profile needs completion
-                await AsyncStorage.setItem('needsProfileCompletion', 'true');
-
-                // Force refresh user data to ensure AppNavigator re-renders
-                await getProfile();
-              }
-            } else {
-              console.log("✅ Doctor profile already exists");
-              // Check if profile is complete
-              if (!existingDoctor.specialization || !existingDoctor.hospital) {
-                await AsyncStorage.setItem('needsProfileCompletion', 'true');
-              }
+              console.log("✅ Doctor profile created");
             }
           } catch (error) {
             console.log("⚠️ Doctor profile error:", error.response?.data?.message);
-            // Don't block registration
           }
         }
 
@@ -188,8 +179,6 @@ export function AuthProvider({ children }) {
       };
     } catch (error) {
       console.log("❌ REGISTER API ERROR:", error.message);
-      console.log("Response data:", error.response?.data);
-      console.log("Response status:", error.response?.status);
       const message = error.response?.data?.message || 'Registration failed. Please try again.';
       return {
         success: false,
@@ -243,8 +232,6 @@ export function AuthProvider({ children }) {
       };
     } catch (error) {
       console.log("❌ LOGIN API ERROR:", error.message);
-      console.log("Response data:", error.response?.data);
-      console.log("Response status:", error.response?.status);
       const message = error.response?.data?.message || 'Invalid email or password.';
       return {
         success: false,
@@ -263,6 +250,7 @@ export function AuthProvider({ children }) {
       setToken(null);
       setUser(null);
       setIsAuthenticated(false);
+      setNeedsProfileCompletion(false);
 
       return {
         success: true,
@@ -340,6 +328,7 @@ export function AuthProvider({ children }) {
         setToken(null);
         setUser(null);
         setIsAuthenticated(false);
+        setNeedsProfileCompletion(false);
 
         return {
           success: true,
@@ -365,6 +354,7 @@ export function AuthProvider({ children }) {
     token,
     loading,
     isAuthenticated,
+    needsProfileCompletion,
     login,
     register,
     logout,

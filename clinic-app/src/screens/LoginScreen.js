@@ -52,9 +52,7 @@ export default function LoginScreen({ navigation }) {
         Alert.alert("Login Failed", result.message);
       } else {
         console.log("✅ LOGIN SUCCESS:", result.message);
-        Alert.alert("Success", result.message);
-        const userRole = String(result?.user?.role || "").toLowerCase();
-        navigation.replace(userRole === "doctor" ? "DoctorDashboard" : "Home");
+        // Alert.alert("Success", result.message);
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";

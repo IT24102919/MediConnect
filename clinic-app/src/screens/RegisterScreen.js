@@ -70,8 +70,7 @@ export default function RegisterScreen({ navigation }) {
         Alert.alert("Registration Failed", result.message);
       } else {
         console.log("✅ REGISTER SUCCESS:", result.message);
-        Alert.alert("Success", result.message);
-        navigation.replace("Home");
+        // Alert.alert("Success", result.message);
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";
@@ -227,7 +226,7 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: COLORS.background, 
+    backgroundColor: COLORS.background,
     justifyContent: "center",
   },
   circle1: {
