@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AuthContext } from '../context/AuthContext';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import axiosInstance from '../api/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -503,42 +504,43 @@ export default function CompleteDoctorProfileScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: COLORS.background,
   },
   header: {
-    padding: 24,
-    paddingTop: 60,
+    padding: SPACING.xxxl,
+    paddingTop: SPACING.xxxl * 1.5,
   },
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: COLORS.dark,
   },
   subtitle: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.6)',
-    marginTop: 8,
+    color: COLORS.textLight,
+    marginTop: SPACING.md,
   },
   form: {
-    padding: 24,
+    padding: SPACING.xxxl,
   },
   formGroup: {
-    marginBottom: 20,
+    marginBottom: SPACING.xl,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#E2E8F0',
-    marginBottom: 8,
+    color: COLORS.dark,
+    marginBottom: SPACING.md,
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 12,
-    padding: 14,
-    color: '#FFFFFF',
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.lg,
+    color: COLORS.dark,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    ...SHADOWS.sm,
   },
   textArea: {
     height: 100,
@@ -547,36 +549,39 @@ const styles = StyleSheet.create({
   specializationContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: SPACING.md,
   },
   specChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    ...SHADOWS.sm,
   },
   specChipActive: {
-    backgroundColor: '#38BDF8',
-    borderColor: '#38BDF8',
+    backgroundColor: COLORS.accent,
+    borderColor: COLORS.accent,
   },
   specChipText: {
-    color: 'rgba(255,255,255,0.7)',
+    color: COLORS.dark,
     fontSize: 13,
+    fontWeight: '600',
   },
   specChipTextActive: {
-    color: '#FFFFFF',
+    color: COLORS.white,
   },
   button: {
-    backgroundColor: '#38BDF8',
-    paddingVertical: 16,
-    borderRadius: 16,
+    backgroundColor: COLORS.accent,
+    paddingVertical: SPACING.lg,
+    borderRadius: BORDER_RADIUS.lg,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: SPACING.xl,
+    ...SHADOWS.lg,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -588,30 +593,32 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
+    ...SHADOWS.md,
   },
   imagePlaceholder: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    ...SHADOWS.sm,
   },
   imagePlaceholderText: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.5)',
+    color: COLORS.textLight,
     textAlign: 'center',
   },
   errorText: {
-    color: '#EF4444',
+    color: COLORS.error,
     fontSize: 12,
-    marginTop: 4,
-    marginLeft: 4,
+    marginTop: SPACING.sm,
+    marginLeft: SPACING.md,
   },
   inputError: {
-    borderColor: '#EF4444',
-    borderWidth: 1,
+    borderColor: COLORS.error,
+    borderWidth: 2,
   },
 });

@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/NotificationContext";
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from "../../constants/theme";
 
 const { width } = Dimensions.get("window");
 
@@ -151,7 +152,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#F8FAFC", 
+    backgroundColor: COLORS.background, 
   },
   circle1: {
     position: 'absolute',
@@ -160,8 +161,8 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#DBEAFE',
-    opacity: 0.3,
+    backgroundColor: COLORS.primary,
+    opacity: 0.1,
   },
   circle2: {
     position: 'absolute',
@@ -170,57 +171,52 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: '#E2E8F0',
-    opacity: 0.2,
+    backgroundColor: COLORS.secondary,
+    opacity: 0.08,
   },
   contentContainer: {
-    padding: 24,
-    paddingTop: 60,
+    padding: SPACING.xxl,
+    paddingTop: SPACING.xxxl,
   },
   header: {
-    marginBottom: 35,
+    marginBottom: SPACING.xxxl,
   },
   title: {
     fontSize: 32,
     fontWeight: "800",
-    color: "#0F172A",
+    color: COLORS.dark,
     letterSpacing: 0.5,
   },
   subtitle: {
-    marginTop: 8,
+    marginTop: SPACING.md,
     fontSize: 16,
-    color: "#64748B",
+    color: COLORS.textLight,
     lineHeight: 24,
   },
   userName: {
-    color: "#38BDF8",
+    color: COLORS.primary,
     fontWeight: "700",
   },
   menuContainer: {
-    paddingBottom: 4,
+    paddingBottom: SPACING.sm,
   },
   glassCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#EAF3FF",
-    borderRadius: 24,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 15,
-    marginBottom: 16,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.xl,
+    ...SHADOWS.md,
+    marginBottom: SPACING.lg,
   },
   iconCircle: {
     width: 50,
     height: 50,
-    borderRadius: 15,
-    backgroundColor: "rgba(56, 189, 248, 0.15)",
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: COLORS.primary,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 16,
+    marginRight: SPACING.lg,
   },
   cardIcon: {
     fontSize: 24,
@@ -231,44 +227,43 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#0F172A",
+    color: COLORS.dark,
   },
   cardText: {
-    marginTop: 4,
+    marginTop: SPACING.sm,
     fontSize: 13,
-    color: "#64748B",
+    color: COLORS.textLight,
   },
   arrowIcon: {
     fontSize: 24,
-    color: "#94A3B8",
-    marginLeft: 10,
+    color: COLORS.textMuted,
+    marginLeft: SPACING.md,
   },
   badge: {
     minWidth: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: "#38BDF8",
+    backgroundColor: COLORS.accent,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 6,
-    marginRight: 8
+    paddingHorizontal: SPACING.sm,
+    marginRight: SPACING.md
   },
   badgeText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontSize: 12,
     fontWeight: "700"
   },
   infoBox: {
-    marginTop: 30,
-    padding: 15,
-    backgroundColor: "#EAF3FF",
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+    marginTop: SPACING.xxxl,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.accent,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: "center",
+    ...SHADOWS.sm,
   },
   infoText: {
-    color: "#38BDF8",
+    color: COLORS.white,
     fontSize: 12,
     fontWeight: "600",
   },

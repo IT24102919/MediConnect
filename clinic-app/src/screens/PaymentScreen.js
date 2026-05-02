@@ -10,6 +10,7 @@ import {
   TextInput
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import axiosInstance from '../api/axios';
 
 export default function PaymentScreen({ route, navigation }) {
@@ -248,88 +249,92 @@ export default function PaymentScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#F8FAFC',
-    padding: 16
+    backgroundColor: COLORS.background,
+    padding: SPACING.lg
   },
   heading: {
-    color: '#0F172A',
+    color: COLORS.dark,
     fontWeight: '700',
-    marginBottom: 16
+    marginBottom: SPACING.lg,
+    fontSize: 20,
   },
   card: {
-    backgroundColor: '#EAF3FF',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 18
+    backgroundColor: COLORS.white,
+    borderWidth: 0,
+    borderColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.md,
   },
   label: {
-    color: '#64748B',
+    color: COLORS.textLight,
     fontSize: 12,
-    marginTop: 10
+    marginTop: SPACING.md,
+    fontWeight: '600',
   },
   value: {
-    color: '#0F172A',
+    color: COLORS.dark,
     fontSize: 16,
     fontWeight: '600',
-    marginTop: 2
+    marginTop: SPACING.sm,
   },
   amount: {
-    color: '#38BDF8',
+    color: COLORS.accent,
     fontSize: 20,
     fontWeight: '700',
-    marginTop: 4
+    marginTop: SPACING.md,
   },
   sectionHeading: {
-    color: '#0F172A',
+    color: COLORS.dark,
     fontSize: 16,
     fontWeight: '700',
-    marginTop: 16,
-    marginBottom: 2
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.sm,
   },
   input: {
-    marginTop: 6,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    color: '#0F172A',
-    fontSize: 15
+    marginTop: SPACING.sm,
+    backgroundColor: COLORS.background,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    color: COLORS.dark,
+    fontSize: 15,
   },
   row: {
     flexDirection: 'row',
-    gap: 10
+    gap: SPACING.md,
   },
   halfField: {
-    flex: 1
+    flex: 1,
   },
   status: {
-    marginTop: 4,
+    marginTop: SPACING.sm,
     fontSize: 16,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   pending: {
-    color: '#38BDF8'
+    color: COLORS.warning,
   },
   paid: {
-    color: '#22C55E'
+    color: COLORS.success,
   },
   button: {
-    backgroundColor: '#2563EB',
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center'
+    backgroundColor: COLORS.accent,
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.lg,
+    alignItems: 'center',
+    ...SHADOWS.lg,
   },
   buttonDisabled: {
-    opacity: 0.6
+    opacity: 0.6,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: COLORS.white,
     fontSize: 16,
-    fontWeight: '700'
+    fontWeight: '700',
   }
 });
 

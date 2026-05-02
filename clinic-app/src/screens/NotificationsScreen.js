@@ -8,6 +8,7 @@ import {
   View
 } from 'react-native';
 import { NotificationContext } from '../context/NotificationContext';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -69,8 +70,8 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
-    padding: 16
+    backgroundColor: COLORS.background,
+    padding: SPACING.lg
   },
   loaderWrap: {
     flex: 1,
@@ -78,51 +79,55 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   listContent: {
-    paddingBottom: 24
+    paddingBottom: SPACING.xxxl
   },
   markAllButton: {
     alignSelf: 'flex-end',
-    backgroundColor: 'rgba(56, 189, 248, 0.15)',
-    borderWidth: 1,
-    borderColor: '#38BDF8',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-    marginBottom: 12
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.md,
+    ...SHADOWS.sm,
   },
   markAllText: {
-    color: '#38BDF8',
+    color: COLORS.primary,
     fontWeight: '700'
   },
   card: {
-    backgroundColor: '#EAF3FF',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 14,
-    marginBottom: 10
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
+    ...SHADOWS.sm,
   },
   unreadCard: {
-    borderColor: '#38BDF8'
+    borderColor: COLORS.accent,
+    backgroundColor: COLORS.background,
   },
   title: {
-    color: '#0F172A',
+    color: COLORS.dark,
     fontSize: 15,
     fontWeight: '700'
   },
   message: {
-    color: '#334155',
-    marginTop: 6
+    color: COLORS.textLight,
+    marginTop: SPACING.md
   },
   date: {
-    color: '#64748B',
+    color: COLORS.text,
     fontSize: 12,
-    marginTop: 10
+    marginTop: SPACING.md,
+    opacity: 0.7,
   },
   empty: {
-    color: '#64748B',
+    color: COLORS.textLight,
     textAlign: 'center',
-    marginTop: 32
+    marginTop: SPACING.xxxl
   }
 });
 

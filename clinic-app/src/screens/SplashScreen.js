@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View, LinearGradient } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import { COLORS } from '../../constants/theme';
 
 export default function SplashScreen({ navigation }) {
   const { loading, isAuthenticated, user } = useContext(AuthContext);
@@ -24,11 +25,15 @@ export default function SplashScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../assets/splash.png')}
-        style={styles.image}
-        resizeMode="contain"
-      />
+      <View style={styles.gradientContainer}>
+        <View style={styles.gradientContent}>
+          <Image
+            source={require('../assets/splash.png')}
+            style={styles.image}
+            resizeMode="contain"
+          />
+        </View>
+      </View>
     </View>
   );
 }
@@ -36,9 +41,22 @@ export default function SplashScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2B50D9',
+    backgroundColor: COLORS.background,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  gradientContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.15
+  },
+  gradientContent: {
+    flex: 1,
+    backgroundColor: COLORS.primary,
+    transform: [{ scaleX: 2 }, { scaleY: 1.5 }]
   },
   image: {
     width: 240,

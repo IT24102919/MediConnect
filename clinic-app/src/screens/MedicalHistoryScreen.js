@@ -10,6 +10,7 @@ import {
   Image
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import axiosInstance from '../api/axios';
 
 export default function MedicalHistoryScreen() {
@@ -171,92 +172,96 @@ export default function MedicalHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: COLORS.background
   },
   content: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    paddingBottom: 30
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.xl,
+    paddingBottom: SPACING.xxxl
   },
   center: {
     justifyContent: 'center',
     alignItems: 'center'
   },
   loadingText: {
-    marginTop: 10,
-    color: '#38BDF8',
+    marginTop: SPACING.md,
+    color: COLORS.primary,
     fontWeight: '600'
   },
   title: {
-    color: '#0F172A',
+    color: COLORS.dark,
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 6
+    marginBottom: SPACING.sm
   },
   subtitle: {
-    color: '#64748B',
-    marginBottom: 18
+    color: COLORS.textLight,
+    marginBottom: SPACING.xl
   },
   pickButton: {
-    backgroundColor: '#E0F2FE',
-    borderWidth: 1,
-    borderColor: '#38BDF8',
-    borderRadius: 12,
+    backgroundColor: COLORS.secondary,
+    borderWidth: 2,
+    borderColor: COLORS.secondary,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
-    paddingVertical: 14
+    paddingVertical: SPACING.lg,
+    ...SHADOWS.sm,
   },
   pickButtonText: {
-    color: '#0369A1',
+    color: COLORS.dark,
     fontWeight: '700'
   },
   previewWrap: {
-    marginTop: 16,
-    borderRadius: 12,
+    marginTop: SPACING.lg,
+    borderRadius: BORDER_RADIUS.md,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#CBD5E1'
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    ...SHADOWS.md,
   },
   previewImage: {
     width: '100%',
     height: 280,
-    backgroundColor: '#E2E8F0'
+    backgroundColor: COLORS.background
   },
   emptyPreview: {
-    marginTop: 16,
+    marginTop: SPACING.lg,
     height: 180,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF'
+    backgroundColor: COLORS.white
   },
   emptyPreviewText: {
-    color: '#94A3B8',
+    color: COLORS.textLight,
     fontWeight: '600'
   },
   saveButton: {
-    marginTop: 20,
-    backgroundColor: '#38BDF8',
-    borderRadius: 12,
+    marginTop: SPACING.xl,
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
-    paddingVertical: 14
+    paddingVertical: SPACING.lg,
+    ...SHADOWS.lg,
   },
   saveButtonText: {
-    color: '#FFFFFF',
+    color: COLORS.white,
     fontWeight: '800'
   },
   deleteButton: {
-    marginTop: 12,
-    borderRadius: 12,
+    marginTop: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
-    paddingVertical: 14,
-    borderWidth: 1,
-    borderColor: '#FCA5A5',
-    backgroundColor: 'rgba(220, 38, 38, 0.12)'
+    paddingVertical: SPACING.lg,
+    borderWidth: 2,
+    borderColor: COLORS.error,
+    backgroundColor: COLORS.white
   },
   deleteButtonText: {
-    color: '#FCA5A5',
+    color: COLORS.error,
     fontWeight: '800'
   },
   buttonDisabled: {

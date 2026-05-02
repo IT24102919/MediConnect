@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 
 export default function AppointmentCard({ appointment, onCancel, onDelete, onEdit, onStatusPress }) {
   // Format date
@@ -17,15 +18,15 @@ export default function AppointmentCard({ appointment, onCancel, onDelete, onEdi
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'pending':
-        return '#38BDF8';
+        return COLORS.warning;
       case 'confirmed':
-        return '#1D4ED8';
+        return COLORS.primary;
       case 'completed':
-        return '#38BDF8';
+        return COLORS.success;
       case 'cancelled':
-        return '#1D4ED8';
+        return COLORS.error;
       default:
-        return '#1D4ED8';
+        return COLORS.primary;
     }
   };
 
@@ -115,40 +116,36 @@ export default function AppointmentCard({ appointment, onCancel, onDelete, onEdi
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#EAF3FF',
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 12,
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
+    marginBottom: SPACING.md,
+    marginTop: SPACING.md,
+    borderWidth: 0,
+    borderColor: COLORS.primary,
+    ...SHADOWS.md,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   doctorName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0F172A',
+    color: COLORS.dark,
     flex: 1,
   },
   statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
-    marginLeft: 8,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.full,
+    marginLeft: SPACING.md,
   },
   statusBadgeAction: {
-    borderWidth: 1,
-    borderColor: '#38BDF8',
+    borderWidth: 2,
+    borderColor: COLORS.primary,
   },
   status: {
     fontSize: 11,
@@ -156,92 +153,95 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   details: {
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   detailRow: {
     fontSize: 13,
-    color: '#64748B',
-    marginBottom: 6,
+    color: COLORS.textLight,
+    marginBottom: SPACING.md,
     fontWeight: '500',
   },
   detailText: {
-    color: '#38BDF8',
+    color: COLORS.primary,
     fontWeight: '600',
   },
   notesBox: {
-    backgroundColor: 'rgba(56, 189, 248, 0.1)',
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: '#38BDF8',
+    backgroundColor: COLORS.secondary,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.secondary,
   },
   notesLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#38BDF8',
-    marginBottom: 4,
+    color: COLORS.dark,
+    marginBottom: SPACING.sm,
   },
   notesText: {
     fontSize: 12,
-    color: '#475569',
+    color: COLORS.textLight,
   },
   symptomsBox: {
-    backgroundColor: 'rgba(29, 78, 216, 0.1)',
-    borderRadius: 10,
-    padding: 10,
-    borderLeftWidth: 3,
-    borderLeftColor: '#1D4ED8',
+    backgroundColor: COLORS.secondary,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.secondary,
   },
   symptomsLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#1D4ED8',
-    marginBottom: 4,
+    color: COLORS.dark,
+    marginBottom: SPACING.sm,
   },
   symptomsText: {
     fontSize: 12,
-    color: '#475569',
+    color: COLORS.textLight,
   },
   cancelButton: {
-    marginTop: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#1D4ED8',
-    backgroundColor: 'rgba(29, 78, 216, 0.14)',
-    paddingVertical: 10,
+    marginTop: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 2,
+    borderColor: COLORS.accent,
+    backgroundColor: COLORS.white,
+    paddingVertical: SPACING.md,
     alignItems: 'center',
+    ...SHADOWS.sm,
   },
   cancelButtonText: {
-    color: '#38BDF8',
+    color: COLORS.accent,
     fontWeight: '700',
     fontSize: 13,
   },
   editButton: {
-    marginTop: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#38BDF8',
-    backgroundColor: 'rgba(56, 189, 248, 0.14)',
-    paddingVertical: 10,
+    marginTop: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.white,
+    paddingVertical: SPACING.md,
     alignItems: 'center',
+    ...SHADOWS.sm,
   },
   editButtonText: {
-    color: '#BAE6FD',
+    color: COLORS.primary,
     fontWeight: '700',
     fontSize: 13,
   },
   deleteButton: {
-    marginTop: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#EF4444',
-    backgroundColor: 'rgba(239, 68, 68, 0.14)',
-    paddingVertical: 10,
+    marginTop: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 2,
+    borderColor: COLORS.error,
+    backgroundColor: COLORS.white,
+    paddingVertical: SPACING.md,
     alignItems: 'center',
+    ...SHADOWS.sm,
   },
   deleteButtonText: {
-    color: '#FCA5A5',
+    color: COLORS.error,
     fontWeight: '700',
     fontSize: 13,
   },
