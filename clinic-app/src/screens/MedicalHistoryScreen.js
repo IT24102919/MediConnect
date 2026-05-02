@@ -10,6 +10,7 @@ import {
   Image
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import axiosInstance from '../api/axios';
 
@@ -49,19 +50,27 @@ export default function MedicalHistoryScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: 0.5,
-        base64: true
+        quality: 0.5
       });
 
       if (!result.canceled && result.assets?.length) {
         const pickedImage = result.assets[0];
-        if (!pickedImage.base64) {
+        const resizedImage = await ImageManipulator.manipulateAsync(
+          pickedImage.uri,
+          [{ resize: { width: 1280 } }],
+          {
+            compress: 0.45,
+            format: ImageManipulator.SaveFormat.JPEG,
+            base64: true
+          }
+        );
+
+        if (!resizedImage.base64) {
           Alert.alert('Error', 'Failed to process selected image.');
           return;
         }
 
-        const mimeType = pickedImage.mimeType || 'image/jpeg';
-        setReportImageData(`data:${mimeType};base64,${pickedImage.base64}`);
+        setReportImageData(`data:image/jpeg;base64,${resizedImage.base64}`);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to pick image.');
