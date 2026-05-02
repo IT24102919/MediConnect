@@ -1,8 +1,13 @@
-require("dotenv").config({ path: require("path").resolve(__dirname, ".env") });
-
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+
+const envPath = process.env.ENV_FILE || path.resolve(__dirname, '.env');
+require('dotenv').config({ path: envPath });
+
+if (!process.env.MONGO_URI && process.env.MONGODB_URI) {
+  process.env.MONGO_URI = process.env.MONGODB_URI;
+}
 
 const connectDB = require('./src/config/db');
 const seedDoctors = require('./src/utils/seedDoctors');
