@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function AppointmentCard({ appointment, onCancel, onDelete }) {
+export default function AppointmentCard({ appointment, onCancel, onDelete, onEdit, onStatusPress }) {
   // Format date
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -36,16 +36,19 @@ export default function AppointmentCard({ appointment, onCancel, onDelete }) {
         <Text style={styles.doctorName} numberOfLines={1}>
           {appointment.doctorId?.name || 'Doctor'}
         </Text>
-        <View
+        <TouchableOpacity
           style={[
             styles.statusBadge,
+            onStatusPress && appointment.status?.toLowerCase() === 'pending' && styles.statusBadgeAction,
             { backgroundColor: getStatusColor(appointment.status) + '20' }
           ]}
+          onPress={onStatusPress}
+          disabled={!onStatusPress || appointment.status?.toLowerCase() !== 'pending'}
         >
           <Text style={[styles.status, { color: getStatusColor(appointment.status) }]}>
             {appointment.status || 'Pending'}
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* Appointment Details */}
@@ -95,6 +98,12 @@ export default function AppointmentCard({ appointment, onCancel, onDelete }) {
         </TouchableOpacity>
       )}
 
+      {onEdit && appointment.status !== 'Cancelled' && (
+        <TouchableOpacity style={styles.editButton} onPress={onEdit}>
+          <Text style={styles.editButtonText}>Edit Appointment</Text>
+        </TouchableOpacity>
+      )}
+
       {onDelete && (
         <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
           <Text style={styles.deleteButtonText}>Delete Record</Text>
@@ -136,6 +145,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 20,
     marginLeft: 8,
+  },
+  statusBadgeAction: {
+    borderWidth: 1,
+    borderColor: '#38BDF8',
   },
   status: {
     fontSize: 11,
@@ -201,6 +214,20 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: '#38BDF8',
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  editButton: {
+    marginTop: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#38BDF8',
+    backgroundColor: 'rgba(56, 189, 248, 0.14)',
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  editButtonText: {
+    color: '#BAE6FD',
     fontWeight: '700',
     fontSize: 13,
   },

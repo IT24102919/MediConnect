@@ -91,7 +91,33 @@ const upsertMedicalHistory = async (req, res) => {
   }
 };
 
+const deleteMedicalHistory = async (req, res) => {
+  try {
+    const patientId = req.params.patientId || req.user.id;
+
+    const deletedMedicalHistory = await MedicalHistory.findOneAndDelete({ patientId });
+
+    if (!deletedMedicalHistory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Medical history not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Medical history deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   getMedicalHistory,
-  upsertMedicalHistory
+  upsertMedicalHistory,
+  deleteMedicalHistory
 };

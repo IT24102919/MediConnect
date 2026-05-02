@@ -20,6 +20,7 @@ const parseCSV = (value) =>
 export default function MedicalHistoryScreen() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [form, setForm] = useState({
     bloodGroup: '',
     allergies: '',
@@ -87,6 +88,50 @@ export default function MedicalHistoryScreen() {
       Alert.alert('Error', error.response?.data?.message || 'Failed to save medical history.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = () => {
+    if (saving || deleting) return;
+
+    Alert.alert(
+      'Delete Medical History',
+      'Are you sure you want to delete your medical history? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: confirmDeleteMedicalHistory
+        }
+      ]
+    );
+  };
+
+  const confirmDeleteMedicalHistory = async () => {
+    try {
+      setDeleting(true);
+
+      const response = await axiosInstance.delete('/medical-history/me');
+
+      if (response.data.success) {
+        setForm({
+          bloodGroup: '',
+          allergies: '',
+          chronicConditions: '',
+          currentMedications: '',
+          surgeries: '',
+          familyHistory: '',
+          notes: ''
+        });
+        Alert.alert('Deleted', 'Medical history deleted successfully.');
+      } else {
+        Alert.alert('Error', response.data.message || 'Failed to delete medical history.');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to delete medical history.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -170,8 +215,16 @@ export default function MedicalHistoryScreen() {
           multiline
         />
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={saving}>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={saving || deleting}>
           <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Medical History'}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.deleteButton, (saving || deleting) && styles.buttonDisabled]}
+          onPress={handleDelete}
+          disabled={saving || deleting}
+        >
+          <Text style={styles.deleteButtonText}>{deleting ? 'Deleting...' : 'Delete Medical History'}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -237,6 +290,22 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#1D4ED8',
     fontWeight: '800'
+  },
+  deleteButton: {
+    marginTop: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+    backgroundColor: 'rgba(220, 38, 38, 0.12)'
+  },
+  deleteButtonText: {
+    color: '#FCA5A5',
+    fontWeight: '800'
+  },
+  buttonDisabled: {
+    opacity: 0.65
   }
 });
 

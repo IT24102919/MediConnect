@@ -7,8 +7,10 @@ import {
   ScrollView,
   StyleSheet,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { AppointmentContext } from '../context/AppointmentContext';
 import { AuthContext } from '../context/AuthContext';
 
@@ -21,6 +23,8 @@ export default function BookAppointmentScreen({ route, navigation }) {
 
   const [patientName, setPatientName] = useState(user?.name || '');
   const [appointmentDate, setAppointmentDate] = useState('');
+  const [dateValue, setDateValue] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [notes, setNotes] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
 
@@ -69,6 +73,23 @@ export default function BookAppointmentScreen({ route, navigation }) {
     }
   };
 
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleDateChange = (_event, selectedDate) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+
+    if (!selectedDate) return;
+    setDateValue(selectedDate);
+    setAppointmentDate(formatDate(selectedDate));
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Book Appointment with {doctor.name}</Text>
@@ -96,13 +117,32 @@ export default function BookAppointmentScreen({ route, navigation }) {
 
       {/* Appointment Date */}
       <Text style={styles.label}>Appointment Date (YYYY-MM-DD) *</Text>
-      <TextInput
+      <TouchableOpacity
         style={styles.input}
-        placeholder="2024-04-15"
-        placeholderTextColor="rgba(29, 78, 216, 0.45)"
-        value={appointmentDate}
-        onChangeText={setAppointmentDate}
-      />
+        onPress={() => setShowDatePicker(true)}
+        activeOpacity={0.85}
+      >
+        <Text style={appointmentDate ? styles.dateText : styles.datePlaceholder}>
+          {appointmentDate || 'Select date from calendar'}
+        </Text>
+      </TouchableOpacity>
+
+      {showDatePicker && (
+        <View style={styles.datePickerWrap}>
+          <DateTimePicker
+            value={dateValue}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            minimumDate={new Date()}
+            onChange={handleDateChange}
+          />
+          {Platform.OS === 'ios' && (
+            <TouchableOpacity style={styles.dateDoneButton} onPress={() => setShowDatePicker(false)}>
+              <Text style={styles.dateDoneText}>Done</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       {/* Time Slots */}
       <Text style={styles.label}>Select Time Slot *</Text>
@@ -256,6 +296,33 @@ const styles = StyleSheet.create({
   },
   timeTextActive: {
     color: '#FFFFFF',
+  },
+  dateText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+  },
+  datePlaceholder: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 15,
+  },
+  datePickerWrap: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  dateDoneButton: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.15)',
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  dateDoneText: {
+    color: '#38BDF8',
+    fontWeight: '700',
+    fontSize: 14,
   },
   button: {
     backgroundColor: '#38BDF8',

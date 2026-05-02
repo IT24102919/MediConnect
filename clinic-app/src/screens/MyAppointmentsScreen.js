@@ -6,16 +6,23 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
-  Alert
+  Alert,
+  TextInput,
+  TouchableOpacity
 } from 'react-native';
 import { AppointmentContext } from '../context/AppointmentContext';
 import { AuthContext } from '../context/AuthContext';
 import AppointmentCard from '../components/AppointmentCard';
 
-export default function MyAppointmentsScreen() {
+export default function MyAppointmentsScreen({ navigation }) {
   const { user } = useContext(AuthContext);
   const { appointments, loading, fetchAppointmentsByPatient, updateAppointment } = useContext(AppointmentContext);
   const [refreshing, setRefreshing] = useState(false);
+  const [editingAppointmentId, setEditingAppointmentId] = useState(null);
+  const [editDate, setEditDate] = useState('');
+  const [editTimeSlot, setEditTimeSlot] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [updating, setUpdating] = useState(false);
   const patientId = user?._id || user?.id;
 
   // Fetch appointments when component mounts
@@ -34,25 +41,19 @@ export default function MyAppointmentsScreen() {
     }
   };
 
-  const { upcomingAppointments, pastAppointments } = useMemo(() => {
+  const upcomingAppointments = useMemo(() => {
     const now = new Date();
     const upcoming = [];
-    const past = [];
 
     appointments.forEach((item) => {
       const appointmentDate = new Date(item.appointmentDate);
       const isUpcoming = appointmentDate >= now && item.status !== 'Cancelled';
       if (isUpcoming) {
         upcoming.push(item);
-      } else {
-        past.push(item);
       }
     });
 
-    return {
-      upcomingAppointments: upcoming,
-      pastAppointments: past
-    };
+    return upcoming;
   }, [appointments]);
 
   const handleCancelAppointment = (appointmentId) => {
@@ -73,12 +74,64 @@ export default function MyAppointmentsScreen() {
     ]);
   };
 
-  const listData = [
-    { type: 'header', title: 'Upcoming Appointments' },
-    ...upcomingAppointments.map((item) => ({ type: 'appointment', appointment: item, section: 'upcoming' })),
-    { type: 'header', title: 'Past & Cancelled Records' },
-    ...pastAppointments.map((item) => ({ type: 'appointment', appointment: item, section: 'history' }))
-  ];
+  const handlePendingStatusPress = (appointment) => {
+    if (appointment?.status?.toLowerCase() !== 'pending') return;
+
+    navigation.navigate('Payment', {
+      appointment,
+      doctor: appointment?.doctorId || {}
+    });
+  };
+
+  const startEditingAppointment = (appointment) => {
+    const normalizedDate = appointment?.appointmentDate
+      ? new Date(appointment.appointmentDate).toISOString().split('T')[0]
+      : '';
+    setEditingAppointmentId(appointment._id);
+    setEditDate(normalizedDate);
+    setEditTimeSlot(appointment?.timeSlot || '');
+    setEditNotes(appointment?.notes || '');
+  };
+
+  const cancelEditingAppointment = () => {
+    setEditingAppointmentId(null);
+    setEditDate('');
+    setEditTimeSlot('');
+    setEditNotes('');
+  };
+
+  const handleUpdateAppointment = async () => {
+    if (!editingAppointmentId) return;
+    if (!editDate.trim() || !editTimeSlot.trim()) {
+      Alert.alert('Missing Info', 'Please provide date and time.');
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      const result = await updateAppointment(editingAppointmentId, {
+        appointmentDate: editDate.trim(),
+        timeSlot: editTimeSlot.trim(),
+        notes: editNotes.trim()
+      });
+
+      if (result.success) {
+        Alert.alert('Updated', 'Appointment updated successfully.');
+        cancelEditingAppointment();
+      } else {
+        Alert.alert('Error', result.message || 'Could not update appointment.');
+      }
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const listData = upcomingAppointments.length
+    ? [
+      { type: 'header', title: 'Upcoming Appointments' },
+      ...upcomingAppointments.map((item) => ({ type: 'appointment', appointment: item, section: 'upcoming' }))
+    ]
+    : [];
 
   // Show loading state
   if (loading && appointments.length === 0) {
@@ -115,14 +168,67 @@ export default function MyAppointmentsScreen() {
           }
 
           return (
-            <AppointmentCard
-              appointment={item.appointment}
-              onCancel={
-                item.section === 'upcoming'
-                  ? () => handleCancelAppointment(item.appointment._id)
-                  : null
-              }
-            />
+            <View>
+              <AppointmentCard
+                appointment={item.appointment}
+                onCancel={
+                  item.section === 'upcoming'
+                    ? () => handleCancelAppointment(item.appointment._id)
+                    : null
+                }
+                onEdit={
+                  item.section === 'upcoming'
+                    ? () => startEditingAppointment(item.appointment)
+                    : null
+                }
+                onStatusPress={
+                  item.section === 'upcoming'
+                    ? () => handlePendingStatusPress(item.appointment)
+                    : null
+                }
+              />
+              {editingAppointmentId === item.appointment._id && (
+                <View style={styles.editPanel}>
+                  <Text style={styles.editTitle}>Edit Appointment</Text>
+                  <TextInput
+                    style={styles.editInput}
+                    placeholder="Date (YYYY-MM-DD)"
+                    placeholderTextColor="rgba(255,255,255,0.4)"
+                    value={editDate}
+                    onChangeText={setEditDate}
+                  />
+                  <TextInput
+                    style={styles.editInput}
+                    placeholder="Time slot (e.g. 10:00 AM)"
+                    placeholderTextColor="rgba(255,255,255,0.4)"
+                    value={editTimeSlot}
+                    onChangeText={setEditTimeSlot}
+                  />
+                  <TextInput
+                    style={[styles.editInput, styles.editNotesInput]}
+                    placeholder="Notes (optional)"
+                    placeholderTextColor="rgba(255,255,255,0.4)"
+                    value={editNotes}
+                    onChangeText={setEditNotes}
+                    multiline
+                  />
+                  <TouchableOpacity
+                    style={[styles.updateButton, updating && styles.disabledButton]}
+                    onPress={handleUpdateAppointment}
+                    disabled={updating}
+                  >
+                    <Text style={styles.updateButtonText}>{updating ? 'Updating...' : 'Save Changes'}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.closeEditButton}
+                    onPress={cancelEditingAppointment}
+                    disabled={updating}
+                  >
+                    <Text style={styles.closeEditButtonText}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           );
         }}
         showsVerticalScrollIndicator={false}
@@ -175,6 +281,60 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 18,
     marginBottom: 4,
+  },
+  editPanel: {
+    marginTop: -2,
+    marginBottom: 12,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 12,
+    padding: 12,
+  },
+  editTitle: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    marginBottom: 10,
+  },
+  editInput: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderRadius: 10,
+    color: '#FFFFFF',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    marginBottom: 8,
+  },
+  editNotesInput: {
+    minHeight: 72,
+    textAlignVertical: 'top',
+  },
+  updateButton: {
+    backgroundColor: '#38BDF8',
+    borderRadius: 10,
+    paddingVertical: 11,
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  updateButtonText: {
+    color: '#1D4ED8',
+    fontWeight: '700',
+  },
+  closeEditButton: {
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  closeEditButtonText: {
+    color: 'rgba(255,255,255,0.75)',
+    fontWeight: '600',
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
 });
 
