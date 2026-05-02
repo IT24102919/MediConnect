@@ -59,7 +59,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MyAppointments")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}>
               <Text style={styles.cardIcon}>📅</Text>
             </View>
             <View style={styles.cardContent}>
@@ -74,7 +74,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MedicalHistory")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.18)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.18)' }]}> 
               <Text style={styles.cardIcon}>🩺</Text>
             </View>
             <View style={styles.cardContent}>
@@ -89,7 +89,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("AppointmentRecords")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}> 
               <Text style={styles.cardIcon}>📁</Text>
             </View>
             <View style={styles.cardContent}>
@@ -104,7 +104,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("Notifications")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}> 
               <Text style={styles.cardIcon}>N</Text>
             </View>
             <View style={styles.cardContent}>
@@ -151,7 +151,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#1D4ED8", 
+    backgroundColor: "#2B50D9", 
   },
   circle1: {
     position: 'absolute',
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     opacity: 0.2,
   },
   contentContainer: {
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.15)",
-    shadowColor: "#1D4ED8",
+    shadowColor: "#2B50D9",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 15,
@@ -261,10 +261,10 @@ const styles = StyleSheet.create({
   infoBox: {
     marginTop: 30,
     padding: 15,
-    backgroundColor: "rgba(29, 78, 216, 0.12)",
+    backgroundColor: "rgba(56, 189, 248, 0.12)",
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "rgba(29, 78, 216, 0.22)",
+    borderColor: "rgba(56, 189, 248, 0.22)",
     alignItems: "center",
   },
   infoText: {
@@ -273,6 +273,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+
 
 
 

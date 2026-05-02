@@ -97,7 +97,7 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     paddingHorizontal: 16,
     paddingTop: 20,
   },
@@ -192,9 +192,9 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.4)',
   },
   logoutButton: {
-    backgroundColor: 'rgba(29, 78, 216, 0.15)',
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
     borderWidth: 1,
-    borderColor: '#1D4ED8',
+    borderColor: '#2B50D9',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
@@ -202,11 +202,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoutText: {
-    color: '#1D4ED8',
+    color: '#38BDF8',
     fontWeight: '700',
     fontSize: 16,
   },
 });
+
+
 
 
 

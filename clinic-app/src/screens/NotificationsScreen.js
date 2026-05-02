@@ -69,7 +69,7 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     padding: 16
   },
   loaderWrap: {
@@ -125,6 +125,8 @@ const styles = StyleSheet.create({
     marginTop: 32
   }
 });
+
+
 
 
 

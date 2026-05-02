@@ -190,7 +190,7 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#1D4ED8", 
+    backgroundColor: "#2B50D9", 
     justifyContent: "center",
   },
   circle1: {
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     opacity: 0.3,
   },
   contentContainer: {
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     padding: 25,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.2)",
-    shadowColor: "#1D4ED8",
+    shadowColor: "#2B50D9",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
     shadowRadius: 20,
@@ -307,6 +307,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
+
+
 
 
 

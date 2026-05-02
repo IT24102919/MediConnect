@@ -15,6 +15,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import MedicalHistoryScreen from '../screens/MedicalHistoryScreen';
 import AppointmentRecordsScreen from '../screens/AppointmentRecordsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import DoctorDashboardScreen from '../screens/DoctorDashboardScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,11 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="DoctorDashboard"
+          component={DoctorDashboardScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

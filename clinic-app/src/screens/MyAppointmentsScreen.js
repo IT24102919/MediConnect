@@ -246,7 +246,7 @@ export default function MyAppointmentsScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     paddingHorizontal: 16,
   },
   centerContent: {
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   updateButtonText: {
-    color: '#1D4ED8',
+    color: '#FFFFFF',
     fontWeight: '700',
   },
   closeEditButton: {
@@ -337,6 +337,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 });
+
+
 
 
 

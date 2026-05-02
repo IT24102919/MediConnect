@@ -248,12 +248,12 @@ export default function PaymentScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     padding: 16
   },
   heading: {
     color: '#FFFFFF',
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     fontWeight: '700',
     marginBottom: 16
   },
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     color: '#38BDF8'
   },
   paid: {
-    color: '#1D4ED8'
+    color: '#22C55E'
   },
   button: {
     backgroundColor: '#38BDF8',
@@ -333,6 +333,8 @@ const styles = StyleSheet.create({
     fontWeight: '700'
   }
 });
+
+
 
 
 
