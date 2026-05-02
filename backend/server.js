@@ -17,6 +17,8 @@ const uploadRoutes = require('./src/routes/uploadRoutes');
 const medicalHistoryRoutes = require('./src/routes/medicalHistoryRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
 
+const { processDueReminders, MINUTE_MS } = require('./src/services/reminderService');
+
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 
 const app = express();
@@ -83,6 +85,18 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
+
+    await processDueReminders();
+    setInterval(async () => {
+      try {
+        const deliveredCount = await processDueReminders();
+        if (deliveredCount > 0) {
+          console.log(`Delivered ${deliveredCount} due reminder(s).`);
+        }
+      } catch (reminderError) {
+        console.error('Reminder processing failed:', reminderError.message);
+      }
+    }, MINUTE_MS);
   } catch (error) {
     console.error('Server startup error:', error.message);
     process.exit(1);

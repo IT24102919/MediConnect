@@ -1,27 +1,15 @@
 const Appointment = require('../models/Appointment');
 const Doctor = require('../models/Doctor');
-const Notification = require('../models/Notification');
+const {
+  createInstantNotification,
+  createAppointmentReminders,
+  clearAppointmentReminders
+} = require('../services/reminderService');
 
 const isValidDateInput = (value) => {
   if (!value) return false;
   const parsed = new Date(value);
   return !Number.isNaN(parsed.getTime());
-};
-
-const createNotificationForPatient = async ({
-  userId,
-  title,
-  message,
-  type = 'general',
-  data = {}
-}) => {
-  await Notification.create({
-    userId,
-    title,
-    message,
-    type,
-    data
-  });
 };
 
 // Create appointment
@@ -74,16 +62,18 @@ const createAppointment = async (req, res) => {
 
     await appointment.save();
 
-    await createNotificationForPatient({
+    await createInstantNotification({
       userId: patientId,
       title: 'Appointment Booked',
       message: `Your appointment is booked for ${new Date(appointmentDate).toDateString()} at ${timeSlot}.`,
       type: 'appointment_created',
+      appointmentId: appointment._id,
       data: {
         appointmentId: appointment._id,
         doctorId
       }
     });
+    await createAppointmentReminders(appointment);
 
     // Populate doctor details
     await appointment.populate('doctorId', 'name specialization hospital fee');
@@ -251,27 +241,31 @@ const updateAppointment = async (req, res) => {
     await appointment.save();
 
     if (status === 'Cancelled') {
-      await createNotificationForPatient({
+      await clearAppointmentReminders(appointment._id);
+      await createInstantNotification({
         userId: appointment.patientId,
         title: 'Appointment Cancelled',
         message: 'Your appointment has been cancelled.',
         type: 'appointment_cancelled',
+        appointmentId: appointment._id,
         data: {
           appointmentId: appointment._id,
           doctorId: appointment.doctorId
         }
       });
     } else if (appointmentDate || timeSlot || status) {
-      await createNotificationForPatient({
+      await createInstantNotification({
         userId: appointment.patientId,
         title: 'Appointment Updated',
         message: 'Your appointment details were updated.',
         type: 'appointment_updated',
+        appointmentId: appointment._id,
         data: {
           appointmentId: appointment._id,
           doctorId: appointment.doctorId
         }
       });
+      await createAppointmentReminders(appointment);
     }
 
     res.status(200).json({
@@ -298,6 +292,8 @@ const deleteAppointment = async (req, res) => {
         message: 'Appointment not found'
       });
     }
+
+    await clearAppointmentReminders(appointment._id);
 
     res.status(200).json({
       success: true,

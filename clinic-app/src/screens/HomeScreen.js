@@ -1,21 +1,22 @@
 import React, { useContext, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/NotificationContext";
 
-const { width } = Dimensions.get("window");
-
 export default function HomeScreen({ navigation }) {
   const { user } = useContext(AuthContext);
-  const { unreadCount, fetchUnreadCount } = useContext(NotificationContext);
+  const { unreadCount, fetchUnreadCount, upcomingReminders, fetchUpcomingReminders } =
+    useContext(NotificationContext);
 
   useEffect(() => {
     fetchUnreadCount();
+    fetchUpcomingReminders();
     const unsubscribe = navigation.addListener("focus", () => {
       fetchUnreadCount();
+      fetchUpcomingReminders();
     });
     return unsubscribe;
-  }, [navigation, fetchUnreadCount]);
+  }, [navigation, fetchUnreadCount, fetchUpcomingReminders]);
 
   return (
     <View style={styles.mainContainer}>
@@ -38,7 +39,7 @@ export default function HomeScreen({ navigation }) {
 
         {/* Options Grid/List */}
         <View style={styles.menuContainer}>
-          
+
           {/* Card 1: View Doctors */}
           <TouchableOpacity
             style={styles.glassCard}
@@ -99,13 +100,13 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.arrowIcon}>›</Text>
           </TouchableOpacity>
 
-          {/* Card 6: Notifications */}
+          {/* Card 5: Notifications */}
           <TouchableOpacity
             style={styles.glassCard}
             onPress={() => navigation.navigate("Notifications")}
           >
             <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
-              <Text style={styles.cardIcon}>N</Text>
+              <Text style={styles.cardIcon}>🔔</Text>
             </View>
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>Notifications</Text>
@@ -116,7 +117,27 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.badgeText}>{unreadCount}</Text>
               </View>
             ) : null}
-            <Text style={styles.arrowIcon}>â€º</Text>
+            <Text style={styles.arrowIcon}>›</Text>
+          </TouchableOpacity>
+
+          {/* Card 6: Reminders */}
+          <TouchableOpacity
+            style={styles.glassCard}
+            onPress={() => navigation.navigate("Reminders")}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
+              <Text style={styles.cardIcon}>⏰</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Reminders</Text>
+              <Text style={styles.cardText}>See upcoming appointment reminders</Text>
+            </View>
+            {upcomingReminders.length > 0 ? (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{upcomingReminders.length}</Text>
+              </View>
+            ) : null}
+            <Text style={styles.arrowIcon}>›</Text>
           </TouchableOpacity>
 
         </View>

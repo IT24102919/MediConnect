@@ -15,6 +15,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import MedicalHistoryScreen from '../screens/MedicalHistoryScreen';
 import AppointmentRecordsScreen from '../screens/AppointmentRecordsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import RemindersScreen from '../screens/RemindersScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -118,6 +119,14 @@ export default function AppNavigator() {
           options={{
             ...appHeaderOptions,
             title: 'Notifications'
+          }}
+        />
+        <Stack.Screen
+          name="Reminders"
+          component={RemindersScreen}
+          options={{
+            ...appHeaderOptions,
+            title: 'Reminders'
           }}
         />
       </Stack.Navigator>

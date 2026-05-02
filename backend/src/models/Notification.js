@@ -20,8 +20,36 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['appointment_created', 'appointment_updated', 'appointment_cancelled', 'general'],
+      enum: [
+        'appointment_created',
+        'appointment_updated',
+        'appointment_cancelled',
+        'appointment_reminder_24h',
+        'appointment_reminder_1h',
+        'general'
+      ],
       default: 'general'
+    },
+    appointmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Appointment',
+      default: null
+    },
+    isReminder: {
+      type: Boolean,
+      default: false
+    },
+    reminderAt: {
+      type: Date,
+      default: null
+    },
+    delivered: {
+      type: Boolean,
+      default: true
+    },
+    deliveredAt: {
+      type: Date,
+      default: null
     },
     read: {
       type: Boolean,
@@ -34,5 +62,8 @@ const notificationSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+notificationSchema.index({ userId: 1, delivered: 1, reminderAt: 1 });
+notificationSchema.index({ appointmentId: 1, isReminder: 1 });
 
 module.exports = mongoose.model('Notification', notificationSchema);
