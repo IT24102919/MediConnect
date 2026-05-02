@@ -36,7 +36,8 @@ const getMedicalHistory = async (req, res) => {
           currentMedications: [],
           surgeries: [],
           familyHistory: '',
-          notes: ''
+          notes: '',
+          reportImageData: ''
         }
       });
     }
@@ -64,7 +65,8 @@ const upsertMedicalHistory = async (req, res) => {
       currentMedications: normalizeStringArray(req.body.currentMedications),
       surgeries: normalizeStringArray(req.body.surgeries),
       familyHistory: (req.body.familyHistory || '').trim(),
-      notes: (req.body.notes || '').trim()
+      notes: (req.body.notes || '').trim(),
+      reportImageData: (req.body.reportImageData || '').trim()
     };
 
     const medicalHistory = await MedicalHistory.findOneAndUpdate(

@@ -110,7 +110,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Enter your name"
-        placeholderTextColor="rgba(29, 78, 216, 0.45)"
+        placeholderTextColor="rgba(56, 189, 248, 0.45)"
         value={patientName}
         onChangeText={setPatientName}
       />
@@ -173,7 +173,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={[styles.input, styles.textArea]}
         placeholder="Any additional information..."
-        placeholderTextColor="rgba(29, 78, 216, 0.45)"
+        placeholderTextColor="rgba(56, 189, 248, 0.45)"
         value={notes}
         onChangeText={setNotes}
         multiline
@@ -198,7 +198,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     padding: 16,
     paddingBottom: 24,
   },
@@ -345,6 +345,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+
 
 
 

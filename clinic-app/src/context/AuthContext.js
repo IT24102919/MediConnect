@@ -177,7 +177,8 @@ export function AuthProvider({ children }) {
 
         return {
           success: true,
-          message: 'Registration successful!'
+          message: 'Registration successful!',
+          user
         };
       }
 
@@ -231,7 +232,8 @@ export function AuthProvider({ children }) {
 
         return {
           success: true,
-          message: 'Login successful!'
+          message: 'Login successful!',
+          user
         };
       }
 

@@ -16,10 +16,10 @@ import ProfileScreen from '../screens/ProfileScreen';
 import MedicalHistoryScreen from '../screens/MedicalHistoryScreen';
 import AppointmentRecordsScreen from '../screens/AppointmentRecordsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import DoctorDashboardScreen from '../screens/DoctorDashboardScreen';
 
 // Doctor Screens
 import CompleteDoctorProfileScreen from '../screens/CompleteDoctorProfileScreen';
-import DoctorDashboardScreen from '../screens/DoctorDashboardScreen';
 import { AuthContext } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();

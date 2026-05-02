@@ -59,7 +59,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MyAppointments")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}>
               <Text style={styles.cardIcon}>📅</Text>
             </View>
             <View style={styles.cardContent}>
@@ -74,7 +74,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MedicalHistory")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.18)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.18)' }]}> 
               <Text style={styles.cardIcon}>🩺</Text>
             </View>
             <View style={styles.cardContent}>
@@ -89,7 +89,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("AppointmentRecords")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}> 
               <Text style={styles.cardIcon}>📁</Text>
             </View>
             <View style={styles.cardContent}>
@@ -104,7 +104,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("Notifications")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}> 
               <Text style={styles.cardIcon}>N</Text>
             </View>
             <View style={styles.cardContent}>
@@ -151,7 +151,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#1D4ED8", 
+    backgroundColor: "#F8FAFC", 
   },
   circle1: {
     position: 'absolute',
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#38BDF8',
+    backgroundColor: '#DBEAFE',
     opacity: 0.3,
   },
   circle2: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#E2E8F0',
     opacity: 0.2,
   },
   contentContainer: {
@@ -183,13 +183,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: "#0F172A",
     letterSpacing: 0.5,
   },
   subtitle: {
     marginTop: 8,
     fontSize: 16,
-    color: "rgba(255, 255, 255, 0.6)",
+    color: "#64748B",
     lineHeight: 24,
   },
   userName: {
@@ -202,12 +202,12 @@ const styles = StyleSheet.create({
   glassCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    backgroundColor: "#EAF3FF",
     borderRadius: 24,
     padding: 20,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
-    shadowColor: "#1D4ED8",
+    borderColor: "#E2E8F0",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 15,
@@ -231,16 +231,16 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: "#0F172A",
   },
   cardText: {
     marginTop: 4,
     fontSize: 13,
-    color: "rgba(255, 255, 255, 0.5)",
+    color: "#64748B",
   },
   arrowIcon: {
     fontSize: 24,
-    color: "rgba(255, 255, 255, 0.3)",
+    color: "#94A3B8",
     marginLeft: 10,
   },
   badge: {
@@ -261,10 +261,10 @@ const styles = StyleSheet.create({
   infoBox: {
     marginTop: 30,
     padding: 15,
-    backgroundColor: "rgba(29, 78, 216, 0.12)",
+    backgroundColor: "#EAF3FF",
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "rgba(29, 78, 216, 0.22)",
+    borderColor: "#E2E8F0",
     alignItems: "center",
   },
   infoText: {
@@ -273,6 +273,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+
+
+
 
 
 

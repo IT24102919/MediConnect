@@ -115,15 +115,15 @@ export default function AppointmentCard({ appointment, onCancel, onDelete, onEdi
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#EAF3FF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
     marginTop: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    shadowColor: '#1D4ED8',
-    shadowOpacity: 0.2,
+    borderColor: '#E2E8F0',
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.08,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   doctorName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#0F172A',
     flex: 1,
   },
   statusBadge: {
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   },
   detailRow: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#64748B',
     marginBottom: 6,
     fontWeight: '500',
   },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   notesText: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#475569',
   },
   symptomsBox: {
     backgroundColor: 'rgba(29, 78, 216, 0.1)',
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   },
   symptomsText: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#475569',
   },
   cancelButton: {
     marginTop: 12,

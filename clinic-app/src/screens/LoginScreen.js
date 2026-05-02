@@ -52,7 +52,8 @@ export default function LoginScreen({ navigation }) {
       } else {
         console.log("✅ LOGIN SUCCESS:", result.message);
         Alert.alert("Success", result.message);
-        navigation.replace("Home");
+        const userRole = String(result?.user?.role || "").toLowerCase();
+        navigation.replace(userRole === "doctor" ? "DoctorDashboard" : "Home");
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";
@@ -199,11 +200,11 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#1D4ED8",
+    backgroundColor: "#2B50D9",
   },
   backgroundGradient: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#1D4ED8",
+    backgroundColor: "#2B50D9",
   },
   // Floating animated blobs
   blob: {
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
     left: -80,
     width: 200,
     height: 200,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#2B50D9',
     opacity: 0.1,
   },
   blob3: {
@@ -241,12 +242,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   glassCard: {
-    backgroundColor: "rgba(29, 78, 216, 0.7)",
+    backgroundColor: "rgba(56, 189, 248, 0.7)",
     borderRadius: 28,
     padding: 28,
     borderWidth: 1.5,
     borderColor: "rgba(255, 255, 255, 0.15)",
-    shadowColor: "#1D4ED8",
+    shadowColor: "#2B50D9",
     shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.4,
     shadowRadius: 30,
@@ -408,7 +409,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1.5,
     borderColor: "rgba(255, 255, 255, 0.1)",
-    shadowColor: "#1D4ED8",
+    shadowColor: "#2B50D9",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -439,6 +440,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 });
+
+
 
 
 

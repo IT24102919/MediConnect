@@ -77,7 +77,7 @@ export default function DoctorDetailsScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#1D4ED8", 
+    backgroundColor: "#2B50D9", 
   },
   circle1: {
     position: 'absolute',
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#38BDF8',
     opacity: 0.2,
   },
   contentContainer: {
@@ -226,11 +226,9 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   bookButtonDisabled: {
-    backgroundColor: '#1D4ED8',
+    backgroundColor: '#475569',
     shadowOpacity: 0,
     elevation: 0,
   },
 });
-
-
 
