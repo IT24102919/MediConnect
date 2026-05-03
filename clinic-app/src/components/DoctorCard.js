@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from "../../constants/theme";
 
 export default function DoctorCard({ doctor, onPress }) {
   return (
@@ -38,62 +39,55 @@ export default function DoctorCard({ doctor, onPress }) {
 
 const styles = StyleSheet.create({
   card: {
-   
-    backgroundColor: "rgba(255, 255, 255, 0.08)", 
-    borderRadius: 24,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    
-    borderColor: "rgba(255, 255, 255, 0.12)", 
-    
-    shadowColor: "#1D4ED8",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 3,
+    borderWidth: 0,
+    borderColor: COLORS.primary,
+    ...SHADOWS.md,
   },
   avatarContainer: {
-    padding: 4,
-    borderRadius: 20,
-    backgroundColor: "rgba(56, 189, 248, 0.1)", // Light blue glass glow
+    padding: SPACING.sm,
+    borderRadius: BORDER_RADIUS.lg,
+    backgroundColor: COLORS.primary,
   },
   avatarInner: {
     width: 64,
     height: 64,
-    borderRadius: 18,
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: COLORS.white,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderWidth: 0,
+    borderColor: COLORS.primary,
   },
   avatarEmoji: {
     fontSize: 32,
   },
   infoContainer: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: SPACING.lg,
   },
   name: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#FFFFFF", // Pure white for titles
+    color: COLORS.dark,
     letterSpacing: 0.3,
   },
   spec: {
     fontSize: 14,
-    color: "#38BDF8", // Vibrant sky blue for highlight
+    color: COLORS.accent,
     fontWeight: "600",
-    marginTop: 2,
+    marginTop: SPACING.sm,
   },
   footer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: SPACING.md,
   },
   locationRow: {
     flexDirection: "row",
@@ -102,34 +96,33 @@ const styles = StyleSheet.create({
   },
   locationIcon: {
     fontSize: 12,
-    marginRight: 4,
+    marginRight: SPACING.sm,
   },
   hospital: {
     fontSize: 12,
-    color: "rgba(255, 255, 255, 0.45)", // Muted white for secondary info
+    color: COLORS.textLight,
     fontWeight: "400",
   },
   ratingBox: {
-    backgroundColor: "rgba(56, 189, 248, 0.12)",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(56, 189, 248, 0.2)",
+    backgroundColor: COLORS.secondary,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 0,
+    borderColor: COLORS.primary,
+    ...SHADOWS.sm,
   },
   ratingText: {
     fontSize: 12,
-    color: "#FFFFFF",
+    color: COLORS.dark,
     fontWeight: "700",
   },
   arrowContainer: {
-    marginLeft: 10,
+    marginLeft: SPACING.md,
   },
   arrowIcon: {
     fontSize: 26,
-    color: "rgba(255, 255, 255, 0.25)",
+    color: COLORS.primary,
     fontWeight: "300",
   },
 });
-
-

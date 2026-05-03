@@ -8,10 +8,14 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Platform
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { Calendar } from 'react-native-calendars';
 import { NotificationContext } from '../context/NotificationContext';
+import { COLORS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -32,6 +36,14 @@ export default function RemindersScreen() {
   const [message, setMessage] = useState('');
   const [reminderDate, setReminderDate] = useState('');
   const [reminderTime, setReminderTime] = useState('');
+  
+  // Calendar and Time Picker states
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState(new Date());
+  const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+  const [selectedAmPm, setSelectedAmPm] = useState('AM');
+  
   const isFirstFocus = useRef(true);
   const {
     upcomingReminders,
@@ -57,13 +69,82 @@ export default function RemindersScreen() {
     setRefreshing(false);
   }, [fetchUpcomingReminders]);
 
+  // Calendar date selection handler
+  const onDateSelect = (day) => {
+    const today = new Date();
+    const selectedDay = new Date(day.dateString);
+    
+    // Validation: cannot select past date
+    if (selectedDay < today.setHours(0, 0, 0, 0)) {
+      Alert.alert('Invalid Date', 'Cannot select a past date');
+      return;
+    }
+    
+    setSelectedDate(day.dateString);
+    setReminderDate(day.dateString);
+    setShowCalendar(false);
+  };
+
+  const formatDateWithAmPm = (dateString) => {
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '';
+  
+  const formattedDate = date.toLocaleDateString();
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // Convert 0 to 12
+  const minutesStr = minutes.toString().padStart(2, '0');
+  const timeWithAmPm = `${hours}:${minutesStr} ${ampm}`;
+  
+  return `${formattedDate} at ${timeWithAmPm}`;
+};
+  // Time picker handler
+ const handleTimeConfirm = (selectedDateTime) => {
+  setTimePickerVisible(false);
+  
+  const now = new Date();
+  const selected = new Date(selectedDateTime);
+  
+  // Validation: cannot select past time for today
+  const selectedDateObj = new Date(reminderDate);
+  const isToday = selectedDateObj.toDateString() === now.toDateString();
+  
+  if (isToday && selected < now) {
+    Alert.alert('Invalid Time', 'Cannot select a past time for today');
+    return;
+  }
+  
+  setSelectedTime(selected);
+  
+  // Get hours in 12-hour format for AM/PM display
+  let hours = selected.getHours();
+  const minutes = selected.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // Convert 0 to 12
+  
+  setSelectedAmPm(ampm);
+  
+  // Format time as HH:MM (24-hour format for storage)
+  const hours24 = selected.getHours().toString().padStart(2, '0');
+  const minutesStr = minutes.toString().padStart(2, '0');
+  const timeString = `${hours24}:${minutesStr}`;
+  setReminderTime(timeString);
+};
+
+const handleTimeCancel = () => {
+  setTimePickerVisible(false);
+};
+
   const onCreateReminder = async () => {
     if (!title.trim() || !message.trim() || !reminderDate.trim() || !reminderTime.trim()) {
       Alert.alert('Invalid input', 'Enter title, message, date and time.');
       return;
     }
 
-    // Accept date: YYYY-MM-DD, time: HH:mm (24h)
+    // Validate date format
     const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(reminderDate.trim());
     const timeMatch = /^(\d{2}):(\d{2})$/.exec(reminderTime.trim());
     if (!dateMatch || !timeMatch) {
@@ -99,8 +180,10 @@ export default function RemindersScreen() {
       setMessage('');
       setReminderDate('');
       setReminderTime('');
+      setSelectedDate('');
+      setSelectedTime(new Date());
       setShowAddForm(false);
-      Alert.alert('Success', 'Manual reminder added.');
+      Alert.alert('Success', 'Reminder added.');
     } else {
       Alert.alert('Error', result.message || 'Failed to add reminder');
     }
@@ -124,7 +207,9 @@ export default function RemindersScreen() {
     <View style={styles.cardRow}>
       <View style={styles.cardLeft}>
         <Text style={styles.badge}>{reminderTypeLabel(item.type)}</Text>
-        <Text style={styles.title}>Reminder fires: {formatDate(item.reminderAt)}</Text>
+        <Text style={styles.title}>
+  Reminder fires: {formatDateWithAmPm(item.reminderAt)}
+</Text>
         <Text style={styles.message}>{item.message || item.title}</Text>
         <View style={styles.snoozeRow}>
           <TouchableOpacity style={styles.snoozeButton} onPress={() => onSnooze(item._id, 1440)}>
@@ -159,39 +244,103 @@ export default function RemindersScreen() {
             value={title}
             onChangeText={setTitle}
             placeholder="Reminder title"
-            placeholderTextColor="rgba(255,255,255,0.5)"
+            placeholderTextColor={COLORS.textSecondary}
             style={styles.input}
           />
           <TextInput
             value={message}
             onChangeText={setMessage}
             placeholder="Reminder message"
-            placeholderTextColor="rgba(255,255,255,0.5)"
+            placeholderTextColor={COLORS.textSecondary}
             style={styles.input}
           />
-          <TextInput
-            value={reminderDate}
-            onChangeText={setReminderDate}
-            placeholder="Date (YYYY-MM-DD)"
-            placeholderTextColor="rgba(255,255,255,0.5)"
-            style={styles.input}
-          />
-          <TextInput
-            value={reminderTime}
-            onChangeText={setReminderTime}
-            placeholder="Time (HH:mm)"
-            placeholderTextColor="rgba(255,255,255,0.5)"
-            style={styles.input}
-          />
+          
+          {/* Date Picker with Calendar Icon */}
+          <View style={styles.datePickerRow}>
+            <TextInput
+              value={reminderDate}
+              onChangeText={setReminderDate}
+              placeholder="Date (YYYY-MM-DD)"
+              placeholderTextColor={COLORS.textSecondary}
+              style={[styles.input, styles.dateInput]}
+              editable={false}
+            />
+            <TouchableOpacity 
+              style={styles.calendarIconButton} 
+              onPress={() => setShowCalendar(true)}
+            >
+              <Text style={styles.calendarIcon}>📅</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Time Picker with Clock Icon */}
+          <View style={styles.datePickerRow}>
+            <TextInput
+  value={reminderTime && reminderTime !== '' ? `${reminderTime} ${selectedAmPm}` : ''}
+  placeholder="Time (HH:MM AM/PM)"
+  placeholderTextColor={COLORS.textSecondary}
+  style={[styles.input, styles.dateInput]}
+  editable={false}
+/>
+            <TouchableOpacity 
+              style={styles.calendarIconButton} 
+              onPress={() => setTimePickerVisible(true)}
+            >
+              <Text style={styles.calendarIcon}>⏰</Text>
+            </TouchableOpacity>
+          </View>
+
           <TouchableOpacity style={styles.addButton} onPress={onCreateReminder}>
             <Text style={styles.addButtonText}>Save reminder</Text>
           </TouchableOpacity>
         </View>
       ) : null}
 
+      {/* Calendar Modal */}
+      {showCalendar && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Date</Text>
+              <TouchableOpacity onPress={() => setShowCalendar(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <Calendar
+              onDayPress={onDateSelect}
+              markedDates={{
+                [selectedDate]: { selected: true, selectedColor: COLORS.primary }
+              }}
+              minDate={new Date().toISOString().split('T')[0]}
+              theme={{
+                todayTextColor: COLORS.primary,
+                selectedDayBackgroundColor: COLORS.primary,
+                arrowColor: COLORS.primary
+              }}
+            />
+            <TouchableOpacity style={styles.modalButton} onPress={() => setShowCalendar(false)}>
+              <Text style={styles.modalButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* Time Picker */}
+      <DateTimePickerModal
+  isVisible={isTimePickerVisible}
+  mode="time"
+  onConfirm={handleTimeConfirm}
+  onCancel={handleTimeCancel}
+  date={selectedTime}
+  is24Hour={false}
+  display="spinner"
+  themeVariant="light"
+  textColor="#ffffff"
+/>
+
       {loading && !refreshing ? (
         <View style={styles.loaderWrap}>
-          <ActivityIndicator size="large" color="#38BDF8" />
+          <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       ) : (
         <FlatList
@@ -200,7 +349,7 @@ export default function RemindersScreen() {
           renderItem={renderReminder}
           contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#38BDF8" />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
           }
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
@@ -218,8 +367,8 @@ export default function RemindersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D4ED8',
-    padding: 16
+    backgroundColor: COLORS.background,
+    padding: SPACING.lg
   },
   loaderWrap: {
     flex: 1,
@@ -227,153 +376,218 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   listContent: {
-    paddingBottom: 24
+    paddingBottom: SPACING.xl
   },
   topRow: {
-    marginBottom: 12
+    marginBottom: SPACING.md
   },
   helperText: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: COLORS.textSecondary,
     fontSize: 16,
     lineHeight: 24,
-    marginBottom: 10
+    marginBottom: SPACING.sm
   },
   plusButton: {
     alignSelf: 'flex-end',
     borderWidth: 1,
-    borderColor: '#38BDF8',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8
+    borderColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.sm,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm
   },
   plusText: {
-    color: '#38BDF8',
+    color: COLORS.primary,
     fontWeight: '700'
   },
   formCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 14,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    padding: 12,
-    marginBottom: 12
+    borderColor: COLORS.border,
+    padding: SPACING.md,
+    marginBottom: SPACING.md
   },
   input: {
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginBottom: 8,
-    backgroundColor: 'rgba(255,255,255,0.06)'
+    borderColor: COLORS.border,
+    borderRadius: BORDER_RADIUS.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.sm,
+    marginBottom: SPACING.sm,
+    backgroundColor: COLORS.surface
+  },
+  datePickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm
+  },
+  dateInput: {
+    flex: 1
+  },
+  calendarIconButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.sm,
+    padding: SPACING.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.sm
+  },
+  calendarIcon: {
+    fontSize: 20,
+    color: COLORS.white
   },
   addButton: {
-    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    backgroundColor: COLORS.primary,
     borderWidth: 1,
-    borderColor: '#38BDF8',
-    borderRadius: 10,
-    paddingVertical: 9,
+    borderColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.sm,
+    paddingVertical: SPACING.sm,
     alignItems: 'center'
   },
   addButtonText: {
-    color: '#38BDF8',
+    color: COLORS.white,
     fontWeight: '700'
   },
   cardRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 14,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
-    borderColor: 'rgba(56, 189, 248, 0.35)',
-    marginBottom: 10,
+    borderColor: COLORS.border,
+    marginBottom: SPACING.sm,
     overflow: 'hidden'
   },
   cardLeft: {
     flex: 1,
-    padding: 14
+    padding: SPACING.lg
   },
   cardDivider: {
     width: StyleSheet.hairlineWidth * 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.22)'
+    backgroundColor: COLORS.border
   },
   cardRight: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 14,
+    paddingHorizontal: SPACING.lg,
     minWidth: 84
   },
   badge: {
     alignSelf: 'flex-start',
-    color: '#38BDF8',
+    color: COLORS.primary,
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.3,
     textTransform: 'uppercase',
-    backgroundColor: 'rgba(56, 189, 248, 0.12)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    backgroundColor: COLORS.light,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.sm,
     borderWidth: 1,
-    borderColor: 'rgba(56, 189, 248, 0.35)',
-    marginBottom: 8
+    borderColor: COLORS.secondary,
+    marginBottom: SPACING.sm
   },
   title: {
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
     fontSize: 15,
     fontWeight: '700'
   },
   message: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 6
+    color: COLORS.textSecondary,
+    marginTop: SPACING.xs
   },
   meta: {
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: COLORS.textMuted,
     fontSize: 12,
-    marginTop: 10
+    marginTop: SPACING.sm
   },
   empty: {
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: COLORS.textSecondary,
     textAlign: 'center',
-    marginTop: 32
+    marginTop: SPACING.xxxl
   },
   emptyWrap: {
     alignItems: 'center',
-    marginTop: 28
+    marginTop: SPACING.xl
   },
   emptyIcon: {
     fontSize: 34,
-    marginBottom: 8
+    marginBottom: SPACING.sm
   },
   emptyTitle: {
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
     fontWeight: '700',
     fontSize: 18
   },
   snoozeRow: {
-    marginTop: 10,
+    marginTop: SPACING.sm,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8
+    gap: SPACING.sm
   },
   snoozeButton: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    backgroundColor: COLORS.primary,
     borderWidth: 1,
-    borderColor: '#38BDF8',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5
+    borderColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs
   },
   snoozeText: {
-    color: '#38BDF8',
+    color: COLORS.white,
     fontWeight: '700',
     fontSize: 12
   },
   deleteText: {
-    color: '#FDBA74',
+    color: COLORS.error,
     fontWeight: '700',
     fontSize: 20
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000
+  },
+  modalContent: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
+    width: '90%',
+    maxWidth: 350
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.md
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.textPrimary
+  },
+  modalClose: {
+    fontSize: 20,
+    color: COLORS.textMuted,
+    padding: SPACING.xs
+  },
+  modalButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.sm,
+    padding: SPACING.md,
+    alignItems: 'center',
+    marginTop: SPACING.md
+  },
+  modalButtonText: {
+    color: COLORS.white,
+    fontWeight: '700'
   }
 });

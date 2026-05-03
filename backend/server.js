@@ -1,8 +1,13 @@
-require("dotenv").config();
-
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+
+const envPath = process.env.ENV_FILE || path.resolve(__dirname, '.env');
+require('dotenv').config({ path: envPath });
+
+if (!process.env.MONGO_URI && process.env.MONGODB_URI) {
+  process.env.MONGO_URI = process.env.MONGODB_URI;
+}
 
 const connectDB = require('./src/config/db');
 const seedDoctors = require('./src/utils/seedDoctors');
@@ -24,8 +29,8 @@ const errorMiddleware = require('./src/middleware/errorMiddleware');
 const app = express();
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -69,6 +74,17 @@ app.use((req, res) => {
     success: false,
     message: 'Route not found'
   });
+});
+
+app.use((error, req, res, next) => {
+  if (error.type === 'entity.too.large') {
+    return res.status(413).json({
+      success: false,
+      message: 'Image is too large. Please choose a smaller file.'
+    });
+  }
+
+  return next(error);
 });
 
 app.use(errorMiddleware);

@@ -38,13 +38,15 @@ const medicalHistorySchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: ''
+    },
+    reportImageData: {
+      type: String,
+      default: ''
     }
   },
   {
     timestamps: true
   }
 );
-
-medicalHistorySchema.index({ patientId: 1 }, { unique: true });
 
 module.exports = mongoose.model('MedicalHistory', medicalHistorySchema);

@@ -4,31 +4,21 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Alert
+  Alert,
+  Image
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import axiosInstance from '../api/axios';
-
-const parseCSV = (value) =>
-  value
-    .split(',')
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
 
 export default function MedicalHistoryScreen() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
-    bloodGroup: '',
-    allergies: '',
-    chronicConditions: '',
-    currentMedications: '',
-    surgeries: '',
-    familyHistory: '',
-    notes: ''
-  });
+  const [deleting, setDeleting] = useState(false);
+  const [reportImageData, setReportImageData] = useState('');
 
   const fetchMedicalHistory = async () => {
     try {
@@ -36,19 +26,10 @@ export default function MedicalHistoryScreen() {
       const response = await axiosInstance.get('/medical-history/me');
 
       if (response.data.success) {
-        const history = response.data.medicalHistory;
-        setForm({
-          bloodGroup: history.bloodGroup || '',
-          allergies: (history.allergies || []).join(', '),
-          chronicConditions: (history.chronicConditions || []).join(', '),
-          currentMedications: (history.currentMedications || []).join(', '),
-          surgeries: (history.surgeries || []).join(', '),
-          familyHistory: history.familyHistory || '',
-          notes: history.notes || ''
-        });
+        setReportImageData(response.data.medicalHistory?.reportImageData || '');
       }
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.message || 'Failed to load medical history.');
+      Alert.alert('Error', error.response?.data?.message || 'Failed to load medical report.');
     } finally {
       setLoading(false);
     }
@@ -58,43 +39,105 @@ export default function MedicalHistoryScreen() {
     fetchMedicalHistory();
   }, []);
 
-  const handleChange = (key, value) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const pickReportImage = async () => {
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permission.status !== 'granted') {
+        Alert.alert('Permission needed', 'Please allow photo library access to upload report images.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.5
+      });
+
+      if (!result.canceled && result.assets?.length) {
+        const pickedImage = result.assets[0];
+        const resizedImage = await ImageManipulator.manipulateAsync(
+          pickedImage.uri,
+          [{ resize: { width: 1280 } }],
+          {
+            compress: 0.45,
+            format: ImageManipulator.SaveFormat.JPEG,
+            base64: true
+          }
+        );
+
+        if (!resizedImage.base64) {
+          Alert.alert('Error', 'Failed to process selected image.');
+          return;
+        }
+
+        setReportImageData(`data:image/jpeg;base64,${resizedImage.base64}`);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick image.');
+    }
   };
 
   const handleSave = async () => {
     try {
+      if (!reportImageData) {
+        Alert.alert('No image selected', 'Please choose a medical report image first.');
+        return;
+      }
+
       setSaving(true);
 
-      const payload = {
-        bloodGroup: form.bloodGroup.trim(),
-        allergies: parseCSV(form.allergies),
-        chronicConditions: parseCSV(form.chronicConditions),
-        currentMedications: parseCSV(form.currentMedications),
-        surgeries: parseCSV(form.surgeries),
-        familyHistory: form.familyHistory.trim(),
-        notes: form.notes.trim()
-      };
-
-      const response = await axiosInstance.put('/medical-history/me', payload);
+      const response = await axiosInstance.put('/medical-history/me', {
+        reportImageData
+      });
 
       if (response.data.success) {
-        Alert.alert('Saved', 'Medical history updated successfully.');
+        Alert.alert('Saved', 'Medical report image uploaded successfully.');
       } else {
-        Alert.alert('Error', response.data.message || 'Failed to save medical history.');
+        Alert.alert('Error', response.data.message || 'Failed to upload medical report image.');
       }
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.message || 'Failed to save medical history.');
+      Alert.alert('Error', error.response?.data?.message || 'Failed to upload medical report image.');
     } finally {
       setSaving(false);
     }
   };
 
+  const handleDelete = () => {
+    if (saving || deleting) return;
+
+    Alert.alert('Remove Image', 'Are you sure you want to remove this medical report image?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            setDeleting(true);
+            setReportImageData('');
+            const response = await axiosInstance.put('/medical-history/me', {
+              reportImageData: ''
+            });
+
+            if (response.data.success) {
+              Alert.alert('Removed', 'Medical report image removed successfully.');
+            } else {
+              Alert.alert('Error', response.data.message || 'Failed to remove medical report image.');
+            }
+          } catch (error) {
+            Alert.alert('Error', error.response?.data?.message || 'Failed to remove medical report image.');
+          } finally {
+            setDeleting(false);
+          }
+        }
+      }
+    ]);
+  };
+
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color="#38BDF8" />
-        <Text style={styles.loadingText}>Loading medical history...</Text>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={styles.loadingText}>Loading medical report...</Text>
       </View>
     );
   }
@@ -102,76 +145,33 @@ export default function MedicalHistoryScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Medical History</Text>
-        <Text style={styles.subtitle}>Keep your core health information up to date.</Text>
+        <Text style={styles.title}>Medical Report</Text>
+        <Text style={styles.subtitle}>Upload your latest medical report image.</Text>
 
-        <Text style={styles.label}>Blood Group</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. A+, O-"
-          placeholderTextColor="rgba(255,255,255,0.35)"
-          value={form.bloodGroup}
-          onChangeText={(text) => handleChange('bloodGroup', text)}
-        />
+        <TouchableOpacity style={styles.pickButton} onPress={pickReportImage} disabled={saving || deleting}>
+          <Text style={styles.pickButtonText}>Choose Report Image</Text>
+        </TouchableOpacity>
 
-        <Text style={styles.label}>Allergies (comma separated)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. Penicillin, Dust"
-          placeholderTextColor="rgba(255,255,255,0.35)"
-          value={form.allergies}
-          onChangeText={(text) => handleChange('allergies', text)}
-        />
+        {reportImageData ? (
+          <View style={styles.previewWrap}>
+            <Image source={{ uri: reportImageData }} style={styles.previewImage} />
+          </View>
+        ) : (
+          <View style={styles.emptyPreview}>
+            <Text style={styles.emptyPreviewText}>No report image selected</Text>
+          </View>
+        )}
 
-        <Text style={styles.label}>Chronic Conditions (comma separated)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. Diabetes, Hypertension"
-          placeholderTextColor="rgba(255,255,255,0.35)"
-          value={form.chronicConditions}
-          onChangeText={(text) => handleChange('chronicConditions', text)}
-        />
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={saving || deleting}>
+          <Text style={styles.saveButtonText}>{saving ? 'Uploading...' : 'Upload Medical Report'}</Text>
+        </TouchableOpacity>
 
-        <Text style={styles.label}>Current Medications (comma separated)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. Metformin 500mg"
-          placeholderTextColor="rgba(255,255,255,0.35)"
-          value={form.currentMedications}
-          onChangeText={(text) => handleChange('currentMedications', text)}
-        />
-
-        <Text style={styles.label}>Surgeries (comma separated)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. Appendectomy (2019)"
-          placeholderTextColor="rgba(255,255,255,0.35)"
-          value={form.surgeries}
-          onChangeText={(text) => handleChange('surgeries', text)}
-        />
-
-        <Text style={styles.label}>Family History</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Family health history..."
-          placeholderTextColor="rgba(255,255,255,0.35)"
-          value={form.familyHistory}
-          onChangeText={(text) => handleChange('familyHistory', text)}
-          multiline
-        />
-
-        <Text style={styles.label}>Additional Notes</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Any other medical notes..."
-          placeholderTextColor="rgba(255,255,255,0.35)"
-          value={form.notes}
-          onChangeText={(text) => handleChange('notes', text)}
-          multiline
-        />
-
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={saving}>
-          <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Medical History'}</Text>
+        <TouchableOpacity
+          style={[styles.deleteButton, (saving || deleting) && styles.buttonDisabled]}
+          onPress={handleDelete}
+          disabled={saving || deleting}
+        >
+          <Text style={styles.deleteButtonText}>{deleting ? 'Removing...' : 'Remove Uploaded Image'}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -181,64 +181,100 @@ export default function MedicalHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D4ED8'
+    backgroundColor: COLORS.background
   },
   content: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    paddingBottom: 30
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.xl,
+    paddingBottom: SPACING.xxxl
   },
   center: {
     justifyContent: 'center',
     alignItems: 'center'
   },
   loadingText: {
-    marginTop: 10,
-    color: '#38BDF8',
+    marginTop: SPACING.md,
+    color: COLORS.primary,
     fontWeight: '600'
   },
   title: {
-    color: '#FFFFFF',
+    color: COLORS.dark,
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 6
+    marginBottom: SPACING.sm
   },
   subtitle: {
-    color: 'rgba(255,255,255,0.6)',
-    marginBottom: 18
+    color: COLORS.textLight,
+    marginBottom: SPACING.xl
   },
-  label: {
-    color: '#38BDF8',
-    fontWeight: '700',
-    marginTop: 12,
-    marginBottom: 6,
-    fontSize: 13
+  pickButton: {
+    backgroundColor: COLORS.secondary,
+    borderWidth: 2,
+    borderColor: COLORS.secondary,
+    borderRadius: BORDER_RADIUS.md,
+    alignItems: 'center',
+    paddingVertical: SPACING.lg,
+    ...SHADOWS.sm,
   },
-  input: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-    color: '#FFFFFF'
+  pickButtonText: {
+    color: COLORS.dark,
+    fontWeight: '700'
   },
-  textArea: {
-    minHeight: 90,
-    textAlignVertical: 'top'
+  previewWrap: {
+    marginTop: SPACING.lg,
+    borderRadius: BORDER_RADIUS.md,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    ...SHADOWS.md,
+  },
+  previewImage: {
+    width: '100%',
+    height: 280,
+    backgroundColor: COLORS.background
+  },
+  emptyPreview: {
+    marginTop: SPACING.lg,
+    height: 180,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderStyle: 'dashed',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.white
+  },
+  emptyPreviewText: {
+    color: COLORS.textLight,
+    fontWeight: '600'
   },
   saveButton: {
-    marginTop: 20,
-    backgroundColor: '#38BDF8',
-    borderRadius: 12,
+    marginTop: SPACING.xl,
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
-    paddingVertical: 14
+    paddingVertical: SPACING.lg,
+    ...SHADOWS.lg,
   },
   saveButtonText: {
-    color: '#1D4ED8',
+    color: COLORS.white,
     fontWeight: '800'
+  },
+  deleteButton: {
+    marginTop: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    alignItems: 'center',
+    paddingVertical: SPACING.lg,
+    borderWidth: 2,
+    borderColor: COLORS.error,
+    backgroundColor: COLORS.white
+  },
+  deleteButtonText: {
+    color: COLORS.error,
+    fontWeight: '800'
+  },
+  buttonDisabled: {
+    opacity: 0.65
   }
 });
-
-
 

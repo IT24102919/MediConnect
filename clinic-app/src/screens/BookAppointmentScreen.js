@@ -7,10 +7,13 @@ import {
   ScrollView,
   StyleSheet,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { AppointmentContext } from '../context/AppointmentContext';
 import { AuthContext } from '../context/AuthContext';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 
 const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '02:00', '02:30', '03:00', '03:30', '04:00'];
 
@@ -21,6 +24,8 @@ export default function BookAppointmentScreen({ route, navigation }) {
 
   const [patientName, setPatientName] = useState(user?.name || '');
   const [appointmentDate, setAppointmentDate] = useState('');
+  const [dateValue, setDateValue] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [notes, setNotes] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
 
@@ -69,6 +74,23 @@ export default function BookAppointmentScreen({ route, navigation }) {
     }
   };
 
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleDateChange = (_event, selectedDate) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+
+    if (!selectedDate) return;
+    setDateValue(selectedDate);
+    setAppointmentDate(formatDate(selectedDate));
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Book Appointment with {doctor.name}</Text>
@@ -89,20 +111,46 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Enter your name"
-        placeholderTextColor="rgba(29, 78, 216, 0.45)"
+        placeholderTextColor={COLORS.textMuted}
         value={patientName}
         onChangeText={setPatientName}
       />
 
       {/* Appointment Date */}
       <Text style={styles.label}>Appointment Date (YYYY-MM-DD) *</Text>
-      <TextInput
+      <TouchableOpacity
         style={styles.input}
-        placeholder="2024-04-15"
-        placeholderTextColor="rgba(29, 78, 216, 0.45)"
-        value={appointmentDate}
-        onChangeText={setAppointmentDate}
-      />
+        onPress={() => setShowDatePicker(true)}
+        activeOpacity={0.85}
+      >
+        <Text style={appointmentDate ? styles.dateText : styles.datePlaceholder}>
+          {appointmentDate || 'Select date from calendar'}
+        </Text>
+      </TouchableOpacity>
+
+      {showDatePicker && (
+        <View style={styles.datePickerWrap}>
+          <DateTimePicker
+            value={dateValue}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            minimumDate={new Date()}
+            onChange={handleDateChange}
+            {...(Platform.OS === 'ios'
+              ? {
+                  textColor: COLORS.dark,
+                  accentColor: COLORS.primary,
+                  themeVariant: 'light',
+                }
+              : {})}
+          />
+          {Platform.OS === 'ios' && (
+            <TouchableOpacity style={styles.dateDoneButton} onPress={() => setShowDatePicker(false)}>
+              <Text style={styles.dateDoneText}>Done</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       {/* Time Slots */}
       <Text style={styles.label}>Select Time Slot *</Text>
@@ -133,7 +181,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       <TextInput
         style={[styles.input, styles.textArea]}
         placeholder="Any additional information..."
-        placeholderTextColor="rgba(29, 78, 216, 0.45)"
+        placeholderTextColor={COLORS.textMuted}
         value={notes}
         onChangeText={setNotes}
         multiline
@@ -147,7 +195,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator size="small" color="#FFFFFF" />
+          <ActivityIndicator size="small" color={COLORS.white} />
         ) : (
           <Text style={styles.buttonText}>Confirm Appointment</Text>
         )}
@@ -158,126 +206,153 @@ export default function BookAppointmentScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1D4ED8',
-    padding: 16,
-    paddingBottom: 24,
+    backgroundColor: COLORS.background,
+    padding: SPACING.lg,
+    paddingBottom: SPACING.xxl,
   },
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 16,
+    color: COLORS.dark,
+    marginBottom: SPACING.lg,
   },
   doctorInfo: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
+    marginBottom: SPACING.xl,
+    ...SHADOWS.md,
   },
   doctorName: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 4,
+    color: COLORS.dark,
+    marginBottom: SPACING.sm,
   },
   doctorSpec: {
     fontSize: 14,
-    color: '#38BDF8',
+    color: COLORS.primary,
     fontWeight: '600',
-    marginBottom: 2,
+    marginBottom: SPACING.sm,
   },
   doctorHospital: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginBottom: 10,
+    color: COLORS.textLight,
+    marginBottom: SPACING.md,
   },
   feeBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 10,
+    paddingTop: SPACING.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: COLORS.textMuted,
   },
   feeLabel: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: COLORS.text,
     fontWeight: '600',
   },
   feeValue: {
-    color: '#38BDF8',
+    color: COLORS.accent,
     fontWeight: '700',
   },
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginBottom: 8,
-    marginTop: 12,
+    color: COLORS.dark,
+    marginBottom: SPACING.md,
+    marginTop: SPACING.lg,
   },
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    color: '#FFFFFF',
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.md,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.lg,
+    color: COLORS.dark,
+    marginBottom: SPACING.md,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
     fontSize: 15,
   },
   textArea: {
     height: 100,
     textAlignVertical: 'top',
-    paddingTop: 12,
+    paddingTop: SPACING.lg,
   },
   timeRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 16,
-    gap: 8,
+    marginBottom: SPACING.lg,
+    gap: SPACING.md,
   },
   timeButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: COLORS.background,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
   },
   timeButtonActive: {
-    backgroundColor: '#38BDF8',
-    borderColor: '#38BDF8',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   timeText: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: COLORS.dark,
     fontWeight: '600',
     fontSize: 13,
   },
   timeTextActive: {
-    color: '#FFFFFF',
+    color: COLORS.white,
+  },
+  dateText: {
+    color: COLORS.dark,
+    fontSize: 15,
+  },
+  datePlaceholder: {
+    color: COLORS.textLight,
+    fontSize: 15,
+  },
+  datePickerWrap: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    marginBottom: SPACING.md,
+    overflow: 'hidden',
+    ...SHADOWS.md,
+  },
+  dateDoneButton: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.primary,
+    paddingVertical: SPACING.md,
+    alignItems: 'center',
+  },
+  dateDoneText: {
+    color: COLORS.primary,
+    fontWeight: '700',
+    fontSize: 14,
   },
   button: {
-    backgroundColor: '#38BDF8',
-    paddingVertical: 14,
-    borderRadius: 12,
+    backgroundColor: COLORS.accent,
+    paddingVertical: SPACING.lg,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
-    marginTop: 20,
-    shadowColor: '#38BDF8',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    marginTop: SPACING.xl,
+    ...SHADOWS.lg,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: COLORS.white,
     fontWeight: '700',
     fontSize: 16,
   },
 });
+
+
+
+
 
 
 

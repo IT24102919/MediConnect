@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { AppointmentContext } from '../context/AppointmentContext';
 import { AuthContext } from '../context/AuthContext';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import AppointmentCard from '../components/AppointmentCard';
 
 export default function AppointmentRecordsScreen() {
@@ -55,7 +56,7 @@ export default function AppointmentRecordsScreen() {
   if (loading && appointmentRecords.length === 0) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#38BDF8" />
+        <ActivityIndicator size="large" color={COLORS.primary} />
         <Text style={styles.loadingText}>Loading appointment records...</Text>
       </View>
     );
@@ -95,41 +96,44 @@ export default function AppointmentRecordsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D4ED8',
-    paddingHorizontal: 16
+    backgroundColor: COLORS.background,
+    paddingHorizontal: SPACING.lg
   },
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center'
   },
   loadingText: {
-    marginTop: 12,
-    color: '#38BDF8',
+    marginTop: SPACING.md,
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '600'
   },
   sectionTitle: {
-    color: '#38BDF8',
+    color: COLORS.primary,
     fontSize: 15,
     fontWeight: '700',
-    marginTop: 16,
-    marginBottom: 8
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.md
   },
   emptyIcon: {
     fontSize: 46,
-    marginBottom: 12
+    marginBottom: SPACING.md
   },
   emptyTitle: {
-    color: '#FFFFFF',
+    color: COLORS.dark,
     fontSize: 20,
     fontWeight: '700',
-    marginBottom: 6
+    marginBottom: SPACING.md
   },
   emptySubtext: {
-    color: 'rgba(255,255,255,0.6)',
+    color: COLORS.textLight,
     textAlign: 'center'
   }
 });
+
+
+
 
 
 

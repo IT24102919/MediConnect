@@ -10,6 +10,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import axiosInstance from '../api/axios';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import DoctorCard from '../components/DoctorCard';
 import localDoctors from '../data/doctors';
 
@@ -85,7 +86,7 @@ export default function DoctorListScreen({ navigation }) {
   if (loading) {
     return (
       <View style={[styles.mainContainer, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#38BDF8" />
+        <ActivityIndicator size="large" color={COLORS.primary} />
         <Text style={styles.loadingText}>Loading doctors...</Text>
       </View>
     );
@@ -133,7 +134,7 @@ export default function DoctorListScreen({ navigation }) {
         <TextInput
           style={styles.searchInput}
           placeholder="Search doctor by name"
-          placeholderTextColor="rgba(255, 255, 255, 0.45)"
+          placeholderTextColor={COLORS.textMuted}
           value={searchText}
           onChangeText={setSearchText}
         />
@@ -190,39 +191,39 @@ export default function DoctorListScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#1D4ED8',
+    backgroundColor: COLORS.background,
   },
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 12,
-    color: '#38BDF8',
+    marginTop: SPACING.md,
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '600',
   },
   errorText: {
-    color: '#1D4ED8',
+    color: COLORS.error,
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: SPACING.lg,
     textAlign: 'center',
   },
   retryText: {
-    color: '#38BDF8',
+    color: COLORS.primary,
     fontSize: 14,
     fontWeight: '700',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    backgroundColor: 'rgba(56, 189, 248, 0.15)',
-    borderWidth: 1,
-    borderColor: '#38BDF8',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
     overflow: 'hidden',
   },
   emptyText: {
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: COLORS.textLight,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -234,8 +235,8 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    backgroundColor: '#38BDF8',
-    opacity: 0.15, 
+    backgroundColor: COLORS.primary,
+    opacity: 0.1, 
   },
   
   circle2: {
@@ -245,8 +246,8 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: '#1D4ED8',
-    opacity: 0.1,
+    backgroundColor: COLORS.secondary,
+    opacity: 0.08,
   },
  
   circle3: {
@@ -256,77 +257,77 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: '#38BDF8',
-    opacity: 0.1,
+    backgroundColor: COLORS.accent,
+    opacity: 0.08,
   },
   header: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    marginBottom: 16,
+    paddingHorizontal: SPACING.xxl,
+    paddingTop: SPACING.xxxl,
+    marginBottom: SPACING.lg,
   },
   title: {
     fontSize: 30,
     fontWeight: "800",
-    color: "#FFFFFF", // Pure White
+    color: COLORS.dark,
     letterSpacing: 0.5,
   },
   subtitle: {
     fontSize: 15,
-    color: "rgba(255, 255, 255, 0.5)", // Muted White
-    marginTop: 6,
+    color: COLORS.textLight,
+    marginTop: SPACING.sm,
     fontWeight: "500",
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 40, // Bottom padding for better scroll experience
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.xxxl,
   },
   searchSection: {
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   warningText: {
-    color: '#38BDF8',
+    color: COLORS.accent,
     fontSize: 12,
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: SPACING.md,
   },
   searchInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: 12,
-    color: '#FFFFFF',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    backgroundColor: COLORS.background,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
+    color: COLORS.dark,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
     fontSize: 14,
-    marginBottom: 10,
+    marginBottom: SPACING.md,
   },
   filterContainer: {
-    paddingVertical: 4,
-    gap: 8,
+    paddingVertical: SPACING.sm,
+    gap: SPACING.md,
   },
   filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
   },
   filterChipActive: {
-    backgroundColor: '#38BDF8',
-    borderColor: '#38BDF8',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   filterChipText: {
-    color: 'rgba(255, 255, 255, 0.75)',
+    color: COLORS.dark,
     fontSize: 13,
     fontWeight: '600',
   },
   filterChipTextActive: {
-    color: '#FFFFFF',
+    color: COLORS.white,
   },
   emptyFilterBox: {
-    marginTop: 20,
+    marginTop: SPACING.xl,
     alignItems: 'center',
   },
 });

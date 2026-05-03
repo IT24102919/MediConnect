@@ -1,16 +1,17 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 
 export default function ProfileScreen({ navigation }) {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, deleteAccount } = useContext(AuthContext);
 
   const handleLogout = async () => {
     Alert.alert(
       'Logout',
       'Are you sure you want to logout?',
       [
-        { text: 'Cancel', onPress: () => {} },
+        { text: 'Cancel', onPress: () => { } },
         {
           text: 'Logout',
           onPress: async () => {
@@ -18,6 +19,28 @@ export default function ProfileScreen({ navigation }) {
             navigation.replace('Login');
           },
           style: 'destructive'
+        }
+      ]
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      '⚠️ WARNING: This action is permanent!\n\nDeleting your account will:\n• Remove your profile\n• Delete your user account\n• Cancel all your appointments\n\nThis cannot be undone.\n\nAre you sure you want to delete your account?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes, Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const result = await deleteAccount();
+            if (result.success) {
+              Alert.alert('Account Deleted', 'Your account has been deleted.');
+            } else {
+              Alert.alert('Error', result.message);
+            }
+          }
         }
       ]
     );
@@ -90,6 +113,13 @@ export default function ProfileScreen({ navigation }) {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>🚪 Logout</Text>
       </TouchableOpacity>
+
+      {/* Delete Account Button - Only for doctors */}
+      {user?.role === 'doctor' && (
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
+          <Text style={styles.deleteButtonText}>🗑️ Delete Account</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -97,116 +127,137 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D4ED8',
-    paddingHorizontal: 16,
-    paddingTop: 20,
+    backgroundColor: COLORS.background,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.xl,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 24,
-    paddingVertical: 20,
+    marginBottom: SPACING.xxxl,
+    paddingVertical: SPACING.xl,
   },
   avatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(56, 189, 248, 0.2)',
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#38BDF8',
-    marginBottom: 16,
+    borderWidth: 0,
+    borderColor: COLORS.primary,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.md,
   },
   avatarText: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#38BDF8',
+    color: COLORS.white,
   },
   name: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 4,
+    color: COLORS.dark,
+    marginBottom: SPACING.sm,
   },
   role: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: COLORS.textLight,
     textTransform: 'capitalize',
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
+    marginBottom: SPACING.xl,
+    borderWidth: 0,
+    borderColor: COLORS.primary,
+    ...SHADOWS.md,
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: SPACING.md,
   },
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: COLORS.textLight,
   },
   value: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: COLORS.dark,
     flex: 1,
     textAlign: 'right',
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: COLORS.border,
   },
   linksContainer: {
-    marginBottom: 24,
+    marginBottom: SPACING.xxxl,
   },
   linkButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    marginBottom: SPACING.md,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    ...SHADOWS.sm,
   },
   linkIcon: {
     fontSize: 18,
-    marginRight: 12,
+    marginRight: SPACING.md,
   },
   linkText: {
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: COLORS.dark,
   },
   linkArrow: {
     fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: COLORS.textLight,
   },
   logoutButton: {
-    backgroundColor: 'rgba(29, 78, 216, 0.15)',
-    borderWidth: 1,
-    borderColor: '#1D4ED8',
-    paddingVertical: 14,
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.accent,
+    paddingVertical: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
     marginTop: 'auto',
-    marginBottom: 20,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.sm,
   },
   logoutText: {
-    color: '#1D4ED8',
+    color: COLORS.accent,
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  deleteButton: {
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.error,
+    paddingVertical: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+    ...SHADOWS.sm,
+  },
+  deleteButtonText: {
+    color: COLORS.error,
     fontWeight: '700',
     fontSize: 16,
   },
 });
+
+
 
 
 

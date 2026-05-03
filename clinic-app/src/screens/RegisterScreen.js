@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { AuthContext } from "../context/AuthContext";
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from "../../constants/theme";
 
 const { width } = Dimensions.get("window");
 
@@ -19,6 +20,7 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState("patient");
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
@@ -59,7 +61,8 @@ export default function RegisterScreen({ navigation }) {
         name.trim(),
         email.trim(),
         password.trim(),
-        confirmPassword.trim()
+        confirmPassword.trim(),
+        selectedRole
       );
 
       if (!result.success) {
@@ -67,8 +70,7 @@ export default function RegisterScreen({ navigation }) {
         Alert.alert("Registration Failed", result.message);
       } else {
         console.log("✅ REGISTER SUCCESS:", result.message);
-        Alert.alert("Success", result.message);
-        navigation.replace("Home");
+        // Alert.alert("Success", result.message);
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";
@@ -86,7 +88,7 @@ export default function RegisterScreen({ navigation }) {
       <View style={styles.circle1} />
       <View style={styles.circle2} />
 
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.contentContainer}
       >
@@ -105,7 +107,7 @@ export default function RegisterScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="Mhd Shifan"
-                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                placeholderTextColor={COLORS.textMuted}
                 value={name}
                 onChangeText={setName}
               />
@@ -120,7 +122,7 @@ export default function RegisterScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="shifan@email.com"
-                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                placeholderTextColor={COLORS.textMuted}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
@@ -137,7 +139,7 @@ export default function RegisterScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                placeholderTextColor={COLORS.textMuted}
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
@@ -153,7 +155,7 @@ export default function RegisterScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                placeholderTextColor={COLORS.textMuted}
                 secureTextEntry
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -161,9 +163,43 @@ export default function RegisterScreen({ navigation }) {
             </View>
           </View>
 
+          {/* Role Selection */}
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Account Type</Text>
+            <View style={styles.roleContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.roleButton,
+                  selectedRole === "patient" && styles.roleButtonActive
+                ]}
+                onPress={() => setSelectedRole("patient")}
+              >
+                <Text style={styles.roleIcon}>👤</Text>
+                <Text style={[
+                  styles.roleText,
+                  selectedRole === "patient" && styles.roleTextActive
+                ]}>Patient</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.roleButton,
+                  selectedRole === "doctor" && styles.roleButtonActive
+                ]}
+                onPress={() => setSelectedRole("doctor")}
+              >
+                <Text style={styles.roleIcon}>👨‍⚕️</Text>
+                <Text style={[
+                  styles.roleText,
+                  selectedRole === "doctor" && styles.roleTextActive
+                ]}>Doctor</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           {/* Register Button */}
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]} 
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleRegister}
             disabled={loading}
           >
@@ -190,7 +226,7 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#1D4ED8", 
+    backgroundColor: COLORS.background,
     justifyContent: "center",
   },
   circle1: {
@@ -200,8 +236,8 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: '#38BDF8',
-    opacity: 0.4,
+    backgroundColor: COLORS.primary,
+    opacity: 0.1,
   },
   circle2: {
     position: 'absolute',
@@ -210,103 +246,122 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: '#1D4ED8',
-    opacity: 0.3,
+    backgroundColor: COLORS.secondary,
+    opacity: 0.08,
   },
   contentContainer: {
     flexGrow: 1,
-    padding: 20,
+    padding: SPACING.lg,
     justifyContent: "center",
   },
   glassCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 30,
-    padding: 25,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
-    shadowColor: "#1D4ED8",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 5,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.xl,
+    ...SHADOWS.lg,
   },
   header: {
-    marginBottom: 25,
+    marginBottom: SPACING.xl,
   },
   title: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: COLORS.dark,
     letterSpacing: 0.5,
   },
   subtitle: {
     fontSize: 14,
-    color: "rgba(255, 255, 255, 0.6)",
-    marginTop: 5,
+    color: COLORS.textLight,
+    marginTop: SPACING.sm,
   },
   formGroup: {
-    marginBottom: 16,
+    marginBottom: SPACING.lg,
   },
   label: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 8,
-    marginLeft: 4,
+    color: COLORS.dark,
+    marginBottom: SPACING.md,
+    marginLeft: SPACING.sm,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.07)",
-    borderRadius: 15,
-    paddingLeft: 15,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.md,
+    paddingLeft: SPACING.lg,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
   },
   icon: {
     fontSize: 16,
-    marginRight: 10,
+    marginRight: SPACING.md,
   },
   input: {
     flex: 1,
-    paddingVertical: 12,
-    color: "#FFFFFF",
+    paddingVertical: SPACING.lg,
+    color: COLORS.dark,
     fontSize: 15,
   },
   button: {
-    backgroundColor: "#38BDF8",
-    paddingVertical: 16,
-    borderRadius: 15,
+    backgroundColor: COLORS.primary,
+    paddingVertical: SPACING.lg,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: "center",
-    marginTop: 10,
-    shadowColor: "#38BDF8",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    marginTop: SPACING.md,
+    ...SHADOWS.lg,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "800",
     fontSize: 16,
     textTransform: "uppercase",
   },
   linkButton: {
-    marginTop: 20,
+    marginTop: SPACING.xxl,
     alignItems: "center",
   },
   linkText: {
-    color: "rgba(255, 255, 255, 0.6)",
+    color: COLORS.textLight,
     fontSize: 14,
   },
   linkHighlight: {
-    color: "#38BDF8",
+    color: COLORS.primary,
     fontWeight: "700",
   },
+  roleContainer: {
+    flexDirection: "row",
+    gap: SPACING.md,
+  },
+  roleButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.lg,
+    gap: SPACING.md,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  roleButtonActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  roleIcon: {
+    fontSize: 18,
+  },
+  roleText: {
+    color: COLORS.dark,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  roleTextActive: {
+    color: COLORS.white,
+  },
 });
-
-
 

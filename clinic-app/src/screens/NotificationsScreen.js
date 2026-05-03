@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { NotificationContext } from '../context/NotificationContext';
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -109,7 +110,7 @@ export default function NotificationsScreen() {
 
       {loading && !refreshing ? (
         <View style={styles.loaderWrap}>
-          <ActivityIndicator size="large" color="#38BDF8" />
+          <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       ) : (
         <FlatList
@@ -118,7 +119,7 @@ export default function NotificationsScreen() {
           renderItem={renderNotification}
           contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#38BDF8" />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
           }
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
@@ -136,39 +137,41 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D4ED8',
-    padding: 16
+    backgroundColor: COLORS.background,
+    padding: SPACING.lg
   },
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 12
+    marginBottom: SPACING.md
   },
   markAllButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: '#38BDF8',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-    marginRight: 10
+    borderColor: COLORS.primary,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    marginRight: SPACING.md,
+    ...SHADOWS.sm
   },
   markAllText: {
-    color: '#38BDF8',
+    color: COLORS.primary,
     fontWeight: '700',
     fontSize: 13
   },
   deleteAllButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: '#F97316',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10
+    borderColor: COLORS.error,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    ...SHADOWS.sm
   },
   deleteAllText: {
-    color: '#FDBA74',
+    color: COLORS.error,
     fontWeight: '700',
     fontSize: 13
   },
@@ -178,105 +181,95 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   listContent: {
-    paddingBottom: 24
+    paddingBottom: SPACING.xxxl
   },
   cardRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 14,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.lg,
     borderWidth: 1,
-    borderColor: 'rgba(147, 197, 253, 0.35)',
-    marginBottom: 10,
-    overflow: 'hidden'
+    borderColor: COLORS.border,
+    marginBottom: SPACING.md,
+    overflow: 'hidden',
+    ...SHADOWS.sm
   },
   unreadCard: {
-    borderColor: '#38BDF8'
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.background,
+    borderWidth: 2
   },
   cardLeft: {
     flex: 1,
-    paddingVertical: 14,
-    paddingLeft: 14,
-    paddingRight: 10
+    paddingVertical: SPACING.lg,
+    paddingLeft: SPACING.lg,
+    paddingRight: SPACING.md
   },
   cardTitle: {
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
     fontSize: 16,
     fontWeight: '700'
   },
   cardBody: {
-    color: 'rgba(255, 255, 255, 0.92)',
-    marginTop: 8,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.sm,
     fontSize: 14,
     lineHeight: 20
   },
   cardTime: {
-    color: 'rgba(255, 255, 255, 0.45)',
+    color: COLORS.textMuted,
     fontSize: 12,
-    marginTop: 10
-  },
-  markOneButton: {
-    alignSelf: 'flex-start',
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: '#38BDF8',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 6
-  },
-  markOneText: {
-    color: '#38BDF8',
-    fontWeight: '700',
-    fontSize: 12
+    marginTop: SPACING.md
   },
   cardDivider: {
-    width: StyleSheet.hairlineWidth * 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.22)'
+    width: StyleSheet.hairlineWidth,
+    backgroundColor: COLORS.border
   },
   cardRight: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    minWidth: 92,
-    gap: 10
+    paddingHorizontal: SPACING.md,
+    minWidth: 90,
+    gap: SPACING.md
   },
   sideAction: {
     borderWidth: 1,
-    borderColor: 'rgba(56, 189, 248, 0.75)',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    minWidth: 82,
-    alignItems: 'center'
+    borderColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.sm,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    minWidth: 80,
+    alignItems: 'center',
+    backgroundColor: COLORS.surface
   },
   sideDelete: {
-    borderColor: 'rgba(249, 115, 22, 0.9)'
+    borderColor: COLORS.error
   },
   sideActionText: {
-    color: '#38BDF8',
-    fontWeight: '800',
+    color: COLORS.primary,
+    fontWeight: '700',
     fontSize: 12
   },
   sideDeleteText: {
-    color: '#FDBA74'
+    color: COLORS.error
   },
   emptyWrap: {
     alignItems: 'center',
-    marginTop: 44,
-    paddingHorizontal: 24
+    marginTop: SPACING.xxxl,
+    paddingHorizontal: SPACING.xl
   },
   emptyIcon: {
-    fontSize: 34,
-    marginBottom: 8
+    fontSize: 48,
+    marginBottom: SPACING.md
   },
   emptyTitle: {
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
     fontSize: 18,
     fontWeight: '700'
   },
   emptySub: {
-    color: 'rgba(255, 255, 255, 0.65)',
-    marginTop: 6,
+    color: COLORS.textMuted,
+    marginTop: SPACING.sm,
     textAlign: 'center'
   }
 });
