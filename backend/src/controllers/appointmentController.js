@@ -1,5 +1,7 @@
 const Appointment = require('../models/Appointment');
+const mongoose = require('mongoose');
 const Doctor = require('../models/Doctor');
+const Notification = require('../models/Notification');
 const {
   createInstantNotification,
   createAppointmentReminders,
@@ -16,7 +18,7 @@ const isValidDateInput = (value) => {
 const createAppointment = async (req, res) => {
   try {
     const { doctorId, patientName, appointmentDate, timeSlot, notes } = req.body;
-    const patientId = req.user.id; // From auth middleware
+    const patientId = new mongoose.Types.ObjectId(req.user.id);
 
     // Validation
     if (!doctorId || !patientName || !appointmentDate || !timeSlot) {
@@ -39,6 +41,21 @@ const createAppointment = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Doctor not found'
+      });
+    }
+
+    // Check if time slot is already booked for this doctor on this date
+    const existingAppointment = await Appointment.findOne({
+      doctorId,
+      appointmentDate: new Date(appointmentDate),
+      timeSlot,
+      status: { $nin: ['Cancelled', 'Rejected'] } // Only check active appointments
+    });
+
+    if (existingAppointment) {
+      return res.status(409).json({
+        success: false,
+        message: 'This time slot is already booked for this doctor. Please select another time.'
       });
     }
 
@@ -150,9 +167,56 @@ const getAppointmentsByPatient = async (req, res) => {
       });
     }
 
-    const appointments = await Appointment.find({ patientId })
+    // CONVERT STRING TO OBJECTID
+    const patientObjectId = new mongoose.Types.ObjectId(patientId);
+
+    const appointments = await Appointment.find({ patientId: patientObjectId })
       .populate('doctorId', 'name specialization hospital fee rating')
       .sort({ appointmentDate: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: appointments.length,
+      appointments
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// Get appointments by doctor
+const getAppointmentsByDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const { filter } = req.query; // 'today' or 'all'
+
+    if (!doctorId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Doctor ID is required'
+      });
+    }
+
+    let query = Appointment.find({ doctorId })
+      .populate('patientId', 'name email')
+      .sort({ appointmentDate: 1 });
+
+    // Filter for today's appointments
+    if (filter === 'today') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      query = Appointment.find({
+        doctorId,
+        appointmentDate: { $gte: today, $lt: tomorrow }
+      }).populate('patientId', 'name email').sort({ appointmentDate: 1 });
+    }
+
+    const appointments = await query;
 
     res.status(200).json({
       success: true,
@@ -179,9 +243,12 @@ const getAppointmentRecordsByPatient = async (req, res) => {
       });
     }
 
+    // Convert string patientId to ObjectId for MongoDB query
+    const patientObjectId = new mongoose.Types.ObjectId(patientId);
+
     const now = new Date();
 
-    const appointments = await Appointment.find({ patientId })
+    const appointments = await Appointment.find({ patientId: patientObjectId })
       .populate('doctorId', 'name specialization hospital fee rating')
       .sort({ appointmentDate: -1 });
 
@@ -224,11 +291,11 @@ const updateAppointment = async (req, res) => {
       });
     }
 
-    const allowedStatuses = ['Pending', 'Confirmed', 'Cancelled'];
+    const allowedStatuses = ['Pending', 'Confirmed', 'Cancelled', 'Rejected'];
     if (status && !allowedStatuses.includes(status)) {
       return res.status(400).json({
         success: false,
-        message: 'Status must be Pending, Confirmed, or Cancelled'
+        message: 'Status must be Pending, Confirmed, Cancelled, or Rejected'
       });
     }
 
@@ -240,7 +307,35 @@ const updateAppointment = async (req, res) => {
 
     await appointment.save();
 
-    if (status === 'Cancelled') {
+    // Send notification for status changes
+    if (status === 'Rejected') {
+      await createInstantNotification({
+        userId: appointment.patientId,
+        title: 'Appointment Rejected',
+        message: `Your appointment on ${appointment.appointmentDate.toDateString()} at ${appointment.timeSlot} was rejected. ${req.body.rejectionReason ? `Reason: ${req.body.rejectionReason}` : ''}`,
+        type: 'appointment_rejected',
+        appointmentId: appointment._id,
+        data: {
+          appointmentId: appointment._id,
+          doctorId: appointment.doctorId,
+          rejectionReason: req.body.rejectionReason || ''
+        }
+      });
+      await clearAppointmentReminders(appointment._id);
+    } else if (status === 'Confirmed') {
+      await createInstantNotification({
+        userId: appointment.patientId,
+        title: 'Appointment Confirmed',
+        message: `Your appointment on ${appointment.appointmentDate.toDateString()} at ${appointment.timeSlot} has been confirmed.`,
+        type: 'appointment_confirmed',
+        appointmentId: appointment._id,
+        data: {
+          appointmentId: appointment._id,
+          doctorId: appointment.doctorId
+        }
+      });
+      await createAppointmentReminders(appointment);
+    } else if (status === 'Cancelled') {
       await clearAppointmentReminders(appointment._id);
       await createInstantNotification({
         userId: appointment.patientId,
@@ -253,7 +348,7 @@ const updateAppointment = async (req, res) => {
           doctorId: appointment.doctorId
         }
       });
-    } else if (appointmentDate || timeSlot || status) {
+    } else if (appointmentDate || timeSlot) {
       await createInstantNotification({
         userId: appointment.patientId,
         title: 'Appointment Updated',
@@ -313,6 +408,7 @@ module.exports = {
   getAppointment,
   getAppointmentsByPatient,
   getAppointmentRecordsByPatient,
+  getAppointmentsByDoctor,
   updateAppointment,
   deleteAppointment
 };

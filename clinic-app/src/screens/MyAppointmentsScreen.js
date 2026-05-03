@@ -24,7 +24,10 @@ export default function MyAppointmentsScreen({ navigation }) {
   const [editTimeSlot, setEditTimeSlot] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [updating, setUpdating] = useState(false);
+  // const patientId = user?.id;
+
   const patientId = user?._id || user?.id;
+
 
   // Fetch appointments when component mounts
   useEffect(() => {
@@ -341,12 +344,3 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 });
-
-
-
-
-
-
-
-
-

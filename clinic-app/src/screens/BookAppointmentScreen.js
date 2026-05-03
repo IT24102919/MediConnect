@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,8 @@ import { AppointmentContext } from '../context/AppointmentContext';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 
-const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '02:00', '02:30', '03:00', '03:30', '04:00'];
+// All available time slots
+const allTimeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '02:00', '02:30', '03:00', '03:30', '04:00'];
 
 export default function BookAppointmentScreen({ route, navigation }) {
   const { doctor } = route.params;
@@ -28,6 +29,44 @@ export default function BookAppointmentScreen({ route, navigation }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [notes, setNotes] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
+  const [availableTimeSlots, setAvailableTimeSlots] = useState(allTimeSlots);
+
+  // Function to get future time slots based on selected date
+  const getFutureTimeSlots = (dateString) => {
+    if (!dateString) return allTimeSlots;
+    
+    const selectedDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const isToday = selectedDate.toDateString() === today.toDateString();
+    
+    if (!isToday) return allTimeSlots;
+    
+    // For today, only show future time slots
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    return allTimeSlots.filter(timeSlot => {
+      let [hour, minute] = timeSlot.split(':').map(Number);
+      // Convert 12-hour format (02:00 PM is 14:00)
+      if (timeSlot === '02:00') hour = 14;
+      if (timeSlot === '02:30') hour = 14;
+      if (timeSlot === '03:00') hour = 15;
+      if (timeSlot === '03:30') hour = 15;
+      if (timeSlot === '04:00') hour = 16;
+      
+      if (hour > currentHour) return true;
+      if (hour === currentHour && minute > currentMinute) return true;
+      return false;
+    });
+  };
+
+  // Update available time slots when date changes
+  useEffect(() => {
+    setAvailableTimeSlots(getFutureTimeSlots(appointmentDate));
+    setSelectedTime(''); // Reset selected time when date changes
+  }, [appointmentDate]);
 
   const isValidDateString = (value) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -82,13 +121,25 @@ export default function BookAppointmentScreen({ route, navigation }) {
   };
 
   const handleDateChange = (_event, selectedDate) => {
+    if (!selectedDate) return;
+    
+    // Allow today's date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDay = new Date(selectedDate);
+    selectedDay.setHours(0, 0, 0, 0);
+    
+    if (selectedDay < today) {
+      Alert.alert('Invalid Date', 'Cannot select a past date');
+      return;
+    }
+    
+    setDateValue(selectedDate);
+    setAppointmentDate(formatDate(selectedDate));
+    
     if (Platform.OS === 'android') {
       setShowDatePicker(false);
     }
-
-    if (!selectedDate) return;
-    setDateValue(selectedDate);
-    setAppointmentDate(formatDate(selectedDate));
   };
 
   return (
@@ -117,7 +168,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       />
 
       {/* Appointment Date */}
-      <Text style={styles.label}>Appointment Date (YYYY-MM-DD) *</Text>
+      <Text style={styles.label}>Appointment Date *</Text>
       <TouchableOpacity
         style={styles.input}
         onPress={() => setShowDatePicker(true)}
@@ -145,7 +196,16 @@ export default function BookAppointmentScreen({ route, navigation }) {
               : {})}
           />
           {Platform.OS === 'ios' && (
-            <TouchableOpacity style={styles.dateDoneButton} onPress={() => setShowDatePicker(false)}>
+            <TouchableOpacity 
+              style={styles.dateDoneButton} 
+              onPress={() => {
+                setShowDatePicker(false);
+                // Ensure the selected date is applied
+                if (dateValue) {
+                  setAppointmentDate(formatDate(dateValue));
+                }
+              }}
+            >
               <Text style={styles.dateDoneText}>Done</Text>
             </TouchableOpacity>
           )}
@@ -155,7 +215,7 @@ export default function BookAppointmentScreen({ route, navigation }) {
       {/* Time Slots */}
       <Text style={styles.label}>Select Time Slot *</Text>
       <View style={styles.timeRow}>
-        {timeSlots.map((slot) => (
+        {availableTimeSlots.map((slot) => (
           <TouchableOpacity
             key={slot}
             style={[
@@ -175,6 +235,9 @@ export default function BookAppointmentScreen({ route, navigation }) {
           </TouchableOpacity>
         ))}
       </View>
+      {availableTimeSlots.length === 0 && (
+        <Text style={styles.noSlotsText}>No available time slots for today</Text>
+      )}
 
       {/* Notes */}
       <Text style={styles.label}>Additional Notes (optional)</Text>
@@ -189,8 +252,8 @@ export default function BookAppointmentScreen({ route, navigation }) {
       />
 
       {/* Confirm Button */}
-      <TouchableOpacity 
-        style={[styles.button, loading && styles.buttonDisabled]} 
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleConfirm}
         disabled={loading}
       >
@@ -304,6 +367,11 @@ const styles = StyleSheet.create({
   timeTextActive: {
     color: COLORS.white,
   },
+  noSlotsText: {
+    textAlign: 'center',
+    color: COLORS.error,
+    marginBottom: SPACING.md,
+  },
   dateText: {
     color: COLORS.dark,
     fontSize: 15,
@@ -349,10 +417,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-
-
-
-
-
-
