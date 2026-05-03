@@ -320,11 +320,12 @@ const styles = StyleSheet.create({
   logoutButton: {
     padding: SPACING.md,
     paddingHorizontal: SPACING.lg,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.white,
     borderRadius: BORDER_RADIUS.md,
+    borderColor: 'rgb(234, 111, 111)',
   },
   logoutText: {
-    color: COLORS.white,
+    color: 'rgb(234, 111, 111)',
     fontWeight: '600',
   },
   profileCard: {

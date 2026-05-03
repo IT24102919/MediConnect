@@ -612,7 +612,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   errorText: {
-    color: COLORS.error,
+    color: 'rgb(241, 37, 37)',
     fontSize: 12,
     marginTop: SPACING.sm,
     marginLeft: SPACING.md,

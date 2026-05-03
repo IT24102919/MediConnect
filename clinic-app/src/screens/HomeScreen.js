@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: COLORS.primary,
+    backgroundColor: 'rgb(135, 155, 243)',
     opacity: 0.1,
   },
   circle2: {
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: 'rgb(23, 8, 122)',
     opacity: 0.08,
   },
   contentContainer: {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "800",
-    color: COLORS.dark,
+    color: 'rgb(22, 6, 128)',
     letterSpacing: 0.5,
   },
   subtitle: {
@@ -279,13 +279,15 @@ const styles = StyleSheet.create({
   infoBox: {
     marginTop: SPACING.xxxl,
     padding: SPACING.lg,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.white,
     borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: 'rgb(241, 37, 37)',
     alignItems: "center",
     ...SHADOWS.sm,
   },
   infoText: {
-    color: COLORS.white,
+    color: 'rgb(239, 45, 45)',
     fontSize: 12,
     fontWeight: "600",
   },
