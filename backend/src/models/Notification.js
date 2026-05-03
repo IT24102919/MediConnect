@@ -24,6 +24,8 @@ const notificationSchema = new mongoose.Schema(
         'appointment_created',
         'appointment_updated',
         'appointment_cancelled',
+        'appointment_confirmed',
+        'appointment_rejected',
         'appointment_reminder_24h',
         'appointment_reminder_1h',
         'general'

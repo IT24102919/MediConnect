@@ -6,17 +6,25 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  Image
+  Image,
+  TextInput,
+  Modal
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import { AppointmentContext } from '../context/AppointmentContext';
 import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import axiosInstance from '../api/axios';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function DoctorDashboardScreen({ navigation }) {
   const { logout, token, user, deleteAccount } = useContext(AuthContext);
+  const { fetchAppointmentsByDoctor, updateAppointment, loading } = useContext(AppointmentContext);
   const [doctorProfile, setDoctorProfile] = useState(null);
   const [appointments, setAppointments] = useState([]);
+  const [filter, setFilter] = useState('today'); // 'today' or 'all'
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
@@ -27,15 +35,15 @@ export default function DoctorDashboardScreen({ navigation }) {
 
   useEffect(() => {
     fetchDoctorProfile();
-    fetchAppointments();
   }, []);
 
-  //refreshes data when returning to this screen
   useFocusEffect(
     useCallback(() => {
       fetchDoctorProfile();
-      fetchAppointments();
-    }, [])
+      if (doctorProfile?._id) {
+        loadAppointments();
+      }
+    }, [doctorProfile?._id, filter])
   );
 
   const fetchDoctorProfile = async () => {
@@ -43,20 +51,69 @@ export default function DoctorDashboardScreen({ navigation }) {
       const response = await axiosInstance.get('/doctors');
       const profile = response.data.doctors.find(doc => doc.name === user.name);
       setDoctorProfile(profile);
+      if (profile?._id) {
+        loadAppointments();
+      }
     } catch (error) {
       console.log("Error fetching profile:", error);
     }
   };
 
-  const fetchAppointments = async () => {
-    try {
-      const response = await axiosInstance.get('/appointments');
-      const myAppointments = response.data.appointments?.filter(
-        apt => apt.doctorId === doctorProfile?._id
-      ) || [];
-      setAppointments(myAppointments);
-    } catch (error) {
-      console.log("Error fetching appointments:", error);
+  const loadAppointments = async () => {
+    if (!doctorProfile?._id) return;
+    const result = await fetchAppointmentsByDoctor(doctorProfile._id, filter);
+    if (result.success) {
+      setAppointments(result.appointments);
+    }
+  };
+
+  const handleAcceptAppointment = async (appointment) => {
+    Alert.alert(
+      'Confirm Appointment',
+      `Accept appointment with ${appointment.patientName}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Accept',
+          onPress: async () => {
+            const result = await updateAppointment(appointment._id, { status: 'Confirmed' });
+            if (result.success) {
+              Alert.alert('Success', 'Appointment confirmed');
+              loadAppointments();
+            } else {
+              Alert.alert('Error', result.message);
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const handleRejectPress = (appointment) => {
+    setSelectedAppointment(appointment);
+    setRejectionReason('');
+    setShowRejectModal(true);
+  };
+
+  const submitRejection = async () => {
+    if (!rejectionReason.trim()) {
+      Alert.alert('Error', 'Please provide a reason for rejection');
+      return;
+    }
+
+    const result = await updateAppointment(selectedAppointment._id, {
+      status: 'Rejected',
+      rejectionReason: rejectionReason.trim()
+    });
+
+    if (result.success) {
+      Alert.alert('Success', 'Appointment rejected');
+      setShowRejectModal(false);
+      setSelectedAppointment(null);
+      setRejectionReason('');
+      loadAppointments();
+    } else {
+      Alert.alert('Error', result.message);
     }
   };
 
@@ -86,6 +143,16 @@ export default function DoctorDashboardScreen({ navigation }) {
         }
       ]
     );
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Confirmed': return styles.confirmed;
+      case 'Pending': return styles.pending;
+      case 'Rejected': return styles.rejected;
+      case 'Cancelled': return styles.cancelled;
+      default: return styles.pending;
+    }
   };
 
   return (
@@ -118,7 +185,7 @@ export default function DoctorDashboardScreen({ navigation }) {
             style={styles.editButton}
             onPress={() => navigation.navigate('CompleteProfile', {
               isEditing: true,
-              doctorData: doctorProfile  //Pass the existing profile data to edit form
+              doctorData: doctorProfile
             })}
           >
             <Text style={styles.editButtonText}>Edit Profile</Text>
@@ -133,22 +200,100 @@ export default function DoctorDashboardScreen({ navigation }) {
       )}
 
       <View style={styles.appointmentsCard}>
-        <Text style={styles.sectionTitle}>Today's Appointments</Text>
-        {appointments.length === 0 ? (
-          <Text style={styles.emptyText}>No appointments yet</Text>
+        <View style={styles.filterRow}>
+          <Text style={styles.sectionTitle}>Appointments</Text>
+          <View style={styles.filterButtons}>
+            <TouchableOpacity
+              style={[styles.filterButton, filter === 'today' && styles.filterButtonActive]}
+              onPress={() => setFilter('today')}
+            >
+              <Text style={[styles.filterText, filter === 'today' && styles.filterTextActive]}>Today</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.filterButton, filter === 'all' && styles.filterButtonActive]}
+              onPress={() => setFilter('all')}
+            >
+              <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>All</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {loading ? (
+          <Text style={styles.loadingText}>Loading appointments...</Text>
+        ) : appointments.length === 0 ? (
+          <Text style={styles.emptyText}>No appointments {filter === 'today' ? 'today' : ''}</Text>
         ) : (
           appointments.map(apt => (
-            <View key={apt._id} style={styles.appointmentItem}>
-              <Text style={styles.patientName}>{apt.patientName}</Text>
-              <Text style={styles.appointmentTime}>{apt.timeSlot}</Text>
-              <Text style={[styles.status,
-              apt.status === 'Confirmed' ? styles.confirmed : styles.pending]}>
-                {apt.status}
-              </Text>
+            <View key={apt._id} style={styles.appointmentCard}>
+              <View style={styles.appointmentHeader}>
+                <Text style={styles.patientName}>{apt.patientName || apt.patientId?.name}</Text>
+                <Text style={[styles.status, getStatusColor(apt.status)]}>
+                  {apt.status}
+                </Text>
+              </View>
+              <Text style={styles.appointmentDetails}>📅 {new Date(apt.appointmentDate).toDateString()}</Text>
+              <Text style={styles.appointmentDetails}>⏰ {apt.timeSlot}</Text>
+              {apt.notes ? <Text style={styles.notes}>📝 Notes: {apt.notes}</Text> : null}
+              {apt.rejectionReason ? <Text style={styles.rejectionReason}>❌ Reason: {apt.rejectionReason}</Text> : null}
+              
+              {apt.status === 'Pending' && (
+                <View style={styles.actionButtons}>
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.acceptButton]}
+                    onPress={() => handleAcceptAppointment(apt)}
+                  >
+                    <Text style={styles.actionButtonText}>Accept</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.rejectButton]}
+                    onPress={() => handleRejectPress(apt)}
+                  >
+                    <Text style={styles.actionButtonText}>Reject</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           ))
         )}
       </View>
+
+      {/* Rejection Reason Modal */}
+      <Modal
+        visible={showRejectModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowRejectModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Rejection Reason</Text>
+            <Text style={styles.modalSubtitle}>Please provide a reason for rejecting this appointment</Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Enter reason..."
+              placeholderTextColor={COLORS.textMuted}
+              value={rejectionReason}
+              onChangeText={setRejectionReason}
+              multiline
+              numberOfLines={3}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelModalButton]}
+                onPress={() => setShowRejectModal(false)}
+              >
+                <Text style={styles.cancelModalText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.submitModalButton]}
+                onPress={submitRejection}
+              >
+                <Text style={styles.submitModalText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -175,11 +320,12 @@ const styles = StyleSheet.create({
   logoutButton: {
     padding: SPACING.md,
     paddingHorizontal: SPACING.lg,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.white,
     borderRadius: BORDER_RADIUS.md,
+    borderColor: 'rgb(234, 111, 111)',
   },
   logoutText: {
-    color: COLORS.white,
+    color: 'rgb(234, 111, 111)',
     fontWeight: '600',
   },
   profileCard: {
@@ -219,10 +365,10 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: COLORS.error,
+    borderColor: 'rgb(234, 111, 111)',
   },
   deleteButtonText: {
-    color: COLORS.error,
+    color: 'rgb(234, 111, 111)',
     fontWeight: '600',
   },
   appointmentsCard: {
@@ -232,42 +378,123 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg,
     ...SHADOWS.md,
   },
-  appointmentItem: {
+  filterRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: SPACING.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.textMuted,
-    opacity: 0.2,
+    marginBottom: SPACING.lg,
+  },
+  filterButtons: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+  },
+  filterButton: {
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+  },
+  filterButtonActive: {
+    backgroundColor: COLORS.primary,
+  },
+  filterText: {
+    color: COLORS.primary,
+    fontWeight: '600',
+  },
+  filterTextActive: {
+    color: COLORS.white,
+  },
+  appointmentCard: {
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.lg,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  appointmentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
   },
   patientName: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '700',
     color: COLORS.dark,
-  },
-  appointmentTime: {
-    fontSize: 12,
-    color: COLORS.textLight,
   },
   status: {
     fontSize: 12,
     fontWeight: '600',
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.xs,
     borderRadius: BORDER_RADIUS.full,
   },
   confirmed: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.success,
     color: COLORS.white,
   },
   pending: {
-    backgroundColor: COLORS.secondary,
-    color: COLORS.dark,
+    backgroundColor: COLORS.warning,
+    color: COLORS.white,
+  },
+  rejected: {
+    backgroundColor: COLORS.error,
+    color: COLORS.white,
+  },
+  cancelled: {
+    backgroundColor: COLORS.textMuted,
+    color: COLORS.white,
+  },
+  appointmentDetails: {
+    fontSize: 13,
+    color: COLORS.text,
+    marginBottom: SPACING.xs,
+  },
+  notes: {
+    fontSize: 12,
+    color: COLORS.textLight,
+    fontStyle: 'italic',
+    marginTop: SPACING.sm,
+  },
+  rejectionReason: {
+    fontSize: 12,
+    color: COLORS.error,
+    marginTop: SPACING.sm,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: SPACING.md,
+    marginTop: SPACING.md,
+  },
+  actionButton: {
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    minWidth: 80,
+    alignItems: 'center',
+  },
+  acceptButton: {
+    backgroundColor: 'rgb(84, 198, 103)',
+  },
+  rejectButton: {
+    backgroundColor: 'rgb(234, 111, 111)',
+  },
+  actionButtonText: {
+    color: COLORS.white,
+    fontWeight: '600',
   },
   emptyText: {
-    color: COLORS.textLight,
     textAlign: 'center',
+    color: COLORS.textLight,
+    paddingVertical: SPACING.xl,
+  },
+  loadingText: {
+    textAlign: 'center',
+    color: COLORS.primary,
     paddingVertical: SPACING.xl,
   },
   profileImage: {
@@ -289,5 +516,68 @@ const styles = StyleSheet.create({
   },
   profileImagePlaceholderText: {
     fontSize: 40,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.xl,
+    width: '85%',
+    ...SHADOWS.lg,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.dark,
+    marginBottom: SPACING.sm,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    marginBottom: SPACING.lg,
+  },
+  modalInput: {
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: SPACING.lg,
+    minHeight: 100,
+    textAlignVertical: 'top',
+    color: COLORS.dark,
+    marginBottom: SPACING.xl,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: SPACING.md,
+  },
+  modalButton: {
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  cancelModalButton: {
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.error,
+  },
+  submitModalButton: {
+    backgroundColor: COLORS.primary,
+  },
+  cancelModalText: {
+    color: COLORS.error,
+    fontWeight: '600',
+  },
+  submitModalText: {
+    color: COLORS.white,
+    fontWeight: '600',
   },
 });

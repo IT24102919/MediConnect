@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 1,
     backgroundColor: COLORS.textMuted,
-    opacity: 0.2,
+    // opacity: 0.2,
   },
   dividerText: {
     marginHorizontal: SPACING.md,
@@ -404,7 +404,6 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     borderTopWidth: 1,
     borderTopColor: COLORS.textMuted,
-    opacity: 0.2,
   },
   signupText: {
     color: COLORS.textLight,
@@ -412,7 +411,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   signupLink: {
-    color: COLORS.primary,
+    color: COLORS.text,
     fontWeight: "700",
     fontSize: 14,
     letterSpacing: 0.3,

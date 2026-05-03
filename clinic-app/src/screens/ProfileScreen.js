@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   logoutButton: {
     backgroundColor: COLORS.white,
     borderWidth: 2,
-    borderColor: COLORS.accent,
+    borderColor: 'rgb(240, 132, 132)',
     paddingVertical: SPACING.md,
     borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
