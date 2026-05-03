@@ -52,9 +52,7 @@ export default function LoginScreen({ navigation }) {
         Alert.alert("Login Failed", result.message);
       } else {
         console.log("✅ LOGIN SUCCESS:", result.message);
-        Alert.alert("Success", result.message);
-        const userRole = String(result?.user?.role || "").toLowerCase();
-        navigation.replace(userRole === "doctor" ? "DoctorDashboard" : "Home");
+        // Alert.alert("Success", result.message);
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";
@@ -371,7 +369,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 1,
     backgroundColor: COLORS.textMuted,
-    opacity: 0.2,
+    // opacity: 0.2,
   },
   dividerText: {
     marginHorizontal: SPACING.md,
@@ -406,7 +404,6 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     borderTopWidth: 1,
     borderTopColor: COLORS.textMuted,
-    opacity: 0.2,
   },
   signupText: {
     color: COLORS.textLight,
@@ -414,7 +411,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   signupLink: {
-    color: COLORS.primary,
+    color: COLORS.text,
     fontWeight: "700",
     fontSize: 14,
     letterSpacing: 0.3,
