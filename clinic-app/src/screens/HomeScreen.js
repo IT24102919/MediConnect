@@ -1,11 +1,23 @@
-import React, { useContext } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import React, { useContext, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { AuthContext } from "../context/AuthContext";
-
-const { width } = Dimensions.get("window");
+import { NotificationContext } from "../context/NotificationContext";
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from "../../constants/theme";
 
 export default function HomeScreen({ navigation }) {
   const { user } = useContext(AuthContext);
+  const { unreadCount, fetchUnreadCount, upcomingReminders, fetchUpcomingReminders } =
+    useContext(NotificationContext);
+
+  useEffect(() => {
+    fetchUnreadCount();
+    fetchUpcomingReminders();
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchUnreadCount();
+      fetchUpcomingReminders();
+    });
+    return unsubscribe;
+  }, [navigation, fetchUnreadCount, fetchUpcomingReminders]);
 
   return (
     <View style={styles.mainContainer}>
@@ -13,8 +25,8 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.circle1} />
       <View style={styles.circle2} />
 
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
+      <ScrollView
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.contentContainer}
       >
         {/* Welcome Header */}
@@ -28,7 +40,7 @@ export default function HomeScreen({ navigation }) {
 
         {/* Options Grid/List */}
         <View style={styles.menuContainer}>
-          
+
           {/* Card 1: View Doctors */}
           <TouchableOpacity
             style={styles.glassCard}
@@ -49,7 +61,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("MyAppointments")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(129, 140, 248, 0.2)' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}>
               <Text style={styles.cardIcon}>📅</Text>
             </View>
             <View style={styles.cardContent}>
@@ -59,27 +71,12 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.arrowIcon}>›</Text>
           </TouchableOpacity>
 
-          {/* Card 3: Profile */}
-          <TouchableOpacity
-            style={styles.glassCard}
-            onPress={() => navigation.navigate("Profile")}
-          >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.2)' }]}>
-              <Text style={styles.cardIcon}>⚙️</Text>
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>Profile Settings</Text>
-              <Text style={styles.cardText}>Manage your health records</Text>
-            </View>
-            <Text style={styles.arrowIcon}>›</Text>
-          </TouchableOpacity>
-
           {/* Card 4: Medical History */}
           <TouchableOpacity
             style={styles.glassCard}
             onPress={() => navigation.navigate("MedicalHistory")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(34, 197, 94, 0.18)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}> 
               <Text style={styles.cardIcon}>🩺</Text>
             </View>
             <View style={styles.cardContent}>
@@ -94,7 +91,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.glassCard}
             onPress={() => navigation.navigate("AppointmentRecords")}
           >
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(251, 191, 36, 0.2)' }]}> 
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}> 
               <Text style={styles.cardIcon}>📁</Text>
             </View>
             <View style={styles.cardContent}>
@@ -104,7 +101,65 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.arrowIcon}>›</Text>
           </TouchableOpacity>
 
+          {/* Card 5: Notifications */}
+          <TouchableOpacity
+            style={styles.glassCard}
+            onPress={() => navigation.navigate("Notifications")}
+          >
+            {/* backgroundColor: 'rgba(29, 78, 216, 0.2)' */}
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}>
+              <Text style={styles.cardIcon}>🔔</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Notifications</Text>
+              <Text style={styles.cardText}>See booking updates and alerts</Text>
+            </View>
+            {unreadCount > 0 ? (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
+              </View>
+            ) : null}
+            <Text style={styles.arrowIcon}>›</Text>
+          </TouchableOpacity>
+
+          {/* Card 6: Reminders */}
+          <TouchableOpacity
+            style={styles.glassCard}
+            onPress={() => navigation.navigate("Reminders")}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(29, 78, 216, 0.2)' }]}> 
+              <Text style={styles.cardIcon}>⏰</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Reminders</Text>
+              <Text style={styles.cardText}>See upcoming appointment reminders</Text>
+            </View>
+            {upcomingReminders.length > 0 ? (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{upcomingReminders.length}</Text>
+              </View>
+            ) : null}
+            <Text style={styles.arrowIcon}>›</Text>
+          </TouchableOpacity>
+
         </View>
+
+        
+
+          {/* Card 3: Profile */}
+          <TouchableOpacity
+            style={styles.glassCard}
+            onPress={() => navigation.navigate("Profile")}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}>
+              <Text style={styles.cardIcon}>⚙️</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Profile Settings</Text>
+              <Text style={styles.cardText}>Manage your health records</Text>
+            </View>
+            <Text style={styles.arrowIcon}>›</Text>
+          </TouchableOpacity>
 
         {/* Support Card (Optional extra) */}
         <View style={styles.infoBox}>
@@ -119,7 +174,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#0F172A", 
+    backgroundColor: COLORS.background, 
   },
   circle1: {
     position: 'absolute',
@@ -128,8 +183,8 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#38BDF8',
-    opacity: 0.3,
+    backgroundColor: 'rgb(135, 155, 243)',
+    opacity: 0.1,
   },
   circle2: {
     position: 'absolute',
@@ -138,56 +193,52 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: '#818CF8',
-    opacity: 0.2,
+    backgroundColor: 'rgb(23, 8, 122)',
+    opacity: 0.08,
   },
   contentContainer: {
-    padding: 24,
-    paddingTop: 60,
+    padding: SPACING.xxl,
+    paddingTop: SPACING.xxxl,
   },
   header: {
-    marginBottom: 35,
+    marginBottom: SPACING.xxxl,
   },
   title: {
     fontSize: 32,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: 'rgb(22, 6, 128)',
     letterSpacing: 0.5,
   },
   subtitle: {
-    marginTop: 8,
+    marginTop: SPACING.md,
     fontSize: 16,
-    color: "rgba(255, 255, 255, 0.6)",
+    color: COLORS.textLight,
     lineHeight: 24,
   },
   userName: {
-    color: "#38BDF8",
+    color: COLORS.primary,
     fontWeight: "700",
   },
   menuContainer: {
-    gap: 16,
+    paddingBottom: SPACING.sm,
   },
   glassCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
-    borderRadius: 24,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 15,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.xl,
+    ...SHADOWS.md,
+    marginBottom: SPACING.lg,
   },
   iconCircle: {
     width: 50,
     height: 50,
-    borderRadius: 15,
-    backgroundColor: "rgba(56, 189, 248, 0.15)",
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: COLORS.primary,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 16,
+    marginRight: SPACING.lg,
   },
   cardIcon: {
     fontSize: 24,
@@ -198,30 +249,55 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: COLORS.dark,
   },
   cardText: {
-    marginTop: 4,
+    marginTop: SPACING.sm,
     fontSize: 13,
-    color: "rgba(255, 255, 255, 0.5)",
+    color: COLORS.textLight,
   },
   arrowIcon: {
     fontSize: 24,
-    color: "rgba(255, 255, 255, 0.3)",
-    marginLeft: 10,
+    color: COLORS.textMuted,
+    marginLeft: SPACING.md,
+  },
+  badge: {
+    minWidth: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.accent,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: SPACING.sm,
+    marginRight: SPACING.md
+  },
+  badgeText: {
+    color: COLORS.white,
+    fontSize: 12,
+    fontWeight: "700"
   },
   infoBox: {
-    marginTop: 30,
-    padding: 15,
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
-    borderRadius: 15,
+    marginTop: SPACING.xxxl,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
-    borderColor: "rgba(239, 68, 68, 0.2)",
+    borderColor: 'rgb(241, 37, 37)',
     alignItems: "center",
+    ...SHADOWS.sm,
   },
   infoText: {
-    color: "#F87171",
+    color: 'rgb(239, 45, 45)',
     fontSize: 12,
     fontWeight: "600",
   },
 });
+
+
+
+
+
+
+
+
+

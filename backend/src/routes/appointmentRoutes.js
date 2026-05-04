@@ -6,6 +6,7 @@ const {
   getAppointment,
   getAppointmentsByPatient,
   getAppointmentRecordsByPatient,
+  getAppointmentsByDoctor,
   updateAppointment,
   deleteAppointment
 } = require('../controllers/appointmentController');
@@ -16,6 +17,7 @@ router.post('/', authMiddleware, createAppointment);
 router.get('/', authMiddleware, getAllAppointments);
 router.get('/patient/:patientId/records', authMiddleware, getAppointmentRecordsByPatient);
 router.get('/patient/:patientId', authMiddleware, getAppointmentsByPatient);
+router.get('/doctor/:doctorId', authMiddleware, getAppointmentsByDoctor);
 router.get('/:id', authMiddleware, getAppointment);
 router.put('/:id', authMiddleware, updateAppointment);
 router.delete('/:id', authMiddleware, deleteAppointment);

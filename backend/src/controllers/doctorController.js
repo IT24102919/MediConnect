@@ -13,36 +13,45 @@ const createDoctor = async (req, res) => {
       description,
       available,
       phone,
-      image
+      image,
+      userId
     } = req.body;
 
     // Validation
-    if (!name || !specialization || !hospital || experience === undefined || fee === undefined) {
+    if (!name) {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields'
       });
     }
 
-    if (Number(experience) < 0 || Number(fee) < 0) {
+    // Only validate if experience/fee are provided (not undefined during initial creation)
+    if (experience !== undefined && Number(experience) < 0) {
       return res.status(400).json({
         success: false,
-        message: 'Experience and fee must be valid positive numbers'
+        message: 'Experience must be a valid positive number'
+      });
+    }
+    if (fee !== undefined && Number(fee) < 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Fee must be a valid positive number'
       });
     }
 
     // Create doctor
     const doctor = new Doctor({
       name: name.trim(),
-      specialization,
-      hospital: hospital.trim(),
-      experience: Number(experience),
-      fee: Number(fee),
+      specialization: specialization || '',  // Allow empty
+      hospital: hospital || '',              // Allow empty
+      experience: experience !== undefined ? Number(experience) : 0,
+      fee: fee !== undefined ? Number(fee) : 0,
       rating: rating !== undefined ? Number(rating) : 0,
       description: description || '',
-      available: available !== undefined ? Boolean(available) : true,
+      available: available !== undefined ? Boolean(available) : false,  // Default false until profile complete
       phone: phone || '',
-      image: image || null
+      image: image || null,
+      userId: userId || null
     });
 
     await doctor.save();

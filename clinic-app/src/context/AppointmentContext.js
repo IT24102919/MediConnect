@@ -87,6 +87,45 @@ export function AppointmentProvider({ children }) {
     }
   }, []);
 
+  // Fetch appointments for doctor
+const fetchAppointmentsByDoctor = useCallback(async (doctorId, filter = 'today') => {
+  try {
+    if (!doctorId) {
+      return {
+        success: false,
+        message: 'Doctor ID is required'
+      };
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const response = await axiosInstance.get(`/appointments/doctor/${doctorId}?filter=${filter}`);
+
+    if (response.data.success) {
+      setAppointments(response.data.appointments || []);
+      return {
+        success: true,
+        appointments: response.data.appointments || []
+      };
+    }
+
+    return {
+      success: false,
+      message: 'Failed to fetch appointments'
+    };
+  } catch (err) {
+    const message = err.response?.data?.message || 'Failed to fetch appointments';
+    setError(message);
+    return {
+      success: false,
+      message
+    };
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
   // Create new appointment
   const addAppointment = async (appointmentData) => {
     try {
@@ -176,6 +215,7 @@ export function AppointmentProvider({ children }) {
       if (response.data.success) {
         // Remove from local state
         setAppointments((prev) => prev.filter((apt) => apt._id !== appointmentId));
+        setAppointmentRecords((prev) => prev.filter((apt) => apt._id !== appointmentId));
 
         return {
           success: true,
@@ -206,6 +246,7 @@ export function AppointmentProvider({ children }) {
     error,
     fetchAppointmentsByPatient,
     fetchAppointmentRecordsByPatient,
+    fetchAppointmentsByDoctor,
     addAppointment,
     updateAppointment,
     deleteAppointment,
@@ -218,3 +259,6 @@ export function AppointmentProvider({ children }) {
     </AppointmentContext.Provider>
   );
 }
+
+
+

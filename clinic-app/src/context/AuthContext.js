@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
 
   // Restore token and user on app start
   useEffect(() => {
@@ -16,11 +17,11 @@ export function AuthProvider({ children }) {
       try {
         const savedToken = await AsyncStorage.getItem('authToken');
         const savedUser = await AsyncStorage.getItem('user');
-        
+
         if (savedToken) {
           setToken(savedToken);
           setIsAuthenticated(true);
-          
+
           if (savedUser) {
             setUser(JSON.parse(savedUser));
           }
@@ -35,8 +36,49 @@ export function AuthProvider({ children }) {
     restoreToken();
   }, []);
 
+  // Check if doctor has completed profile
+  const checkDoctorProfile = async () => {
+    try {
+      const currentToken = await AsyncStorage.getItem('authToken');
+      const currentUser = await AsyncStorage.getItem('user');
+
+      console.log("🔍 checkDoctorProfile - token exists:", !!currentToken);
+      console.log("🔍 checkDoctorProfile - user:", currentUser);
+
+      if (!currentToken || !currentUser) return { exists: false };
+
+      const parsedUser = JSON.parse(currentUser);
+      console.log("🔍 checkDoctorProfile - parsed role:", parsedUser.role);
+
+      if (parsedUser.role !== 'doctor') return { exists: true };
+      // Check if doctor profile exists and is complete
+      const response = await axiosInstance.get('/doctors', {
+        headers: { Authorization: `Bearer ${currentToken}` }
+      });
+
+      console.log("🔍 checkDoctorProfile - doctors found:", response.data.doctors.length);
+
+      // Find doctor profile linked to this user
+      const doctorProfile = response.data.doctors.find(
+        doc => doc.userId === parsedUser.id || doc.name === parsedUser.name
+      );
+
+      console.log("🔍 checkDoctorProfile - matching doctor:", doctorProfile);
+
+      // Profile exists AND has required fields filled
+      if (doctorProfile && doctorProfile.specialization && doctorProfile.hospital && doctorProfile.hospital !== '') {
+        return { exists: true, profile: doctorProfile };
+      } else {
+        return { exists: false };
+      }
+    } catch (error) {
+      console.log("Check doctor profile error:", error);
+      return { exists: false };
+    }
+  };
+
   // Register user
-  const register = async (name, email, password, confirmPassword) => {
+  const register = async (name, email, password, confirmPassword, role = "patient") => {
     try {
       // Validation
       if (!name || !email || !password || !confirmPassword) {
@@ -66,7 +108,7 @@ export function AuthProvider({ children }) {
         name: name.trim(),
         email: email.trim(),
         password: password.trim(),
-        role: 'patient'
+        role: role
       });
 
       console.log("📡 REGISTER API: Response received:", response.data);
@@ -78,14 +120,56 @@ export function AuthProvider({ children }) {
         await AsyncStorage.setItem('authToken', token);
         await AsyncStorage.setItem('user', JSON.stringify(user));
 
-        // Update state
+        // For doctors, set needsProfileCompletion BEFORE updating auth state
+        if (user.role === 'doctor') {
+          setNeedsProfileCompletion(true);
+          await AsyncStorage.setItem('needsProfileCompletion', 'true');
+        }
+
+        // Update auth state (this triggers AppNavigator re-render)
         setToken(token);
         setUser(user);
         setIsAuthenticated(true);
 
+        // If user registered as doctor, create doctor profile (async - doesn't block navigation)
+        if (user.role === 'doctor') {
+          try {
+            console.log("👨‍⚕️ Creating doctor profile for:", user.id);
+
+            // First check if doctor profile already exists
+            const doctorsResponse = await axiosInstance.get('/doctors', {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const existingDoctor = doctorsResponse.data.doctors.find(
+              doc => doc.userId === user.id || doc.name === user.name
+            );
+
+            if (!existingDoctor) {
+              // Create a basic doctor profile (all fields empty - will need completion)
+              const doctorResponse = await axiosInstance.post('/doctors', {
+                name: user.name,
+                userId: user.id,
+                specialization: "",
+                hospital: "",
+                experience: 0,
+                fee: 0,
+                available: false,
+                description: ""
+              }, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              console.log("✅ Doctor profile created");
+            }
+          } catch (error) {
+            console.log("⚠️ Doctor profile error:", error.response?.data?.message);
+          }
+        }
+
         return {
           success: true,
-          message: 'Registration successful!'
+          message: 'Registration successful!',
+          user
         };
       }
 
@@ -95,8 +179,6 @@ export function AuthProvider({ children }) {
       };
     } catch (error) {
       console.log("❌ REGISTER API ERROR:", error.message);
-      console.log("Response data:", error.response?.data);
-      console.log("Response status:", error.response?.status);
       const message = error.response?.data?.message || 'Registration failed. Please try again.';
       return {
         success: false,
@@ -139,7 +221,8 @@ export function AuthProvider({ children }) {
 
         return {
           success: true,
-          message: 'Login successful!'
+          message: 'Login successful!',
+          user
         };
       }
 
@@ -149,8 +232,6 @@ export function AuthProvider({ children }) {
       };
     } catch (error) {
       console.log("❌ LOGIN API ERROR:", error.message);
-      console.log("Response data:", error.response?.data);
-      console.log("Response status:", error.response?.status);
       const message = error.response?.data?.message || 'Invalid email or password.';
       return {
         success: false,
@@ -164,10 +245,12 @@ export function AuthProvider({ children }) {
     try {
       await AsyncStorage.removeItem('authToken');
       await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem('needsProfileCompletion');
 
       setToken(null);
       setUser(null);
       setIsAuthenticated(false);
+      setNeedsProfileCompletion(false);
 
       return {
         success: true,
@@ -219,15 +302,65 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Delete user account
+  const deleteAccount = async () => {
+    try {
+      const currentToken = await AsyncStorage.getItem('authToken');
+
+      if (!currentToken) {
+        return {
+          success: false,
+          message: 'No token available'
+        };
+      }
+
+      const response = await axiosInstance.delete('/auth/account', {
+        headers: { Authorization: `Bearer ${currentToken}` }
+      });
+
+      if (response.data.success) {
+        // Clear all local storage
+        await AsyncStorage.removeItem('authToken');
+        await AsyncStorage.removeItem('user');
+        await AsyncStorage.removeItem('needsProfileCompletion');
+
+        // Clear state
+        setToken(null);
+        setUser(null);
+        setIsAuthenticated(false);
+        setNeedsProfileCompletion(false);
+
+        return {
+          success: true,
+          message: 'Account deleted successfully'
+        };
+      }
+
+      return {
+        success: false,
+        message: response.data.message || 'Failed to delete account'
+      };
+    } catch (error) {
+      console.log("❌ DELETE ACCOUNT ERROR:", error.response?.data);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to delete account'
+      };
+    }
+  };
+
   const value = {
     user,
     token,
     loading,
     isAuthenticated,
+    needsProfileCompletion,
     login,
     register,
     logout,
-    getProfile
+    getProfile,
+    checkDoctorProfile,
+    deleteAccount
   };
 
   return (

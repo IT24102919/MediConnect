@@ -1,15 +1,17 @@
-// Load environment variables
-require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-// Import database configuration
+const envPath = process.env.ENV_FILE || path.resolve(__dirname, '.env');
+require('dotenv').config({ path: envPath });
+
+if (!process.env.MONGO_URI && process.env.MONGODB_URI) {
+  process.env.MONGO_URI = process.env.MONGODB_URI;
+}
+
 const connectDB = require('./src/config/db');
 const seedDoctors = require('./src/utils/seedDoctors');
 
-// Import routes
 const authRoutes = require('./src/routes/authRoutes');
 const doctorRoutes = require('./src/routes/doctorRoutes');
 const scheduleRoutes = require('./src/routes/scheduleRoutes');
@@ -18,22 +20,20 @@ const paymentRoutes = require('./src/routes/paymentRoutes');
 const feedbackRoutes = require('./src/routes/feedbackRoutes');
 const uploadRoutes = require('./src/routes/uploadRoutes');
 const medicalHistoryRoutes = require('./src/routes/medicalHistoryRoutes');
+const notificationRoutes = require('./src/routes/notificationRoutes');
 
-// Import middleware
+const { processDueReminders, MINUTE_MS } = require('./src/services/reminderService');
+
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 
-// Initialize express app
 const app = express();
 
-// Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/schedules', scheduleRoutes);
@@ -42,15 +42,14 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/medical-history', medicalHistoryRoutes);
+app.use('/api/notifications', notificationRoutes);
 
-// Simple DB test route
 app.get('/api/test-db', (req, res) => {
   res.json({
     message: 'Database connected successfully'
   });
 });
 
-// Welcome route
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -64,12 +63,12 @@ app.get('/', (req, res) => {
       payments: '/api/payments',
       feedbacks: '/api/feedbacks',
       upload: '/api/upload',
-      medicalHistory: '/api/medical-history'
+      medicalHistory: '/api/medical-history',
+      notifications: '/api/notifications'
     }
   });
 });
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -77,20 +76,47 @@ app.use((req, res) => {
   });
 });
 
-// Error handling middleware (must be last)
+app.use((error, req, res, next) => {
+  if (error.type === 'entity.too.large') {
+    return res.status(413).json({
+      success: false,
+      message: 'Image is too large. Please choose a smaller file.'
+    });
+  }
+
+  return next(error);
+});
+
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5000;
 
-// Start server after successful database connection
 const startServer = async () => {
-  await connectDB();
-  await seedDoctors();
+  try {
+    console.log('MONGO_URI LOADED:', process.env.MONGO_URI ? 'YES' : 'NO');
 
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`API Documentation: http://localhost:${PORT}`);
-  });
+    await connectDB();
+    await seedDoctors();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+    await processDueReminders();
+    setInterval(async () => {
+      try {
+        const deliveredCount = await processDueReminders();
+        if (deliveredCount > 0) {
+          console.log(`Delivered ${deliveredCount} due reminder(s).`);
+        }
+      } catch (reminderError) {
+        console.error('Reminder processing failed:', reminderError.message);
+      }
+    }, MINUTE_MS);
+  } catch (error) {
+    console.error('Server startup error:', error.message);
+    process.exit(1);
+  }
 };
 
 startServer();

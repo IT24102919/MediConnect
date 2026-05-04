@@ -4,16 +4,22 @@ import AppNavigator from "./navigation/AppNavigator";
 import { AuthProvider } from "./context/AuthContext";
 import { AppointmentProvider } from "./context/AppointmentContext";
 import { PaymentProvider } from "./context/PaymentContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 export default function App() {
   return (
     <AuthProvider>
-      <PaymentProvider>
-        <AppointmentProvider>
-          <AppNavigator />
-          <StatusBar style="light" />
-        </AppointmentProvider>
-      </PaymentProvider>
+      <NotificationProvider>
+        <PaymentProvider>
+          <AppointmentProvider>
+            <AppNavigator />
+            <StatusBar style="light" />
+          </AppointmentProvider>
+        </PaymentProvider>
+      </NotificationProvider>
     </AuthProvider>
   );
 }
+
+
+
