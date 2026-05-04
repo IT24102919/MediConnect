@@ -10,18 +10,19 @@ import {
   TextInput
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import { PaymentContext } from '../context/PaymentContext';
 import { COLORS, SHADOWS, SPACING, BORDER_RADIUS } from '../../constants/theme';
-import axiosInstance from '../api/axios';
 
 export default function PaymentScreen({ route, navigation }) {
   const { appointment, doctor } = route.params || {};
   const { user } = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+  const { createPayment, loading } = useContext(PaymentContext);
   const [currentStatus, setCurrentStatus] = useState('Pending');
   const [cardholderName, setCardholderName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const amount = useMemo(() => Number(doctor?.fee || 0), [doctor]);
 
@@ -30,10 +31,14 @@ export default function PaymentScreen({ route, navigation }) {
     return digits.replace(/(.{4})/g, '$1 ').trim();
   };
 
-  const formatExpiry = (value) => {
-    const digits = value.replace(/\D/g, '').slice(0, 4);
-    if (digits.length <= 2) return digits;
-    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  const formatExpiryDate = (value) => {
+    const cleaned = value.replace(/\D/g, '');
+
+    if (cleaned.length <= 2) {
+      return cleaned;
+    }
+
+    return `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}`;
   };
 
   const isValidCardNumber = (value) => {
@@ -61,7 +66,8 @@ export default function PaymentScreen({ route, navigation }) {
       return 'Cardholder name is required.';
     }
 
-    if (!cardNumber.trim()) {
+    const digits = String(cardNumber).replace(/\D/g, '');
+    if (!digits) {
       return 'Card number is required.';
     }
 
@@ -69,21 +75,23 @@ export default function PaymentScreen({ route, navigation }) {
       return 'Please enter a valid card number.';
     }
 
-    if (!expiry.trim()) {
-      return 'Expiry must be in MM/YY format.';
+    if (!expiryDate.trim()) {
+      return 'Expiry date is required.';
     }
 
-    if (!cvv.trim()) {
-      return 'CVV is required.';
+    if (expiryDate.length < 4) {
+      return 'Expiry date must be at least 4 characters.';
+    }
+
+    if (!cvv.trim() || cvv.length < 3 || cvv.length > 4) {
+      return 'CVV must be 3 or 4 digits.';
     }
 
     return null;
   };
 
   const handlePayment = async () => {
-    if (loading || currentStatus === 'Paid') {
-      return;
-    }
+    if (submitting || loading || currentStatus === 'Paid') return;
 
     const validationMessage = validateCardInputs();
     if (validationMessage) {
@@ -102,48 +110,44 @@ export default function PaymentScreen({ route, navigation }) {
       return;
     }
 
-    setLoading(true);
+    const paymentData = {
+      appointmentId: appointment._id,
+      patientId,
+      amount,
+      paymentMethod: 'Card',
+      cardholderName: cardholderName.trim(),
+      cardNumber: cardNumber.replace(/\s/g, ''),
+      expiryDate: expiryDate.trim(),
+      cvv: cvv.trim(),
+      description: 'Appointment payment'
+    };
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1800));
+      setSubmitting(true);
+      const result = await createPayment(paymentData);
 
-      const response = await axiosInstance.post('/payments', {
-        appointmentId: appointment._id,
-        patientId,
-        amount,
-        paymentMethod: 'Card',
-        cardholderName: cardholderName.trim(),
-        cardNumber,
-        expiry,
-        cvv,
-        paymentStatus: 'Paid'
-      });
-
-      if (!response.data?.success) {
-        throw new Error(response.data?.message || 'Payment could not be saved');
+      if (result.success) {
+        setCurrentStatus('Paid');
+        Alert.alert('Payment Successful', 'Your payment was saved successfully.', [
+          {
+            text: 'View Payment History',
+            onPress: () => navigation.navigate('PaymentHistory')
+          },
+          {
+            text: 'OK',
+            style: 'cancel',
+            onPress: () => navigation.goBack()
+          }
+        ]);
+        return;
       }
 
-      setCurrentStatus('Paid');
-      Alert.alert('Payment Successful', 'Your payment was saved successfully.', [
-        {
-          text: 'Go to My Appointments',
-          onPress: () => navigation.navigate('MyAppointments')
-        },
-        {
-          text: 'OK',
-          style: 'cancel'
-        }
-      ]);
+      Alert.alert('Payment Failed', result.message || 'Could not save payment.');
     } catch (error) {
-      console.error('❌ PAYMENT SAVE ERROR:', error);
-      console.error('Response data:', error.response?.data);
-      console.error('Response status:', error.response?.status);
-      Alert.alert(
-        'Payment Failed',
-        error.response?.data?.message || error.message || 'Could not save payment.'
-      );
+      console.error('Payment error:', error);
+      Alert.alert('Payment Failed', 'An unexpected error occurred.');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -168,7 +172,7 @@ export default function PaymentScreen({ route, navigation }) {
         <Text style={styles.value}>{appointment?.timeSlot || 'N/A'}</Text>
 
         <Text style={styles.label}>Amount</Text>
-        <Text style={styles.amount}>Rs. {amount}</Text>
+        <Text style={styles.amount}>Rs. {amount.toFixed(2)}</Text>
 
         <Text style={styles.sectionHeading}>Credit Card Details</Text>
 
@@ -201,9 +205,10 @@ export default function PaymentScreen({ route, navigation }) {
               style={styles.input}
               placeholder="MM/YY"
               placeholderTextColor={COLORS.textMuted}
-              value={expiry}
-              onChangeText={(value) => setExpiry(formatExpiry(value))}
+              value={expiryDate}
+              onChangeText={(text) => setExpiryDate(formatExpiryDate(text))}
               keyboardType="number-pad"
+              maxLength={5}
               editable={!isPaid && !loading}
             />
           </View>
@@ -223,18 +228,22 @@ export default function PaymentScreen({ route, navigation }) {
           </View>
         </View>
 
+        <View style={styles.noteBox}>
+          <Text style={styles.noteText}>
+            This is a simulated payment for academic project purposes. Full card details are not stored.
+          </Text>
+        </View>
+
         <Text style={styles.label}>Payment Status</Text>
-        <Text style={[styles.status, statusStyle]}>
-          {currentStatus}
-        </Text>
+        <Text style={[styles.status, statusStyle]}>{currentStatus}</Text>
       </View>
 
       <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
-        disabled={loading || isPaid}
+        style={[styles.button, (submitting || loading || isPaid) && styles.buttonDisabled]}
+        disabled={submitting || loading || isPaid}
         onPress={handlePayment}
       >
-        {loading ? (
+        {(submitting || loading) ? (
           <ActivityIndicator size="small" color={COLORS.white} />
         ) : (
           <Text style={styles.buttonText}>
@@ -256,41 +265,39 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
     fontWeight: '700',
     marginBottom: SPACING.lg,
-    fontSize: 20,
+    fontSize: 20
   },
   card: {
     backgroundColor: COLORS.white,
-    borderWidth: 0,
-    borderColor: COLORS.primary,
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: SPACING.lg,
-    ...SHADOWS.md,
+    ...SHADOWS.md
   },
   label: {
     color: COLORS.textLight,
     fontSize: 12,
     marginTop: SPACING.md,
-    fontWeight: '600',
+    fontWeight: '600'
   },
   value: {
     color: COLORS.dark,
     fontSize: 16,
     fontWeight: '600',
-    marginTop: SPACING.sm,
+    marginTop: SPACING.sm
   },
   amount: {
     color: COLORS.accent,
     fontSize: 20,
     fontWeight: '700',
-    marginTop: SPACING.md,
+    marginTop: SPACING.md
   },
   sectionHeading: {
     color: COLORS.dark,
     fontSize: 16,
     fontWeight: '700',
     marginTop: SPACING.lg,
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.sm
   },
   input: {
     marginTop: SPACING.sm,
@@ -301,40 +308,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
     color: COLORS.dark,
-    fontSize: 15,
+    fontSize: 15
   },
   row: {
     flexDirection: 'row',
-    gap: SPACING.md,
+    gap: SPACING.md
   },
   halfField: {
-    flex: 1,
+    flex: 1
+  },
+  noteBox: {
+    marginTop: SPACING.md,
+    padding: SPACING.md,
+    backgroundColor: COLORS.secondary,
+    borderRadius: BORDER_RADIUS.md
+  },
+  noteText: {
+    color: COLORS.dark,
+    fontSize: 13,
+    lineHeight: 20
   },
   status: {
     marginTop: SPACING.sm,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '700'
   },
   pending: {
-    color: COLORS.warning,
+    color: COLORS.warning
   },
   paid: {
-    color: COLORS.success,
+    color: COLORS.success
   },
   button: {
     backgroundColor: COLORS.accent,
     borderRadius: BORDER_RADIUS.md,
     paddingVertical: SPACING.lg,
     alignItems: 'center',
-    ...SHADOWS.lg,
+    ...SHADOWS.lg
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.6
   },
   buttonText: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '700'
   }
 });
 

@@ -70,6 +70,38 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.arrowIcon}>›</Text>
           </TouchableOpacity>
 
+          {user?.role === 'patient' && (
+            <TouchableOpacity
+              style={styles.glassCard}
+              onPress={() => navigation.navigate('PaymentHistory')}
+            >
+              <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}> 
+                <Text style={styles.cardIcon}>💳</Text>
+              </View>
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>Payment History</Text>
+                <Text style={styles.cardText}>Review your payments and receipts</Text>
+              </View>
+              <Text style={styles.arrowIcon}>›</Text>
+            </TouchableOpacity>
+          )}
+
+          {user?.role === 'admin' && (
+            <TouchableOpacity
+              style={styles.glassCard}
+              onPress={() => navigation.navigate('AdminPaymentManagement')}
+            >
+              <View style={[styles.iconCircle, { backgroundColor: COLORS.light }]}> 
+                <Text style={styles.cardIcon}>🧾</Text>
+              </View>
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>Payment Management</Text>
+                <Text style={styles.cardText}>Manage all payments and statuses</Text>
+              </View>
+              <Text style={styles.arrowIcon}>›</Text>
+            </TouchableOpacity>
+          )}
+
           {/* Card 4: Medical History */}
           <TouchableOpacity
             style={styles.glassCard}
@@ -117,7 +149,7 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.badgeText}>{unreadCount}</Text>
               </View>
             ) : null}
-            <Text style={styles.arrowIcon}>â€º</Text>
+            <Text style={styles.arrowIcon}>›</Text>
           </TouchableOpacity>
 
         </View>

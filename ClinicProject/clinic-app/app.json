@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "clinicapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true
     },
@@ -39,9 +39,6 @@
         }
       ],
       "expo-router"
-    ],
-    "experiments": {
-      "reactCompiler": true
-    }
+    ]
   }
 }

@@ -87,6 +87,22 @@ export default function ProfileScreen({ navigation }) {
 
       {/* Quick Links */}
       <View style={styles.linksContainer}>
+        {user?.role === 'patient' && (
+          <TouchableOpacity style={styles.linkButton} onPress={() => navigation.navigate('PaymentHistory')}>
+            <Text style={styles.linkIcon}>💳</Text>
+            <Text style={styles.linkText}>Payment History</Text>
+            <Text style={styles.linkArrow}>›</Text>
+          </TouchableOpacity>
+        )}
+
+        {user?.role === 'admin' && (
+          <TouchableOpacity style={styles.linkButton} onPress={() => navigation.navigate('AdminPaymentManagement')}>
+            <Text style={styles.linkIcon}>🧾</Text>
+            <Text style={styles.linkText}>Payment Management</Text>
+            <Text style={styles.linkArrow}>›</Text>
+          </TouchableOpacity>
+        )}
+
         <TouchableOpacity style={styles.linkButton} onPress={() => navigation.navigate('MedicalHistory')}>
           <Text style={styles.linkIcon}>🩺</Text>
           <Text style={styles.linkText}>Medical History</Text>

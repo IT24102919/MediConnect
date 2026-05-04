@@ -26,15 +26,25 @@ export default function DoctorDashboardScreen({ navigation }) {
   };
 
   useEffect(() => {
-    fetchDoctorProfile();
-    fetchAppointments();
+    const loadData = async () => {
+      const profile = await fetchDoctorProfile();
+      if (profile) {
+        fetchAppointments(profile._id);
+      }
+    };
+    loadData();
   }, []);
 
   //refreshes data when returning to this screen
   useFocusEffect(
     useCallback(() => {
-      fetchDoctorProfile();
-      fetchAppointments();
+      const loadData = async () => {
+        const profile = await fetchDoctorProfile();
+        if (profile) {
+          fetchAppointments(profile._id);
+        }
+      };
+      loadData();
     }, [])
   );
 
@@ -43,16 +53,21 @@ export default function DoctorDashboardScreen({ navigation }) {
       const response = await axiosInstance.get('/doctors');
       const profile = response.data.doctors.find(doc => doc.name === user.name);
       setDoctorProfile(profile);
+      return profile;
     } catch (error) {
       console.log("Error fetching profile:", error);
+      return null;
     }
   };
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (profileId) => {
     try {
+      const targetId = profileId || doctorProfile?._id;
+      if (!targetId) return;
+
       const response = await axiosInstance.get('/appointments');
       const myAppointments = response.data.appointments?.filter(
-        apt => apt.doctorId === doctorProfile?._id
+        apt => apt.doctorId === targetId
       ) || [];
       setAppointments(myAppointments);
     } catch (error) {
@@ -133,7 +148,7 @@ export default function DoctorDashboardScreen({ navigation }) {
       )}
 
       <View style={styles.appointmentsCard}>
-        <Text style={styles.sectionTitle}>Today's Appointments</Text>
+        <Text style={styles.sectionTitle}>{"Today's Appointments"}</Text>
         {appointments.length === 0 ? (
           <Text style={styles.emptyText}>No appointments yet</Text>
         ) : (

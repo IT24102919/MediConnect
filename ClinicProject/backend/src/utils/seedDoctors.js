@@ -124,6 +124,13 @@ const defaultDoctors = [
 ];
 
 const seedDoctors = async () => {
+  // Check if database is connected before proceeding
+  const mongoose = require('mongoose');
+  if (mongoose.connection.readyState !== 1) {
+    console.log('❌ Skipping doctor seeding: No database connection.');
+    return;
+  }
+
   const doctorCount = await Doctor.countDocuments();
 
   if (doctorCount > 0) {

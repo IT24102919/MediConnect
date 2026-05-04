@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Define Payment Schema
 const paymentSchema = new mongoose.Schema(
   {
     appointmentId: {
@@ -16,12 +15,17 @@ const paymentSchema = new mongoose.Schema(
     amount: {
       type: Number,
       required: [true, 'Please provide amount'],
-      min: 0
+      min: [0, 'Amount cannot be negative']
     },
     paymentMethod: {
       type: String,
-      enum: ['Card'],
+      enum: ['Card', 'Cash', 'Online'],
       default: 'Card'
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['Pending', 'Paid', 'Failed', 'Refunded', 'Cancelled'],
+      default: 'Pending'
     },
     cardBrand: {
       type: String,
@@ -43,12 +47,18 @@ const paymentSchema = new mongoose.Schema(
     transactionId: {
       type: String,
       trim: true,
+      unique: true,
+      sparse: true
+    },
+    description: {
+      type: String,
+      trim: true,
       default: ''
     },
-    paymentStatus: {
+    refundReason: {
       type: String,
-      enum: ['Pending', 'Paid'],
-      default: 'Pending'
+      trim: true,
+      default: ''
     },
     paidAt: {
       type: Date,
@@ -60,9 +70,8 @@ const paymentSchema = new mongoose.Schema(
   }
 );
 
-// Index for finding payments by patient
 paymentSchema.index({ patientId: 1 });
 paymentSchema.index({ appointmentId: 1 });
+paymentSchema.index({ paymentStatus: 1 });
 
-// Create and export Payment model
 module.exports = mongoose.model('Payment', paymentSchema);

@@ -43,11 +43,13 @@ const getExpoHost = () => {
 
 const backendHostFromEnv = process.env.EXPO_PUBLIC_API_HOST?.trim();
 const backendUrlFromEnv = process.env.EXPO_PUBLIC_API_URL?.trim();
-const fallbackHost = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+const expoHost = getExpoHost();
 
+// Use Expo host for backend connection - this ensures both frontend and backend are on same network
 const BACKEND_URL =
   backendUrlFromEnv ||
-  `http://${backendHostFromEnv || getExpoHost() || fallbackHost}:5000/api`;
+  backendHostFromEnv ||
+  (expoHost ? `http://${expoHost}:5000/api` : 'http://172.28.29.224:5000/api');
 
 // Create axios instance with base configuration
 const axiosInstance = axios.create({
@@ -89,6 +91,14 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
+    // Log connection errors for debugging
+    if (!error.response) {
+      console.error('Connection error - Could not reach backend at:', BACKEND_URL);
+      console.error('Error details:', error.message);
+    } else {
+      console.error('API Error Status:', error.response.status, 'Message:', error.response.data?.message);
+    }
+    
     // Handle common errors
     if (error.response?.status === 401) {
       // Token expired or invalid - clear storage and redirect handled by AuthContext

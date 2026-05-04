@@ -3,6 +3,13 @@ const Doctor = require('../models/Doctor');
 // Create doctor
 const createDoctor = async (req, res) => {
   try {
+    if (String(req.user?.role).toLowerCase() !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Admin access required.'
+      });
+    }
+
     const {
       name,
       specialization,
@@ -129,6 +136,13 @@ const getDoctor = async (req, res) => {
 // Update doctor
 const updateDoctor = async (req, res) => {
   try {
+    if (String(req.user?.role).toLowerCase() !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Admin access required.'
+      });
+    }
+
     const { name, specialization, hospital, experience, fee, rating, phone, description, available, image } = req.body;
 
     let doctor = await Doctor.findById(req.params.id);
@@ -170,6 +184,13 @@ const updateDoctor = async (req, res) => {
 // Delete doctor
 const deleteDoctor = async (req, res) => {
   try {
+    if (String(req.user?.role).toLowerCase() !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Admin access required.'
+      });
+    }
+
     const doctor = await Doctor.findByIdAndDelete(req.params.id);
 
     if (!doctor) {

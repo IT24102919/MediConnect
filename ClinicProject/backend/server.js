@@ -22,6 +22,7 @@ const uploadRoutes = require('./src/routes/uploadRoutes');
 const medicalHistoryRoutes = require('./src/routes/medicalHistoryRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
 
+const { isDatabaseConnected, requireDatabase } = require('./src/middleware/dbMiddleware');
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 
 const app = express();
@@ -32,19 +33,28 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/doctors', doctorRoutes);
-app.use('/api/schedules', scheduleRoutes);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/feedbacks', feedbackRoutes);
+app.get('/api/health', (req, res) => {
+  res.json({
+    success: true,
+    api: 'running',
+    database: isDatabaseConnected() ? 'connected' : 'disconnected'
+  });
+});
+
+app.use('/api/auth', requireDatabase, authRoutes);
+app.use('/api/doctors', requireDatabase, doctorRoutes);
+app.use('/api/schedules', requireDatabase, scheduleRoutes);
+app.use('/api/appointments', requireDatabase, appointmentRoutes);
+app.use('/api/payments', requireDatabase, paymentRoutes);
+app.use('/api/feedbacks', requireDatabase, feedbackRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/medical-history', medicalHistoryRoutes);
-app.use('/api/notifications', notificationRoutes);
+app.use('/api/medical-history', requireDatabase, medicalHistoryRoutes);
+app.use('/api/notifications', requireDatabase, notificationRoutes);
 
 app.get('/api/test-db', (req, res) => {
   res.json({
-    message: 'Database connected successfully'
+    success: isDatabaseConnected(),
+    database: isDatabaseConnected() ? 'connected' : 'disconnected'
   });
 });
 
@@ -94,10 +104,24 @@ const startServer = async () => {
     console.log('MONGO_URI LOADED:', process.env.MONGO_URI ? 'YES' : 'NO');
 
     await connectDB();
-    await seedDoctors();
+    
+    try {
+      await seedDoctors();
+    } catch (seedError) {
+      console.log('⚠️ Skipping doctor seeding due to database connection issues.');
+    }
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
+    });
+
+    server.on('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Stop the other server or start this backend with a different PORT.`);
+        process.exit(1);
+      }
+
+      throw error;
     });
   } catch (error) {
     console.error('Server startup error:', error.message);
