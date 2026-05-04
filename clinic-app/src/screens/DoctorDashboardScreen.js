@@ -119,7 +119,6 @@ export default function DoctorDashboardScreen({ navigation }) {
 
   const handleLogout = async () => {
     await logout();
-    navigation.replace('Login');
   };
 
   const handleDeleteAccount = () => {
@@ -135,7 +134,6 @@ export default function DoctorDashboardScreen({ navigation }) {
             const result = await deleteAccount();
             if (result.success) {
               Alert.alert('Account Deleted', 'Your account has been deleted.');
-              navigation.replace('Login');
             } else {
               Alert.alert('Error', result.message);
             }

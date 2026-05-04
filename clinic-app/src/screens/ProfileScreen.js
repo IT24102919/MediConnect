@@ -16,7 +16,6 @@ export default function ProfileScreen({ navigation }) {
           text: 'Logout',
           onPress: async () => {
             await logout();
-            navigation.replace('Login');
           },
           style: 'destructive'
         }
